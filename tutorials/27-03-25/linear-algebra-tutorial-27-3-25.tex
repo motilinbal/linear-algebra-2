@@ -1,0 +1,393 @@
+\documentclass[11pt]{article}
+\usepackage{amsmath, amssymb, amsthm}
+\usepackage[margin=1in]{geometry}
+\usepackage{hyperref} % Optional, for clickable links if needed
+
+% Theorem Environments Setup
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{proposition}[theorem]{Proposition}
+
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{example}[theorem]{Example}
+\newtheorem{axiom}[theorem]{Axiom}
+
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+
+% Custom Commands
+\newcommand{\field}[1]{\mathbb{#1}} % For fields R, C, Q
+\newcommand{\R}{\field{R}}
+\newcommand{\C}{\field{C}}
+\newcommand{\Q}{\field{Q}}
+\newcommand{\F}{\field{F}} % Generic field
+\newcommand{\Z}{\field{Z}} % Integers
+\newcommand{\N}{\field{N}} % Natural numbers
+\DeclareMathOperator{\rank}{rank}
+\DeclareMathOperator{\adj}{adj}
+\DeclareMathOperator{\det}{det}
+\DeclareMathOperator{\Null}{Null}
+\DeclareMathOperator{\ColSpace}{ColSpace}
+\DeclareMathOperator{\RowSpace}{RowSpace}
+\DeclareMathOperator{\dim}{dim}
+
+\newcommand{\veca}[1]{\mathbf{#1}} % Vector notation (alternative: \vec{#1})
+\newcommand{\mat}[1]{\mathbf{#1}} % Matrix notation
+
+\setlength{\parindent}{0pt} % No paragraph indentation
+\setlength{\parskip}{1ex} % Space between paragraphs
+
+\title{Linear Algebra Tutorial Notes \\ (Based on Lecture of March 27/25)}
+\author{Course Staff}
+\date{March 2023} % Adjust date as needed
+
+\begin{document}
+\maketitle
+
+%--------------------------------------------------------------------------
+\section*{Administrative Announcements}
+%--------------------------------------------------------------------------
+
+Please take note of the following administrative points mentioned during the lecture:
+
+\begin{itemize}
+    \item \textbf{Office Hours:}
+        \begin{itemize}
+            \item There was a request from students to potentially move the regular office hours to Thursday.
+            \item This change is \textbf{not guaranteed}. If the timing becomes too close to other commitments, the current schedule will remain.
+            \item A decision will be made, and an announcement will follow if there is a change.
+            \item For the upcoming week, office hours will proceed \textbf{as usual} at the currently scheduled time.
+        \end{itemize}
+
+    \item \textbf{Moed Bet Exam:}
+        \begin{itemize}
+            \item The exact date and time for the Moed Bet exam have not yet been confirmed by the administration.
+            \item A tentative assumption might be 9:00 AM (as Shabbat entrance times might affect Friday scheduling). However, this is \textbf{speculation only}.
+            \item Once the official schedule is released, an announcement will be made. If you require Moed Bet accommodations and haven't been in touch, please do so.
+        \end{itemize}
+
+    \item \textbf{Course Structure and Proofs (Semester Bet vs. Aleph):}
+        \begin{itemize}
+            \item The overall structure regarding points (roughly 70% computational/algorithmic, 30% theoretical/proofs) is expected to remain similar to Semester Aleph.
+            \item Some students perceive Semester Bet as less focused on strict algorithms compared to Semester Aleph, although algorithms are still present and sometimes require conceptual understanding.
+            \item New algorithms not covered in Semester Aleph (e.g., finding a basis for the intersection of subspaces) will be introduced.
+            \item The exam format is expected to be similar: likely two questions worth 35 points each and two questions worth 15 points each. Proofs will still be a component.
+        \end{itemize}
+
+     \item \textbf{Materials/Misc:} Mention was made of branded cups and notebooks. A reference to "Week 0" was also noted.
+\end{itemize}
+\vspace{2ex}
+\hrulefill
+\vspace{2ex}
+
+%--------------------------------------------------------------------------
+\section{Introduction: Fields and Vector Spaces}
+%--------------------------------------------------------------------------
+
+Welcome! As we delve deeper into linear algebra, we encounter more abstract structures. Central to this is the concept of a \textbf{vector space}. Think of it as a generalization of the familiar spaces like $\R^2$ (the plane) or $\R^3$ (3D space). To properly define a vector space, we first need to understand the "arena" in which it operates – the set of scalars, which must form a mathematical structure called a \textbf{field}.
+
+\subsection{Fields (A Brief Overview)}
+
+While fields are a vast topic in abstract algebra, for our purposes in linear algebra, we only need the essential idea.
+
+\begin{definition}[Field (Informal)]
+A \textbf{field} is a set $\F$ equipped with two operations, addition ($+$) and multiplication ($\cdot$), that behave like familiar arithmetic. Specifically, they satisfy properties like:
+\begin{itemize}
+    \item Closure, associativity, commutativity for both $+$ and $\cdot$.
+    \item Existence of additive identity (0) and multiplicative identity (1), with $1 \neq 0$.
+    \item Existence of additive inverses (for every $a \in \F$, there's a $-a \in \F$ such that $a+(-a)=0$).
+    \item Existence of multiplicative inverses (for every $a \in \F$ with $a \neq 0$, there's an $a^{-1} \in \F$ such that $a \cdot a^{-1}=1$).
+    \item Distributivity of multiplication over addition ($a \cdot (b+c) = a \cdot b + a \cdot c$).
+\end{itemize}
+\end{definition}
+
+\begin{remark}
+The key takeaway is that in a field, you can add, subtract, multiply, and divide (by non-zero elements) and remain within the set, following the standard rules of algebra.
+\end{remark}
+
+\begin{example}
+Common fields we will use:
+\begin{itemize}
+    \item $\R$: The field of real numbers.
+    \item $\C$: The field of complex numbers.
+    \item $\Q$: The field of rational numbers.
+\end{itemize}
+These satisfy all the field properties.
+\end{example}
+
+\begin{example}[Non-Examples]
+\begin{itemize}
+    \item $\Z$: The integers. This is \emph{not} a field because most integers lack multiplicative inverses within $\Z$. For example, there is no integer $z$ such that $2 \cdot z = 1$. Only 1 and -1 have multiplicative inverses in $\Z$.
+    \item $\N$: The natural numbers. This lacks both additive inverses (no negative numbers) and most multiplicative inverses.
+\end{itemize}
+\end{example}
+
+\subsection{Vector Spaces}
+
+Now we can define the main object of study.
+
+\begin{definition}[Vector Space]
+A \textbf{vector space} $V$ over a field $\F$ (denoted $(V, \F, +, \cdot)$ or simply $V$ over $\F$) consists of:
+\begin{itemize}
+    \item A set $V$, whose elements are called \textbf{vectors} (e.g., denoted $\veca{u}, \veca{v}, \veca{w}$).
+    \item A field $\F$, whose elements are called \textbf{scalars} (e.g., denoted $\alpha, \beta, \gamma$).
+    \item An operation called \textbf{vector addition} $+ : V \times V \to V$.
+    \item An operation called \textbf{scalar multiplication} $\cdot : \F \times V \to V$.
+\end{itemize}
+These sets and operations must satisfy the following eight axioms for all $\veca{u}, \veca{v}, \veca{w} \in V$ and all $\alpha, \beta \in \F$:
+
+\begin{enumerate}
+    \item \textbf{Commutativity of Addition:} $\veca{u} + \veca{v} = \veca{v} + \veca{u}$.
+    \item \textbf{Associativity of Addition:} $(\veca{u} + \veca{v}) + \veca{w} = \veca{u} + (\veca{v} + \veca{w})$.
+    \item \textbf{Existence of Zero Vector:} There exists a unique vector $\veca{0}_V \in V$ such that for all $\veca{v} \in V$, $\veca{v} + \veca{0}_V = \veca{v}$.
+    \item \textbf{Existence of Additive Inverse:} For every $\veca{v} \in V$, there exists a unique vector $-\veca{v} \in V$ such that $\veca{v} + (-\veca{v}) = \veca{0}_V$.
+    \item \textbf{Multiplicative Identity:} $1_\F \cdot \veca{v} = \veca{v}$, where $1_\F$ is the multiplicative identity in the field $\F$.
+    \item \textbf{Associativity of Scalar Multiplication:} $(\alpha \beta) \cdot \veca{v} = \alpha \cdot (\beta \cdot \veca{v})$.
+    \item \textbf{Distributivity (Scalars):} $(\alpha + \beta) \cdot \veca{v} = (\alpha \cdot \veca{v}) + (\beta \cdot \veca{v})$.
+    \item \textbf{Distributivity (Vectors):} $\alpha \cdot (\veca{u} + \veca{v}) = (\alpha \cdot \veca{u}) + (\alpha \cdot \veca{v})$.
+\end{enumerate}
+\end{definition}
+
+\begin{remark}
+The axiomatic definition might seem abstract, but it precisely captures the essential properties needed for linear algebra concepts (like linear combinations, span, basis, dimension) to work consistently. While we won't focus excessively on proving these axioms for standard spaces, understanding them is crucial when dealing with less familiar examples or proving general theorems.
+\end{remark}
+
+\begin{example}
+Familiar vector spaces include:
+\begin{itemize}
+    \item $\R^n$ over $\R$: Vectors are $n$-tuples of real numbers, with standard component-wise addition and scalar multiplication.
+    \item $\C^n$ over $\C$ (or over $\R$).
+    \item The set of all $m \times n$ matrices with entries from $\F$, over the field $\F$.
+    \item The set of all continuous functions $f: [a,b] \to \R$, over the field $\R$. (As mentioned in an exercise).
+\end{itemize}
+Anything satisfying the 8 axioms qualifies.
+\end{example}
+
+%--------------------------------------------------------------------------
+\section{Determinants and Divisibility}
+%--------------------------------------------------------------------------
+
+Let's explore a property of determinants using an example related to divisibility.
+
+\begin{example}[Homework Problem 3 - Modified] \label{ex:det_divisibility}
+Consider the matrix
+\[ \mat{A} = \begin{pmatrix} 2 & 7 & 3 \\ 4 & 1 & 6 \\ 5 & 8 & 5 \end{pmatrix} \]
+Let $D = \det(\mat{A})$. We are given the (perhaps surprising) information that the numbers formed by reading the rows as digits are divisible by 13:
+\begin{itemize}
+    \item $273 = 13 \times 21$
+    \item $416 = 13 \times 32$
+    \item $585 = 13 \times 45$
+\end{itemize}
+Show that $D$ must also be divisible by 13, \emph{without explicitly calculating the determinant's value}.
+
+\textit{Strategy:} We will use elementary column operations that do not change the value of the determinant to manipulate the matrix into a form where the divisibility by 13 becomes apparent.
+
+\textit{Solution:}
+Recall the decimal representation. For example, $273 = 2 \times 100 + 7 \times 10 + 3 \times 1$. This suggests combining the columns. Let $C_1, C_2, C_3$ be the columns of $\mat{A}$. Consider the following column operation:
+\[ C_3' = C_3 + 10 C_2 + 100 C_1 \]
+This operation consists of adding multiples of columns to another column, which \textbf{does not change the determinant}. Applying this:
+\begin{align*} \det(\mat{A}) &= \begin{vmatrix} 2 & 7 & 3 \\ 4 & 1 & 6 \\ 5 & 8 & 5 \end{vmatrix} \\ &= \begin{vmatrix} 2 & 7 & 3 + 10(7) + 100(2) \\ 4 & 1 & 6 + 10(1) + 100(4) \\ 5 & 8 & 5 + 10(8) + 100(5) \end{vmatrix} \\ &= \begin{vmatrix} 2 & 7 & 273 \\ 4 & 1 & 416 \\ 5 & 8 & 585 \end{vmatrix} \end{align*}
+Now, we use the given divisibility information. Every entry in the third column is a multiple of 13. We can factor out a common factor from a single column (or row) of a determinant:
+\begin{align*} \det(\mat{A}) &= \begin{vmatrix} 2 & 7 & 13 \times 21 \\ 4 & 1 & 13 \times 32 \\ 5 & 8 & 13 \times 45 \end{vmatrix} \\ &= 13 \times \begin{vmatrix} 2 & 7 & 21 \\ 4 & 1 & 32 \\ 5 & 8 & 45 \end{vmatrix} \end{align*}
+Let the remaining determinant be $D'$.
+\[ D' = \begin{vmatrix} 2 & 7 & 21 \\ 4 & 1 & 32 \\ 5 & 8 & 45 \end{vmatrix} \]
+Since all the entries in this matrix are integers, the determinant $D'$ (calculated via cofactor expansion, for instance) will involve only sums, differences, and products of integers. Therefore, $D'$ must itself be an integer. Let $D' = z$, where $z \in \Z$.
+
+We have shown that $\det(\mat{A}) = 13 \times z$ for some integer $z$. By definition, this means $\det(\mat{A})$ is divisible by 13. $\qed$
+
+\begin{remark}
+An alternative approach mentioned was to compute the determinant using cofactor expansion along the third column of the matrix
+\[ \begin{pmatrix} 2 & 7 & 273 \\ 4 & 1 & 416 \\ 5 & 8 & 585 \end{pmatrix} \]
+Each term in the expansion would be of the form $\pm (\text{entry from } C_3) \times (\text{a minor determinant})$. Since each entry in $C_3$ is divisible by 13, and the minor determinants are integers, the entire sum (the determinant) must be divisible by 13. This is also a valid line of reasoning.
+\end{remark}
+\end{example}
+
+%--------------------------------------------------------------------------
+\section{The Adjugate Matrix}
+%--------------------------------------------------------------------------
+
+We now introduce a matrix closely related to the inverse, called the adjugate (or sometimes, classical adjoint).
+
+\begin{definition}[Minor and Cofactor]
+Let $\mat{A}$ be an $n \times n$ matrix.
+\begin{itemize}
+    \item The \textbf{$(i,j)$-minor} of $\mat{A}$, denoted $M_{ij}$, is the determinant of the $(n-1) \times (n-1)$ submatrix obtained by deleting row $i$ and column $j$ of $\mat{A}$.
+    \item The \textbf{$(i,j)$-cofactor} of $\mat{A}$, denoted $C_{ij}$, is given by $C_{ij} = (-1)^{i+j} M_{ij}$.
+\end{itemize}
+\end{definition}
+
+\begin{definition}[Adjugate Matrix]
+Let $\mat{A}$ be an $n \times n$ matrix. The \textbf{adjugate} of $\mat{A}$, denoted $\adj(\mat{A})$, is the $n \times n$ matrix whose $(i,j)$-entry is the $(j,i)$-cofactor of $\mat{A}$. That is,
+\[ (\adj(\mat{A}))_{ij} = C_{ji} = (-1)^{j+i} M_{ji} \]
+Note the transpose relationship between the indices of the adjugate entry and the cofactor used. The adjugate is the transpose of the matrix of cofactors.
+\end{definition}
+
+The adjugate matrix satisfies a fundamental identity:
+
+\begin{theorem}[Fundamental Property of the Adjugate] \label{thm:adj_identity}
+For any $n \times n$ matrix $\mat{A}$,
+\[ \mat{A} \cdot \adj(\mat{A}) = \adj(\mat{A}) \cdot \mat{A} = \det(\mat{A}) \mat{I}_n \]
+where $\mat{I}_n$ is the $n \times n$ identity matrix.
+\end{theorem}
+
+\begin{proof} (Sketch)
+The $(i,k)$-entry of the product $\mat{A} \cdot \adj(\mat{A})$ is $\sum_{j=1}^n A_{ij} (\adj(\mat{A}))_{jk} = \sum_{j=1}^n A_{ij} C_{kj}$.
+\begin{itemize}
+    \item If $i=k$, this sum is $\sum_{j=1}^n A_{ij} C_{ij}$, which is precisely the cofactor expansion of $\det(\mat{A})$ along row $i$. So the diagonal entries are $\det(\mat{A})$.
+    \item If $i \neq k$, this sum $\sum_{j=1}^n A_{ij} C_{kj}$ represents the cofactor expansion of a matrix obtained from $\mat{A}$ by replacing row $k$ with a copy of row $i$. Such a matrix has two identical rows, and thus its determinant is 0. So the off-diagonal entries are 0.
+\end{itemize}
+This shows $\mat{A} \cdot \adj(\mat{A}) = \det(\mat{A}) \mat{I}_n$. A similar argument works for $\adj(\mat{A}) \cdot \mat{A}$.
+\end{proof}
+
+This identity directly leads to a formula for the inverse when it exists:
+
+\begin{corollary}[Inverse via Adjugate]
+If $\mat{A}$ is an $n \times n$ matrix with $\det(\mat{A}) \neq 0$ (i.e., $\mat{A}$ is invertible), then
+\[ \mat{A}^{-1} = \frac{1}{\det(\mat{A})} \adj(\mat{A}) \]
+\end{corollary}
+
+\begin{proof}
+Since $\det(\mat{A}) \neq 0$, we can divide the identity from Theorem \ref{thm:adj_identity} by the scalar $\det(\mat{A})$:
+\[ \mat{A} \cdot \left( \frac{1}{\det(\mat{A})} \adj(\mat{A}) \right) = \frac{1}{\det(\mat{A})} (\det(\mat{A}) \mat{I}_n) = \mat{I}_n \]
+By the definition of the inverse, the matrix multiplying $\mat{A}$ on the right to yield $\mat{I}_n$ must be $\mat{A}^{-1}$.
+\end{proof}
+
+\begin{remark}
+If $\det(\mat{A}) = 0$, then $\mat{A}$ is not invertible, and the expression $\frac{1}{\det(\mat{A})}$ is undefined. In this case, the identity $\mat{A} \cdot \adj(\mat{A}) = \mat{0}$ (the zero matrix) still holds.
+\end{remark}
+
+%--------------------------------------------------------------------------
+\section{Rank of the Adjugate Matrix}
+%--------------------------------------------------------------------------
+
+While the rank of a general $n \times n$ matrix $\mat{A}$ can be any integer from 0 to $n$, the rank of its adjugate is surprisingly restricted.
+
+\begin{theorem} \label{thm:rank_adj}
+Let $\mat{A}$ be an $n \times n$ matrix over a field $\F$. Then the rank of its adjugate matrix, $\rank(\adj(\mat{A}))$, can only take one of the following three values:
+\[ \rank(\adj(\mat{A})) = \begin{cases} n & \text{if } \rank(\mat{A}) = n \\ 1 & \text{if } \rank(\mat{A}) = n-1 \\ 0 & \text{if } \rank(\mat{A}) < n-1 \end{cases} \]
+(Assuming $n \ge 2$. If $n=1$, $\adj(A)=(1)$ and the rank is always 1 if $A \neq (0)$, 0 if $A=(0)$.)
+\end{theorem}
+
+\begin{proof}
+We proceed by cases based on the rank of $\mat{A}$. Assume $n \ge 2$.
+
+\textbf{Case 1: $\rank(\mat{A}) = n$.}
+If $\rank(\mat{A}) = n$, then $\mat{A}$ is invertible, and $\det(\mat{A}) \neq 0$. From the corollary above, $\adj(\mat{A}) = \det(\mat{A}) \mat{A}^{-1}$. Since $\det(\mat{A})$ is a non-zero scalar and $\mat{A}^{-1}$ is invertible (and thus has rank $n$), their product $\adj(\mat{A})$ must also be invertible. An invertible $n \times n$ matrix has rank $n$.
+Alternatively, using determinants:
+\[ \det(\adj(\mat{A})) = \det(\det(\mat{A}) \mat{A}^{-1}) = (\det(\mat{A}))^n \det(\mat{A}^{-1}) = (\det(\mat{A}))^n (\det(\mat{A}))^{-1} = (\det(\mat{A}))^{n-1} \]
+Since $\det(\mat{A}) \neq 0$ and $n \ge 2$, $(\det(\mat{A}))^{n-1} \neq 0$. Thus, $\adj(\mat{A})$ is invertible, and its rank is $n$.
+
+\textbf{Case 2: $\rank(\mat{A}) < n-1$.}
+If the rank of $\mat{A}$ is strictly less than $n-1$, this means that any $(n-1) \times (n-1)$ submatrix of $\mat{A}$ must be singular (otherwise, we could find $n-1$ linearly independent rows/columns, contradicting $\rank(\mat{A}) < n-1$).
+Consider any entry of the adjugate matrix: $(\adj(\mat{A}))_{ij} = C_{ji} = (-1)^{j+i} M_{ji}$. The minor $M_{ji}$ is the determinant of an $(n-1) \times (n-1)$ submatrix of $\mat{A}$. Since $\rank(\mat{A}) < n-1$, all such minors must be zero. That is, $M_{ji} = 0$ for all $j, i$.
+Therefore, every entry of $\adj(\mat{A})$ is zero. This means $\adj(\mat{A})$ is the zero matrix, $\mat{0}$. The rank of the zero matrix is 0.
+
+\textbf{Case 3: $\rank(\mat{A}) = n-1$.}
+If $\rank(\mat{A}) = n-1$, then $\mat{A}$ is not invertible, so $\det(\mat{A}) = 0$. The fundamental identity becomes:
+\[ \mat{A} \cdot \adj(\mat{A}) = \det(\mat{A}) \mat{I}_n = 0 \cdot \mat{I}_n = \mat{0} \]
+Let $\veca{c}_j$ be the $j$-th column of $\adj(\mat{A})$. The equation $\mat{A} \cdot \adj(\mat{A}) = \mat{0}$ implies that $\mat{A} \veca{c}_j = \veca{0}$ for all $j=1, \dots, n$. This means that every column of $\adj(\mat{A})$ belongs to the null space of $\mat{A}$, $\Null(\mat{A})$.
+Consequently, the column space of $\adj(\mat{A})$ is a subspace of the null space of $\mat{A}$:
+\[ \ColSpace(\adj(\mat{A})) \subseteq \Null(\mat{A}) \]
+By the Rank-Nullity Theorem, $\dim(\Null(\mat{A})) = n - \rank(\mat{A})$. Since we are in the case $\rank(\mat{A}) = n-1$, we have:
+\[ \dim(\Null(\mat{A})) = n - (n-1) = 1 \]
+Since $\ColSpace(\adj(\mat{A}))$ is a subspace of a 1-dimensional space $\Null(\mat{A})$, its dimension must be either 0 or 1. That is, $\rank(\adj(\mat{A})) = \dim(\ColSpace(\adj(\mat{A}))) \in \{0, 1\}$.
+
+Can the rank be 0? If $\rank(\adj(\mat{A})) = 0$, then $\adj(\mat{A})$ must be the zero matrix. This implies that all cofactors $C_{ji}$ are zero, meaning all $(n-1) \times (n-1)$ minors $M_{ji}$ are zero. However, if $\rank(\mat{A}) = n-1$, there must exist at least one $(n-1) \times (n-1)$ submatrix with a non-zero determinant (this is precisely the definition of rank $n-1$). This means there exists at least one minor $M_{ji} \neq 0$. This contradicts the assumption that $\adj(\mat{A})$ is the zero matrix.
+Therefore, $\rank(\adj(\mat{A}))$ cannot be 0 in this case. It must be 1.
+
+Combining all cases, the rank of $\adj(\mat{A})$ is $n$ if $\rank(A)=n$, 1 if $\rank(A)=n-1$, and 0 if $\rank(A)<n-1$.
+\end{proof}
+
+\begin{remark}
+This theorem shows a strong relationship between the rank of a matrix and the rank of its adjugate. The "critical" transition happens when the rank drops just below full rank.
+\end{remark}
+
+%--------------------------------------------------------------------------
+\section{Verifying the Vector Space Axioms: Examples}
+%--------------------------------------------------------------------------
+
+Let's test whether certain sets with non-standard operations form vector spaces. The underlying set for these examples will be $V = \R^2$ and the field of scalars will be $\F = \R$. The key is to carefully check the eight axioms using the \emph{given} definitions of vector addition ($+$) and scalar multiplication ($\cdot$).
+
+\begin{example}[Case (Gimel) - Not a Vector Space] \label{ex:vs_fail}
+Let $V = \R^2$ over $\F = \R$. Define operations as follows:
+\begin{itemize}
+    \item Addition: $\veca{v} + \veca{u} = (v_1, v_2) + (u_1, u_2) = (v_1+u_1, v_2+u_2)$ (Standard addition)
+    \item Scalar Multiplication: $\alpha \cdot \veca{v} = \alpha \cdot (v_1, v_2) = (\alpha^2 v_1, \alpha^2 v_2)$
+\end{itemize}
+Does this define a vector space?
+
+\textit{Analysis:} The addition is standard, but the scalar multiplication is unusual. Let's test Axiom 7: $(\alpha + \beta) \cdot \veca{v} = (\alpha \cdot \veca{v}) + (\beta \cdot \veca{v})$.
+
+\textbf{LHS (Left Hand Side):}
+\begin{align*} (\alpha + \beta) \cdot \veca{v} &= (\alpha + \beta) \cdot (v_1, v_2) \\ &= ((\alpha + \beta)^2 v_1, (\alpha + \beta)^2 v_2) \quad \text{(by definition of scalar mult.)} \\ &= ((\alpha^2 + 2\alpha\beta + \beta^2) v_1, (\alpha^2 + 2\alpha\beta + \beta^2) v_2) \end{align*}
+
+\textbf{RHS (Right Hand Side):}
+\begin{align*} (\alpha \cdot \veca{v}) + (\beta \cdot \veca{v}) &= (\alpha^2 v_1, \alpha^2 v_2) + (\beta^2 v_1, \beta^2 v_2) \quad \text{(by definition of scalar mult.)} \\ &= ( (\alpha^2 v_1 + \beta^2 v_1), (\alpha^2 v_2 + \beta^2 v_2) ) \quad \text{(by definition of addition)} \\ &= ( (\alpha^2 + \beta^2) v_1, (\alpha^2 + \beta^2) v_2 ) \end{align*}
+
+For Axiom 7 to hold, we need LHS = RHS for all $\alpha, \beta \in \R$ and all $\veca{v} \in \R^2$. Comparing the components, this requires:
+\[ \alpha^2 + 2\alpha\beta + \beta^2 = \alpha^2 + \beta^2 \]
+This simplifies to $2\alpha\beta = 0$, which implies $\alpha=0$ or $\beta=0$. This is certainly \emph{not} true for all scalars $\alpha, \beta$. For example, if $\alpha=1, \beta=1$, then $2(1)(1) = 2 \neq 0$.
+
+Since Axiom 7 fails, this structure $(V, \R, +, \cdot)$ is \textbf{not} a vector space.
+\end{example}
+
+\begin{example}[Case (Dalet) - Is a Vector Space] \label{ex:vs_pass}
+Let $V = \R^2$ over $\F = \R$. Define operations as follows:
+\begin{itemize}
+    \item Addition: $\veca{v} + \veca{u} = (v_1, v_2) + (u_1, u_2) = (v_1+u_1+1, v_2+u_2)$
+    \item Scalar Multiplication: $\alpha \cdot \veca{v} = \alpha \cdot (v_1, v_2) = (\alpha v_1 + \alpha - 1, \alpha v_2)$
+\end{itemize}
+Does this define a vector space? (Spoiler: Yes, it does.)
+
+\textit{Analysis:} Both operations are non-standard. Checking all eight axioms can be tedious. Let's verify a few crucial ones, especially those involving identities and inverses, as these are often where non-standard operations reveal interesting behavior.
+
+\textbf{Axiom 1: Commutativity of Addition}
+\[ \veca{v} + \veca{u} = (v_1+u_1+1, v_2+u_2) \]
+\[ \veca{u} + \veca{v} = (u_1+v_1+1, u_2+v_2) \]
+Since addition in $\R$ is commutative ($v_1+u_1 = u_1+v_1$ and $v_2+u_2 = u_2+v_2$), the results are identical. Axiom 1 holds.
+
+\textbf{Axiom 3: Existence of Zero Vector}
+We seek a vector $\veca{0}_V = (z_1, z_2)$ such that $\veca{v} + \veca{0}_V = \veca{v}$ for all $\veca{v}=(v_1, v_2)$.
+Using the definition of addition:
+\[ \veca{v} + \veca{0}_V = (v_1, v_2) + (z_1, z_2) = (v_1+z_1+1, v_2+z_2) \]
+We need this to equal $(v_1, v_2)$. Comparing components:
+\begin{itemize}
+    \item $v_1+z_1+1 = v_1 \implies z_1+1 = 0 \implies z_1 = -1$
+    \item $v_2+z_2 = v_2 \implies z_2 = 0$
+\end{itemize}
+So, the zero vector for this structure is $\veca{0}_V = (-1, 0)$. This is \emph{not} the standard zero vector $(0,0)$! Let's quickly verify:
+$\veca{v} + (-1, 0) = (v_1 + (-1) + 1, v_2 + 0) = (v_1, v_2)$. It works. Axiom 3 holds.
+
+\textbf{Axiom 4: Existence of Additive Inverse}
+For a given $\veca{v}=(v_1, v_2)$, we seek an inverse $-\veca{v} = (x_1, x_2)$ such that $\veca{v} + (-\veca{v}) = \veca{0}_V = (-1, 0)$.
+Using the definition of addition:
+\[ \veca{v} + (-\veca{v}) = (v_1, v_2) + (x_1, x_2) = (v_1+x_1+1, v_2+x_2) \]
+We need this to equal $(-1, 0)$. Comparing components:
+\begin{itemize}
+    \item $v_1+x_1+1 = -1 \implies x_1 = -v_1 - 2$
+    \item $v_2+x_2 = 0 \implies x_2 = -v_2$
+\end{itemize}
+So, the additive inverse of $\veca{v}=(v_1, v_2)$ is $-\veca{v} = (-v_1-2, -v_2)$. Again, this is not just component-wise negation. Axiom 4 holds.
+
+\textit{Interesting Observation:} Let's compute $(-1) \cdot \veca{v}$ using the given scalar multiplication rule with $\alpha = -1$:
+\[ (-1) \cdot (v_1, v_2) = ((-1)v_1 + (-1) - 1, (-1)v_2) = (-v_1 - 2, -v_2) \]
+In this particular (unusual) structure, it turns out that the additive inverse $-\veca{v}$ is indeed equal to the scalar product $(-1) \cdot \veca{v}$. This is often true in standard vector spaces but isn't guaranteed by the axioms alone for arbitrary definitions.
+
+\textit{Other Axioms:} Axioms 2, 5, 6, 7, 8 would also need to be checked. They do hold, but the calculations can be lengthy (associativity of addition and the distributive laws are usually the most involved). Since the question asks if it *is* a vector space, and we haven't found a failure, we assume it is (as hinted in the lecture).
+
+\textit{Conclusion:} This structure $(V, \R, +, \cdot)$ \textbf{is} a vector space, despite its non-standard operations and the unusual nature of its zero vector and additive inverses.
+\end{example}
+
+\begin{remark}[Importance of Definitions]
+These examples highlight a crucial point: mathematical concepts like "zero vector," "inverse," or even "orthogonality" (as mentioned briefly regarding inner products) depend entirely on the specific definitions of the operations involved. When operations are defined non-standardly, you must use those definitions exclusively to verify properties or perform calculations within that structure. Standard intuition might be misleading.
+\end{remark}
+
+%--------------------------------------------------------------------------
+\section{Looking Ahead: Inner Products}
+%--------------------------------------------------------------------------
+The final example serves as a useful reminder for future topics, such as inner product spaces. The standard "dot product" $\langle \veca{x}, \veca{y} \rangle = \sum x_i y_i$ leads to the standard definition of orthogonality ($\langle \veca{x}, \veca{y} \rangle = 0$). However, sometimes alternative inner products might be defined on a vector space. In such cases, concepts derived from the inner product, like orthogonality, must be evaluated using that specific, potentially non-standard, definition, just as we evaluated vector space axioms using the provided non-standard operations in Example \ref{ex:vs_pass}.
+
+
+\end{document}

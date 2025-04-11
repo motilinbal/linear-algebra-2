@@ -1,0 +1,425 @@
+\documentclass[11pt]{article}
+
+\usepackage{amsmath, amssymb, amsthm, amsfonts}
+\usepackage[margin=1in]{geometry} % Sensible margins
+\usepackage{parskip} % Better paragraph spacing for notes
+\usepackage[utf8]{inputenc} % Handle UTF-8 input if needed
+\usepackage{hyperref} % Optional: for links if ever needed
+
+% Theorem Environments
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{proposition}[theorem]{Proposition}
+
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{example}[theorem]{Example}
+\newtheorem{axiom}[theorem]{Axiom}
+
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+
+% Custom environment for announcements
+\newenvironment{announcement}
+  {\par\medskip\noindent\fbox{\begin{minipage}{\dimexpr\linewidth-2\fboxsep-2\fboxrule\relax}\textbf{Announcements:}\par\nobreak\medskip}
+  {\end{minipage}}\medskip\par}
+
+% Blackboard Bold letters
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\F}{\mathbb{F}} % General Field
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Z}{\mathbb{Z}}
+
+% Matrix notation
+\newcommand{\Mat}[3]{M_{#1 \times #2}(#3)}
+
+% Polynomial notation
+\newcommand{\Poly}[1]{\mathcal{P}(#1)}
+\newcommand{\PolyN}[2]{\mathcal{P}_{#1}(#2)}
+
+% Function notation
+\newcommand{\Func}[2]{\mathrm{Func}(#1, #2)}
+\newcommand{\ContFunc}[2]{C(#1, #2)} % Continuous functions
+
+% Span
+\DeclareMathOperator{\Span}{span}
+
+\title{Linear Algebra Lecture Notes \\ (Based on Lecture 30/3/25)}
+\author{Undergraduate Math Educator Persona}
+\date{March 30} % Assuming the date relates to the lecture
+
+\begin{document}
+\maketitle
+
+\begin{announcement}
+    \begin{itemize}
+        \item Today's lecture will proceed without a break as I need to leave early. The session will be approximately 1.5 hours long.
+        \item Please note we will meet again this evening (details presumably provided elsewhere).
+    \end{itemize}
+\end{announcement}
+
+\section{Introduction: Revisiting Vector Spaces}
+
+Welcome back! Today, we embark on a more abstract journey into the heart of linear algebra. We've worked extensively with $\R^n$ and $\C^n$, which are fundamental examples. But the true power of linear algebra lies in its ability to unify concepts across many different mathematical structures. To do this, we rely on the abstract definition of a **vector space**.
+
+Recall the core idea: A vector space is a set equipped with two operations (vector addition and scalar multiplication) that behave in a familiar, predictable way, mimicking the properties we observe in $\R^n$. Let's keep the formal definition handy, as it will be our guidepost today.
+
+\begin{definition}[Vector Space Axioms]
+Let $V$ be a set, and let $\F$ be a field (for us, typically $\F = \R$ or $\F = \C$). Let `+' be an operation $V \times V \to V$ (vector addition) and `$\cdot$' be an operation $\F \times V \to V$ (scalar multiplication). Then $V$ is a **vector space** over the field $\F$ if the following axioms hold for all $u, v, w \in V$ and all scalars $c, d \in \F$:
+
+\medskip\noindent\textbf{Closure Axioms:}
+\begin{enumerate}
+    \item[(C1)] Closure under Addition: $u + v \in V$.
+    \item[(C2)] Closure under Scalar Multiplication: $c \cdot v \in V$.
+\end{enumerate}
+(Note: These are often implicitly assumed by the definition of the operations mapping *into* V.)
+
+\medskip\noindent\textbf{Addition Axioms:}
+\begin{enumerate}
+    \item[(A1)] Commutativity: $u + v = v + u$.
+    \item[(A2)] Associativity: $(u + v) + w = u + (v + w)$.
+    \item[(A3)] Zero Vector: There exists an element $0_V \in V$, called the zero vector, such that $v + 0_V = v$ for all $v \in V$.
+    \item[(A4)] Additive Inverse: For every $v \in V$, there exists an element $-v \in V$, called the additive inverse of $v$, such that $v + (-v) = 0_V$.
+\end{enumerate}
+
+\medskip\noindent\textbf{Scalar Multiplication Axioms:}
+\begin{enumerate}
+    \item[(M1)] Multiplicative Identity: $1 \cdot v = v$, where $1$ is the multiplicative identity in $\F$.
+    \item[(M2)] Associativity: $(c \cdot d) \cdot v = c \cdot (d \cdot v)$.
+\end{enumerate}
+
+\medskip\noindent\textbf{Distributivity Axioms:}
+\begin{enumerate}
+    \item[(D1)] Distributivity over Vector Addition: $c \cdot (u + v) = c \cdot u + c \cdot v$.
+    \item[(D2)] Distributivity over Scalar Addition: $(c + d) \cdot v = c \cdot v + d \cdot v$.
+\end{enumerate}
+Elements of $V$ are called **vectors**, and elements of $\F$ are called **scalars**.
+\end{definition}
+
+\section{Expanding Our Universe: Examples of Vector Spaces}
+
+Let's explore some less familiar, yet crucial, examples of sets that, with the right operations, satisfy these axioms and thus qualify as vector spaces.
+
+\subsection{General Field Vectors: $\F^n$}
+While we focus on $\R^n$ and $\C^n$, we could consider any field $\F$. The set $\F^n$ consists of $n$-tuples $(x_1, x_2, \dots, x_n)$ where each $x_i \in \F$. With the standard component-wise addition and scalar multiplication (using scalars from $\F$), $\F^n$ forms a vector space over $\F$.
+
+\subsection{Matrices: $\Mat{m}{n}{\F}$}
+Consider the set $\Mat{m}{n}{\F}$ of all $m \times n$ matrices with entries from a field $\F$. Can this be a vector space? We need operations!
+
+\begin{definition}[Matrix Operations]
+Let $A, B \in \Mat{m}{n}{\F}$ and $c \in \F$.
+\begin{itemize}
+    \item \textbf{Addition:} $(A+B)_{ij} = A_{ij} + B_{ij}$ (Add element-wise).
+    \item \textbf{Scalar Multiplication:} $(c A)_{ij} = c \cdot A_{ij}$ (Multiply every element by $c$).
+\end{itemize}
+\end{definition}
+
+Are these the "right" operations? Let's check the axioms.
+\begin{itemize}
+    \item[(A1)] $A+B = B+A$? Yes, because addition in the field $\F$ is commutative ($A_{ij}+B_{ij} = B_{ij}+A_{ij}$).
+    \item[(A2)] $(A+B)+C = A+(B+C)$? Yes, because addition in $\F$ is associative.
+    \item[(A3)] Zero Vector? The $m \times n$ zero matrix $O$ (all entries are $0 \in \F$) acts as the zero vector: $A + O = A$.
+    \item[(A4)] Additive Inverse? For any matrix $A$, the matrix $-A$ (where $(-A)_{ij} = -A_{ij}$) satisfies $A + (-A) = O$.
+    \item[(M1)] $1 \cdot A = A$? Yes, $1 \cdot A_{ij} = A_{ij}$.
+    \item[(M2)] $(cd)A = c(dA)$? Yes, $(cd)A_{ij} = c(dA_{ij})$.
+    \item[(D1)] $c(A+B) = cA+cB$? Yes, $c(A_{ij}+B_{ij}) = cA_{ij}+cB_{ij}$.
+    \item[(D2)] $(c+d)A = cA+dA$? Yes, $(c+d)A_{ij} = cA_{ij}+dA_{ij}$.
+\end{itemize}
+All axioms hold! So, $\Mat{m}{n}{\F}$ is a vector space over $\F$. The "vectors" in this space are matrices, and the "scalars" are elements of $\F$.
+
+\subsection{Polynomials of Bounded Degree: $\PolyN{n}{\F}$}
+Let $\PolyN{n}{\F}$ denote the set of all polynomials with coefficients from $\F$ and degree *less than or equal to* $n$. A typical element looks like $p(x) = a_n x^n + a_{n-1} x^{n-1} + \dots + a_1 x + a_0$, where $a_i \in \F$.
+
+\begin{definition}[Polynomial Operations]
+Let $p(x) = \sum_{j=0}^n a_j x^j$, $q(x) = \sum_{j=0}^n b_j x^j$ in $\PolyN{n}{\F}$, and $c \in \F$.
+\begin{itemize}
+    \item \textbf{Addition:} $(p+q)(x) = \sum_{j=0}^n (a_j + b_j) x^j$. (Add coefficients of like terms).
+    \item \textbf{Scalar Multiplication:} $(c p)(x) = \sum_{j=0}^n (c a_j) x^j$. (Multiply all coefficients by $c$).
+\end{itemize}
+Note: If one polynomial initially has a lower degree, we can pad it with zero coefficients. Crucially, the sum of two polynomials of degree $\le n$ still has degree $\le n$, and multiplying by a scalar doesn't increase the degree (unless the scalar is 0, which might decrease it).
+\end{definition}
+
+Again, let's verify the axioms (many are similar to matrices, relying on field properties):
+\begin{itemize}
+    \item Closure: The operations keep us within $\PolyN{n}{\F}$.
+    \item Addition Axioms: Commutativity and associativity follow from $\F$. The zero vector is the zero polynomial $0(x) = 0 + 0x + \dots + 0x^n$. The additive inverse of $p(x)$ is $-p(x) = \sum (-a_j)x^j$.
+    \item Scalar Multiplication Axioms: $1 \cdot p(x) = p(x)$ and $(cd)p(x) = c(dp(x))$ hold.
+    \item Distributivity: Both distributivity laws hold, following from the properties of $\F$.
+\end{itemize}
+Thus, $\PolyN{n}{\F}$ is a vector space over $\F$.
+
+\begin{example}
+In $\PolyN{3}{\R}$: Let $p(x) = x^3$ and $q(x) = 1 + 3x^3$.
+Then $(p+q)(x) = (0+1) + (0)x + (0)x^2 + (1+3)x^3 = 1 + 4x^3$.
+\end{example}
+
+\begin{example}
+In $\PolyN{2}{\R}$: Let $p(x) = 1+x^2$ and $c=8$.
+Then $(c p)(x) = 8(1) + 8(0)x + 8(1)x^2 = 8 + 8x^2$.
+\end{example}
+
+\begin{remark}
+$\PolyN{n}{\F}$ contains infinitely many polynomials (unless $\F$ is finite and $n=0$). For instance, $ax^2 \in \PolyN{2}{\R}$ for any $a \in \R$.
+\end{remark}
+
+\subsection{All Polynomials: $\Poly{\F}$}
+We can extend the previous example. Let $\Poly{\F}$ be the set of *all* polynomials with coefficients in $\F$, regardless of degree.
+$p(x) = \sum_{j=0}^m a_j x^j$ for some non-negative integer $m$ (which can vary for each polynomial).
+
+The same definitions for addition and scalar multiplication apply (when adding polynomials of different degrees, imagine the lower-degree one padded with zero coefficients up to the higher degree). It's straightforward to verify that $\Poly{\F}$ is also a vector space over $\F$.
+
+\begin{remark}
+For any $n$, $\PolyN{n}{\F}$ is a subset of $\Poly{\F}$. For example, $x^3 \in \Poly{\R}$ but $x^3 \notin \PolyN{2}{\R}$.
+\end{remark}
+
+\subsection{Functions: $\Func{X}{\F}$ and $C(\R)$}
+Let $X$ be any non-empty set and $\F$ be a field. Consider $\Func{X}{\F}$, the set of all functions $f: X \to \F$.
+
+\begin{definition}[Function Operations (Pointwise)]
+Let $f, g \in \Func{X}{\F}$ and $c \in \F$.
+\begin{itemize}
+    \item \textbf{Addition:} $(f+g)(x) = f(x) + g(x)$ for all $x \in X$.
+    \item \textbf{Scalar Multiplication:} $(c f)(x) = c \cdot f(x)$ for all $x \in X$.
+\end{itemize}
+\end{definition}
+
+Is $\Func{X}{\F}$ a vector space over $\F$?
+\begin{itemize}
+    \item Addition Axioms: Commutativity/associativity follow from $\F$. The zero vector is the zero function $z(x) = 0$ for all $x \in X$. The additive inverse of $f$ is $(-f)(x) = -f(x)$.
+    \item Scalar Multiplication/Distributivity: These also follow directly from the field properties applied at each point $x$.
+\end{itemize}
+Yes, $\Func{X}{\F}$ is a vector space.
+
+\begin{example}[Continuous Functions $C(\R)$]
+Let $X=\R$ and $\F=\R$. Consider $C(\R) = \ContFunc{\R}{\R}$, the set of all continuous functions from $\R$ to $\R$.
+Is $C(\R)$ a vector space? It's a subset of the vector space $\Func{\R}{\R}$. If we use the same pointwise operations, do they keep us *within* $C(\R)$?
+Yes! From calculus, we know:
+\begin{itemize}
+    \item The sum of two continuous functions is continuous.
+    \item A scalar multiple of a continuous function is continuous.
+\end{itemize}
+These are the closure properties needed for $C(\R)$ to be a *subspace* (we'll define this formally next). Since the operations are the same, and the zero function ($f(x)=0$) is continuous, and the negative of a continuous function is continuous, $C(\R)$ inherits all the necessary vector space properties and is itself a vector space over $\R$.
+\end{example}
+
+\begin{remark}
+$\Poly{\R}$ is a subset of $C(\R)$ (all polynomials are continuous). However, $C(\R)$ is much larger. For example, $f(x) = \cos(x)$ is in $C(\R)$ but not in $\Poly{\R}$. (Why? A non-zero polynomial has only finitely many roots, while $\cos(x)$ has infinitely many).
+\end{remark}
+
+\subsection{Sets That Are NOT Vector Spaces (with standard operations)}
+
+It's crucial to see examples that fail.
+\begin{example}[Invertible Matrices $GL_n(\R)$]
+Let $V = \Mat{n}{n}{\R}$ (a known vector space). Consider the subset $W = GL_n(\R)$ of invertible $n \times n$ real matrices. Using the standard matrix addition and scalar multiplication from $V$, is $W$ a vector space?
+No. It fails the closure property for addition. Let $A \in GL_n(\R)$. Then $-A$ is also in $GL_n(\R)$ (since $\det(-A) = (-1)^n \det(A) \neq 0$). However, $A + (-A) = O$ (the zero matrix), and the zero matrix is *not* invertible (for $n \ge 1$), so $A+(-A) \notin W$. $W$ is not closed under addition.
+(It also fails closure under scalar multiplication: $0 \cdot A = O \notin W$).
+\end{example}
+
+\begin{example}[Increasing Functions]
+Let $V = \Func{\R}{\R}$. Consider the subset $W$ of all *increasing* functions $f: \R \to \R$ (meaning $x_1 < x_2 \implies f(x_1) \le f(x_2)$). Is $W$ a vector space using pointwise operations?
+No. It fails closure under scalar multiplication. If $f \in W$ is strictly increasing (e.g., $f(x)=x$), then consider $c = -1$. The function $(c f)(x) = -f(x)$ is now decreasing (e.g., $g(x)=-x$). Since $-f$ is not increasing, it's not in $W$. $W$ is not closed under scalar multiplication.
+(Note: It *is* closed under addition - the sum of two increasing functions is increasing).
+\end{example}
+
+These examples highlight that being a subset is not enough; the closure properties under the *specific* operations are essential.
+
+\section{Subspaces: Vector Spaces Within Vector Spaces}
+
+Often, we find vector spaces living inside larger ones. This leads to the fundamental concept of a subspace.
+
+\begin{definition}[Subspace]
+Let $V$ be a vector space over a field $\F$. A subset $W \subseteq V$ is called a **subspace** of $V$ if $W$ is itself a vector space over $\F$ using the **same addition and scalar multiplication operations** as defined on $V$.
+\end{definition}
+
+Checking all ten axioms every time seems tedious. Thankfully, there's a much more efficient criterion. Since $W$ inherits the operations from $V$, most axioms (like commutativity, associativity, distributivity) are automatically satisfied just because they hold in the larger space $V$. What really matters is whether $W$ is self-contained.
+
+\begin{theorem}[Subspace Criterion] \label{thm:subspace_criterion}
+Let $V$ be a vector space over $\F$, and let $W$ be a non-empty subset of $V$ ($W \subseteq V$, $W \neq \emptyset$). Then $W$ is a subspace of $V$ if and only if $W$ is closed under vector addition and scalar multiplication. That is:
+\begin{enumerate}
+    \item For all $u, w \in W$, we have $u + w \in W$. (Closure under addition)
+    \item For all $c \in \F$ and all $w \in W$, we have $c \cdot w \in W$. (Closure under scalar multiplication)
+\end{enumerate}
+\end{theorem}
+
+\begin{proof}
+($\Rightarrow$) If $W$ is a subspace, it is a vector space by definition, so it must be closed under its operations (which are the same as $V$'s).
+
+($\Leftarrow$) Assume $W$ is a non-empty subset closed under addition and scalar multiplication. We need to show $W$ satisfies all vector space axioms.
+\begin{itemize}
+    \item Closure: Given by assumption.
+    \item Axioms (A1), (A2), (M2), (D1), (D2): These hold for all elements in $V$, so they automatically hold for elements in the subset $W$.
+    \item Axiom (A3) (Zero Vector): Since $W$ is non-empty, let $w \in W$. By closure under scalar multiplication, $0 \cdot w \in W$. We know from properties derived from the axioms that $0 \cdot w = 0_V$ (the zero vector of $V$). Thus, $0_V \in W$.
+    \item Axiom (A4) (Additive Inverse): Let $w \in W$. By closure under scalar multiplication, $(-1) \cdot w \in W$. We know $(-1) \cdot w = -w$ (the additive inverse of $w$ in $V$). Thus, the additive inverse of any element in $W$ is also in $W$.
+    \item Axiom (M1) ($1 \cdot w = w$): This holds in $V$, so it holds for elements in $W$.
+\end{itemize}
+All axioms are satisfied, so $W$ is a vector space, hence a subspace of $V$.
+\end{proof}
+
+\begin{remark}
+The condition $W \neq \emptyset$ is often handled by checking if $0_V \in W$. If $W$ is closed under scalar multiplication, and contains at least one element $w$, then $0 \cdot w = 0_V$ must be in $W$. So, an alternative phrasing of the criterion is: $W$ is a subspace iff (1) $0_V \in W$, (2) $W$ is closed under addition, and (3) $W$ is closed under scalar multiplication.
+\end{remark}
+
+\begin{example}[Revisited]
+\begin{itemize}
+    \item Symmetric Matrices: Let $W = \{ A \in \Mat{n}{n}{\R} \mid A^T = A \}$.
+        1. Is $O \in W$? Yes, $O^T = O$. $W$ is non-empty.
+        2. If $A, B \in W$, is $A+B \in W$? Yes, $(A+B)^T = A^T + B^T = A+B$. Closed under +.
+        3. If $A \in W, c \in \R$, is $cA \in W$? Yes, $(cA)^T = c A^T = cA$. Closed under $\cdot$.
+        Therefore, $W$ is a subspace of $\Mat{n}{n}{\R}$.
+    \item $\PolyN{n}{\F}$ as a subspace of $\Poly{\F}$:
+        1. The zero polynomial has degree $\le n$. Non-empty.
+        2. Sum of two polynomials of degree $\le n$ has degree $\le n$. Closed under +.
+        3. Scalar multiple of a polynomial of degree $\le n$ has degree $\le n$. Closed under $\cdot$.
+        Therefore, $\PolyN{n}{\F}$ is a subspace of $\Poly{\F}$.
+    \item $C(\R)$ as a subspace of $\Func{\R}{\R}$: We already argued this based on closure properties from calculus.
+\end{itemize}
+\end{example}
+
+\subsection{Intersection and Union of Subspaces}
+
+How do subspaces interact?
+\begin{proposition}
+If $W$ and $U$ are subspaces of a vector space $V$, then their intersection $W \cap U$ is also a subspace of $V$.
+\end{proposition}
+
+\begin{proof}
+We use the Subspace Criterion (Theorem \ref{thm:subspace_criterion}).
+\begin{enumerate}
+    \item Since $W$ and $U$ are subspaces, $0_V \in W$ and $0_V \in U$. Therefore, $0_V \in W \cap U$. So $W \cap U$ is non-empty.
+    \item Let $v_1, v_2 \in W \cap U$. This means $v_1, v_2 \in W$ and $v_1, v_2 \in U$.
+        Since $W$ is a subspace, $v_1 + v_2 \in W$.
+        Since $U$ is a subspace, $v_1 + v_2 \in U$.
+        Therefore, $v_1 + v_2 \in W \cap U$. $W \cap U$ is closed under addition.
+    \item Let $v \in W \cap U$ and $c \in \F$. This means $v \in W$ and $v \in U$.
+        Since $W$ is a subspace, $c \cdot v \in W$.
+        Since $U$ is a subspace, $c \cdot v \in U$.
+        Therefore, $c \cdot v \in W \cap U$. $W \cap U$ is closed under scalar multiplication.
+\end{enumerate}
+By the Subspace Criterion, $W \cap U$ is a subspace of $V$.
+\end{proof}
+
+What about the union?
+\begin{remark}
+The union $W \cup U$ of two subspaces is **not generally** a subspace.
+\end{remark}
+
+\begin{example}[Union Counterexample]
+Consider $V = \R^2$. Let $W$ be the x-axis, $W = \{(x, 0) \mid x \in \R\}$, and $U$ be the y-axis, $U = \{(0, y) \mid y \in \R\}$. Both $W$ and $U$ are subspaces of $\R^2$ (check!).
+Consider the union $W \cup U$, which is the set of points lying on either axis.
+Let $v_1 = (1, 0) \in W \subset W \cup U$.
+Let $v_2 = (0, 1) \in U \subset W \cup U$.
+Their sum is $v_1 + v_2 = (1, 1)$.
+Is $(1, 1)$ in $W \cup U$? No, it lies on neither the x-axis nor the y-axis.
+Since $W \cup U$ is not closed under addition, it cannot be a subspace.
+\end{example}
+
+\section{Spanning Sets and Linear Combinations}
+
+A fundamental way to construct subspaces is by taking all possible combinations of a given set of vectors.
+
+\begin{definition}[Linear Combination]
+Let $V$ be a vector space over $\F$, and let $S = \{v_1, v_2, \dots, v_k\}$ be a finite set of vectors in $V$. A **linear combination** of vectors in $S$ is any vector $v \in V$ of the form
+\[ v = c_1 v_1 + c_2 v_2 + \dots + c_k v_k \]
+where $c_1, c_2, \dots, c_k$ are scalars in $\F$.
+\end{definition}
+Note: The axioms of a vector space guarantee that such a sum is well-defined and results in a vector in $V$.
+
+\begin{example}
+In $\PolyN{2}{\R}$, let $v_1 = x^2$, $v_2 = x$, $v_3 = 1$. The vector $v = 1 \cdot v_1 + 2 \cdot v_2 + 2 \cdot v_3 = x^2 + 2x + 2$ is a linear combination of $v_1, v_2, v_3$.
+\end{example}
+
+\begin{definition}[Span]
+Let $V$ be a vector space and let $S$ be any subset of $V$ (finite or infinite). The **span** of $S$, denoted $\Span(S)$, is the set of all possible *finite* linear combinations of vectors from $S$.
+If $S = \emptyset$, we define $\Span(\emptyset) = \{0_V\}$.
+\end{definition}
+
+The span of a set of vectors is incredibly important because it's always a subspace.
+
+\begin{theorem}
+Let $V$ be a vector space and $S \subseteq V$. Then $\Span(S)$ is a subspace of $V$. Furthermore, it is the **smallest** subspace of $V$ that contains $S$. (Smallest means that if $W$ is any subspace of $V$ such that $S \subseteq W$, then $\Span(S) \subseteq W$).
+\end{theorem}
+
+\begin{proof}
+\begin{enumerate}
+    \item Show $\Span(S)$ is a subspace:
+        \begin{itemize}
+            \item Non-empty: If $S \neq \emptyset$, take $v \in S$. Then $1 \cdot v$ is a linear combination, so $v \in \Span(S)$. More simply, $0_V$ is always a linear combination (e.g., $0 \cdot v$ for any $v \in S$, or the empty sum if $S=\emptyset$). So $0_V \in \Span(S)$.
+            \item Closure under addition: Let $u, w \in \Span(S)$. Then $u = \sum_{i=1}^k a_i s_i$ and $w = \sum_{j=1}^p b_j t_j$ for some $s_i, t_j \in S$ and scalars $a_i, b_j$. Their sum $u+w = \sum a_i s_i + \sum b_j t_j$ is also a finite sum of scalar multiples of vectors from $S$, hence $u+w \in \Span(S)$. (We can be more formal by taking the union of $\{s_i\}$ and $\{t_j\}$ and expressing both $u$ and $w$ as combinations of vectors in this union, potentially using zero coefficients, then adding corresponding coefficients as shown in the lecture.)
+            \item Closure under scalar multiplication: Let $u = \sum a_i s_i \in \Span(S)$ and $c \in \F$. Then $c u = c (\sum a_i s_i) = \sum (c a_i) s_i$ (by distributivity/associativity axioms). This is also a finite linear combination of vectors from $S$, so $c u \in \Span(S)$.
+        \end{itemize}
+        By the Subspace Criterion, $\Span(S)$ is a subspace.
+
+    \item Show $S \subseteq \Span(S)$: For any $v \in S$, $v = 1 \cdot v$ is a linear combination, so $v \in \Span(S)$.
+
+    \item Show smallest: Let $W$ be any subspace of $V$ such that $S \subseteq W$. We want to show $\Span(S) \subseteq W$.
+        Let $v \in \Span(S)$. By definition, $v = c_1 s_1 + \dots + c_k s_k$ for some $s_1, \dots, s_k \in S$ and $c_1, \dots, c_k \in \F$.
+        Since $S \subseteq W$, all $s_i$ are in $W$.
+        Since $W$ is a subspace, it's closed under scalar multiplication, so each $c_i s_i \in W$.
+        Since $W$ is closed under addition, the sum $c_1 s_1 + \dots + c_k s_k = v$ must also be in $W$.
+        Thus, any element $v$ of $\Span(S)$ is also in $W$, which means $\Span(S) \subseteq W$.
+\end{enumerate}
+\end{proof}
+
+\begin{example}[Characterizing the Span of Matrices]
+Let $V = \Mat{2}{2}{\R}$. Consider the set $S = \{A, B, C\}$ where
+$A = \begin{pmatrix} 1 & 1 \\ 1 & 0 \end{pmatrix}$, $B = \begin{pmatrix} 0 & 0 \\ 1 & 1 \end{pmatrix}$, $C = \begin{pmatrix} 0 & 2 \\ 0 & -1 \end{pmatrix}$.
+What is the general form of a matrix $D = \begin{pmatrix} a & b \\ c & d \end{pmatrix}$ in $W = \Span(S)$?
+
+$D \in W$ means $D = x_1 A + x_2 B + x_3 C$ for some scalars $x_1, x_2, x_3 \in \R$.
+\begin{align*} \begin{pmatrix} a & b \\ c & d \end{pmatrix} &= x_1 \begin{pmatrix} 1 & 1 \\ 1 & 0 \end{pmatrix} + x_2 \begin{pmatrix} 0 & 0 \\ 1 & 1 \end{pmatrix} + x_3 \begin{pmatrix} 0 & 2 \\ 0 & -1 \end{pmatrix} \\ &= \begin{pmatrix} x_1 & x_1 + 2x_3 \\ x_1 + x_2 & x_2 - x_3 \end{pmatrix} \end{align*}
+Equating corresponding entries gives a system of linear equations for $x_1, x_2, x_3$:
+\begin{align*} x_1 &= a \\ x_1 + 2x_3 &= b \\ x_1 + x_2 &= c \\ x_2 - x_3 &= d \end{align*}
+We need to determine for which $a, b, c, d$ this system has a solution. Let's solve for $x_1, x_2, x_3$ in terms of $a, b, c$ and see what condition arises for $d$.
+From (1), $x_1 = a$.
+From (3), $x_2 = c - x_1 = c - a$.
+From (2), $2x_3 = b - x_1 = b - a$, so $x_3 = (b - a) / 2$.
+Now substitute into (4):
+$d = x_2 - x_3 = (c - a) - \frac{b - a}{2} = c - a - \frac{b}{2} + \frac{a}{2} = c - \frac{a}{2} - \frac{b}{2}$.
+Multiplying by 2 gives $2d = 2c - a - b$, or $a = 2c - b - 2d$.
+
+Conclusion: The system has a solution (and thus $D \in \Span(S)$) if and only if the entries $a, b, c, d$ satisfy the condition $a = 2c - b - 2d$.
+So, $\Span(S) = \left\{ \begin{pmatrix} a & b \\ c & d \end{pmatrix} \in \Mat{2}{2}{\R} \, \middle| \, a = 2c - b - 2d \right\}$. This is the explicit description of the subspace spanned by $A, B, C$.
+\end{example}
+
+
+\section{Linear Independence and Dependence}
+
+Spanning sets tell us how to build vectors, but they might be inefficient. Maybe we can remove some vectors from $S$ and still span the same space? This relates to the concept of linear independence.
+
+\begin{definition}[Linear Independence and Dependence]
+Let $V$ be a vector space over $\F$ and let $S = \{v_1, v_2, \dots, v_k\}$ be a finite set of vectors in $V$.
+\begin{itemize}
+    \item The set $S$ is **linearly independent** if the only solution to the vector equation
+    \[ c_1 v_1 + c_2 v_2 + \dots + c_k v_k = 0_V \]
+    is the **trivial solution** $c_1 = c_2 = \dots = c_k = 0$.
+    \item The set $S$ is **linearly dependent** if there exists a **non-trivial solution**, meaning there exist scalars $c_1, c_2, \dots, c_k$, *not all zero*, such that $c_1 v_1 + c_2 v_2 + \dots + c_k v_k = 0_V$.
+\end{itemize}
+(We can extend this definition to infinite sets, but focus on finite sets for now).
+\end{definition}
+
+Intuitively, linear dependence means at least one vector in the set is redundant – it can be expressed as a linear combination of the others. Linear independence means every vector contributes something unique.
+
+\begin{example}[Polynomial Monomials]
+Consider the set $S = \{1, x, x^2, \dots, x^n\}$ in the vector space $\PolyN{n}{\F}$. Is this set linearly independent?
+We look for solutions to $c_0 \cdot 1 + c_1 x + c_2 x^2 + \dots + c_n x^n = 0$, where the right side is the zero *polynomial*.
+The zero polynomial is the function that outputs 0 for all inputs $x$. A fundamental property of polynomials states that a polynomial is identically zero (i.e., the zero polynomial) if and only if all of its coefficients are zero.
+Therefore, the only way for $\sum_{j=0}^n c_j x^j$ to be the zero polynomial is if $c_0 = c_1 = \dots = c_n = 0$.
+This is the trivial solution. Thus, the set $S = \{1, x, \dots, x^n\}$ is **linearly independent**.
+\end{example}
+
+\begin{example}[Trigonometric Functions]
+Consider the set $S = \{1, \cos(2x), \sin^2(x)\}$ in the vector space $C(\R)$. Is this set linearly independent or dependent?
+We look for scalars $c_1, c_2, c_3$, not all zero, such that $c_1 \cdot 1 + c_2 \cos(2x) + c_3 \sin^2(x) = 0$ (the zero *function*).
+Recall the trigonometric identity: $\cos(2x) = 1 - 2\sin^2(x)$.
+Rearranging this gives: $1 \cdot (1) + 1 \cdot \cos(2x) - 2 \cdot \sin^2(x) = 0$.
+This equation holds true *for all* $x \in \R$. We have found scalars $c_1 = 1$, $c_2 = 1$, $c_3 = -2$, which are not all zero, satisfying the dependence relation.
+Therefore, the set $S = \{1, \cos(2x), \sin^2(x)\}$ is **linearly dependent**.
+\end{example}
+
+Linear independence and spanning sets are the two key ingredients for the crucial concept of a **basis**, which we will explore next time. A basis will provide the most efficient way to describe all vectors in a vector space.
+
+\medskip
+(End of Lecture Notes)
+
+\end{document}

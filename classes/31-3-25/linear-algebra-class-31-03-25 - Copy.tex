@@ -1,0 +1,337 @@
+\documentclass[11pt]{article}
+\usepackage{amsmath, amssymb, amsthm}
+\usepackage[margin=1in]{geometry}
+
+% Theorem Styles
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{proposition}[theorem]{Proposition}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{example}[theorem]{Example}
+\newtheorem{remark}[theorem]{Remark}
+\newtheorem{axiom}{Axiom} % For listing axioms if needed
+
+% Custom Commands (Optional)
+\newcommand{\F}{\mathbb{F}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\M}[2]{M_{#1 \times #2}}
+\newcommand{\Fn}[1]{\mathbb{F}_{#1}[x]}
+\newcommand{\Fx}{\mathbb{F}[x]}
+\newcommand{\Span}[1]{\text{span}(#1)}
+\newcommand{\nul}{\text{Nul}}
+\newcommand{\col}{\text{Col}}
+\newcommand{\row}{\text{Row}}
+\newcommand{\rank}{\text{rank}}
+
+\title{Vector Spaces: Further Examples, Subspaces, Span, and Linear Independence}
+\author{Lecture Notes}
+\date{March 31, 2025 (Based on Lecture Transcript)}
+
+\begin{document}
+\maketitle
+
+\section{Introduction}
+We continue our exploration of vector spaces, moving beyond the familiar examples of $\R^n$ and $\C^n$. Our goal is to understand the abstract structure defined by the vector space axioms and to see how this structure manifests in different mathematical settings. We will introduce several important examples, including spaces of matrices, polynomials, and functions. Then, we will develop fundamental concepts analogous to those studied for $\R^n$: subspaces, linear combinations, span, and linear independence, laying the groundwork for understanding basis and dimension in a general context.
+
+\section{More Examples of Vector Spaces}
+
+Recall that a set $V$ together with a field $\F$ and two operations, vector addition ($+: V \times V \to V$) and scalar multiplication ($\cdot: \F \times V \to V$), forms a vector space over $\F$ if it satisfies a specific list of axioms (commutativity and associativity of addition, existence of a zero vector $0_V$, existence of additive inverses $-v$ for every $v \in V$, $1 \cdot v = v$, associativity of scalar multiplication, and two distributive laws).
+
+We've already established that $\R^n$ and $\C^n$ (with standard component-wise addition and scalar multiplication) are vector spaces over $\R$ and $\C$, respectively. More generally, if $\F$ is any field, $\F^n$ (the set of $n$-tuples with entries from $\F$) is a vector space over $\F$.
+
+Let's explore some less familiar, but equally important, examples.
+
+\begin{example}[Space of Matrices]
+Let $\F$ be a field, and let $m, n$ be positive integers. Consider the set $\M{m}{n}(\F)$ of all $m \times n$ matrices with entries from $\F$. We can define operations on this set:
+\begin{itemize}
+    \item \textbf{Matrix Addition:} If $A = (a_{ij})$ and $B = (b_{ij})$ are in $\M{m}{n}(\F)$, their sum $A+B$ is the matrix $C = (c_{ij})$ where $c_{ij} = a_{ij} + b_{ij}$ for all $1 \le i \le m, 1 \le j \le n$. This is the standard element-wise addition.
+    \item \textbf{Scalar Multiplication:} If $A = (a_{ij}) \in \M{m}{n}(\F)$ and $c \in \F$, the scalar product $cA$ is the matrix $D = (d_{ij})$ where $d_{ij} = c \cdot a_{ij}$ for all $1 \le i \le m, 1 \le j \le n$. Every entry is multiplied by the scalar $c$.
+\end{itemize}
+With these operations, $\M{m}{n}(\F)$ forms a vector space over $\F$. Let's briefly verify why the axioms hold:
+\begin{itemize}
+    \item Closure under addition and scalar multiplication holds by definition.
+    \item Commutativity and associativity of matrix addition follow directly from the corresponding properties of addition in the field $\F$ applied to each entry.
+    \item The \textbf{zero vector} is the $m \times n$ zero matrix $O$, all of whose entries are $0 \in \F$. Clearly, $A+O = A$ for any $A$.
+    \item The \textbf{additive inverse} of a matrix $A = (a_{ij})$ is the matrix $-A = (-a_{ij})$, obtained by negating each entry using the additive inverse in $\F$. Then $A + (-A) = O$.
+    \item The property $1 \cdot A = A$ holds because $1 \cdot a_{ij} = a_{ij}$ in $\F$.
+    \item Associativity of scalar multiplication $(c_1 c_2)A = c_1(c_2 A)$ and the distributive laws $c(A+B) = cA+cB$ and $(c_1+c_2)A = c_1 A + c_2 A$ follow directly from the field axioms applied element-wise.
+\end{itemize}
+So, the set of $m \times n$ matrices is indeed a vector space. The "vectors" in this space are matrices themselves.
+\end{example}
+
+\begin{example}[Space of Polynomials of Bounded Degree]
+Let $\F$ be a field and $n \ge 0$ be an integer. Consider the set $\Fn{n}$ of all polynomials with coefficients in $\F$ and degree less than or equal to $n$. A typical element $p(x) \in \Fn{n}$ looks like
+\[ p(x) = a_n x^n + a_{n-1} x^{n-1} + \dots + a_1 x + a_0 = \sum_{j=0}^n a_j x^j \]
+where $a_0, a_1, \dots, a_n \in \F$. Note that some (or even all) coefficients $a_j$ for $j>0$ can be zero. The degree is the highest power $j$ for which $a_j \neq 0$ (with $\deg(0) = -\infty$ by convention).
+
+For example, $p(x) = 1 + x^2 = 0x^3 + 1x^2 + 0x + 1$ is a polynomial of degree 2, and it belongs to $\mathbb{F}_3[x]$, $\mathbb{F}_4[x]$, etc., but not $\mathbb{F}_1[x]$.
+
+We define operations naturally:
+\begin{itemize}
+    \item \textbf{Polynomial Addition:} If $p(x) = \sum_{j=0}^n a_j x^j$ and $q(x) = \sum_{j=0}^n b_j x^j$, their sum is
+    \[ (p+q)(x) = \sum_{j=0}^n (a_j + b_j) x^j \]
+    We add the coefficients of corresponding powers. If $\deg(p) \le n$ and $\deg(q) \le n$, then $\deg(p+q) \le \max(\deg(p), \deg(q)) \le n$. So $\Fn{n}$ is closed under addition.
+    \item \textbf{Scalar Multiplication:} If $p(x) = \sum_{j=0}^n a_j x^j$ and $c \in \F$, the scalar product is
+    \[ (c p)(x) = \sum_{j=0}^n (c a_j) x^j \]
+    We multiply each coefficient by the scalar. If $\deg(p) \le n$, then $\deg(cp) \le \deg(p) \le n$ (unless $c=0$, then $cp=0$ has degree $-\infty \le n$). So $\Fn{n}$ is closed under scalar multiplication.
+\end{itemize}
+Again, the vector space axioms hold because they derive from the field properties of $\F$ applied to the coefficients. The zero vector is the zero polynomial (all coefficients are $0$). The additive inverse of $p(x) = \sum a_j x^j$ is $-p(x) = \sum (-a_j) x^j$. Thus, $\Fn{n}$ is a vector space over $\F$.
+\end{example}
+
+\begin{example}[Space of All Polynomials]
+Let $\F$ be a field. Consider the set $\Fx$ of \emph{all} polynomials with coefficients in $\F$, without any restriction on the degree (though each polynomial must have a finite degree).
+\[ \Fx = \{ \sum_{j=0}^k a_j x^j \mid k \in \N \cup \{0\}, a_j \in \F \} \]
+The operations are defined exactly as for $\Fn{n}$: add coefficients of like terms, and distribute scalar multiplication to coefficients. When adding polynomials $p(x)$ and $q(x)$ of potentially different degrees, say $\deg(p)=k_1$ and $\deg(q)=k_2$, we can think of both as having degree $k = \max(k_1, k_2)$ by adding zero coefficients for higher powers if necessary.
+
+$\Fx$ is also a vector space over $\F$. The verification of axioms is identical to that for $\Fn{n}$.
+
+Note the relationship: For any $n$, $\Fn{n}$ is a subset of $\Fx$. That is, $\Fn{n} \subset \Fx$. Is the inclusion proper? Yes, for any $n$, the polynomial $x^{n+1}$ belongs to $\Fx$ but does not belong to $\Fn{n}$ because its degree is $n+1$.
+\end{example}
+
+\begin{example}[Space of Functions]
+Let $X$ be any non-empty set and $\F$ be a field. Consider the set $F(X, \F)$ of all functions from $X$ to $\F$.
+\[ F(X, \F) = \{ f \mid f: X \to \F \} \]
+We can define operations \emph{pointwise}:
+\begin{itemize}
+    \item \textbf{Function Addition:} For $f, g \in F(X, \F)$, their sum $(f+g)$ is the function defined by
+    \[ (f+g)(x) = f(x) + g(x) \quad \text{for all } x \in X \]
+    The addition on the right takes place in the field $\F$.
+    \item \textbf{Scalar Multiplication:} For $f \in F(X, \F)$ and $c \in \F$, the scalar product $(cf)$ is the function defined by
+    \[ (cf)(x) = c \cdot f(x) \quad \text{for all } x \in X \]
+    The multiplication on the right takes place in the field $\F$.
+\end{itemize}
+$F(X, \F)$ forms a vector space over $\F$. The vector space axioms for $F(X, \F)$ are inherited directly from the field axioms of $\F$, applied at each point $x \in X$.
+\begin{itemize}
+    \item The zero vector is the \textbf{zero function}, $z(x) = 0 \in \F$ for all $x \in X$.
+    \item The additive inverse of $f$ is the function $(-f)$ defined by $(-f)(x) = -f(x)$ for all $x \in X$.
+\end{itemize}
+This is a very general and powerful construction. Many important vector spaces are spaces of functions.
+
+For instance, let $X = \R$ and $\F = \R$. Then $F(\R, \R)$ is the space of all real-valued functions of a real variable.
+Consider the subset $C(\R, \R) \subset F(\R, \R)$ consisting of all \emph{continuous} functions from $\R$ to $\R$. We know from Calculus that the sum of two continuous functions is continuous, and a scalar multiple of a continuous function is continuous. Also, the zero function $z(x)=0$ is continuous. This suggests that $C(\R, \R)$ might itself be a vector space, a concept we formalize next.
+\end{example}
+
+\section{Subspaces}
+
+Often, we encounter vector spaces that sit inside larger vector spaces.
+
+\begin{definition}[Subspace]
+Let $V$ be a vector space over a field $\F$. A subset $W \subseteq V$ is called a \textbf{subspace} of $V$ if $W$ is itself a vector space over $\F$ with respect to the same addition and scalar multiplication operations inherited from $V$.
+\end{definition}
+
+To check if a subset $W$ is a subspace, do we need to verify all the vector space axioms for $W$? Fortunately, no. Most axioms are automatically inherited from $V$. For example, if addition is commutative in $V$, it will certainly be commutative for elements within $W$. The crucial requirements are that $W$ is non-empty and closed under the operations, and that it contains the necessary structural elements (zero vector, additive inverses). This leads to a much simpler criterion.
+
+\begin{theorem}[Subspace Criterion]
+Let $V$ be a vector space over $\F$, and let $W$ be a subset of $V$. Then $W$ is a subspace of $V$ if and only if all three of the following conditions hold:
+\begin{enumerate}
+    \item $W$ is non-empty ($W \neq \emptyset$).
+    \item $W$ is closed under vector addition: For all $w_1, w_2 \in W$, their sum $w_1 + w_2$ is also in $W$.
+    \item $W$ is closed under scalar multiplication: For all $w \in W$ and all $c \in \F$, the scalar product $c \cdot w$ is also in $W$.
+\end{enumerate}
+\end{theorem}
+
+\begin{proof}
+($\Rightarrow$) If $W$ is a subspace, it is a vector space by definition. This means it must be closed under addition and scalar multiplication (as these operations must map $W \times W \to W$ and $\F \times W \to W$). Also, being a vector space, it must contain at least the zero vector, so it is non-empty.
+
+($\Leftarrow$) Assume the three conditions hold. We need to show $W$ satisfies all vector space axioms.
+\begin{itemize}
+    \item Axioms involving only the properties of addition and scalar multiplication within the set (commutativity, associativity, distributivity, $1 \cdot w = w$) hold for elements in $W$ because they hold for these elements considered as vectors in $V$.
+    \item We need to ensure the zero vector $0_V$ of $V$ is in $W$. Since $W$ is non-empty (Condition 1), let $w$ be any element in $W$. By Condition 3, $0 \cdot w$ must be in $W$ (where $0$ is the zero scalar in $\F$). From the vector space axioms (provable as a property, or sometimes included), we know $0 \cdot w = 0_V$. Thus, $0_V \in W$.
+    \item We need to ensure that for every $w \in W$, its additive inverse $-w$ (which exists in $V$) is also in $W$. By Condition 3, taking the scalar $-1 \in \F$, $(-1) \cdot w$ must be in $W$. From the vector space axioms (again, provable as a property), we know $(-1) \cdot w = -w$. Thus, for every $w \in W$, its additive inverse $-w$ is in $W$.
+\end{itemize}
+Since $W$ inherits the necessary algebraic properties from $V$, contains the zero vector, contains additive inverses, and is closed under addition and scalar multiplication, $W$ satisfies all axioms and is a vector space, hence a subspace of $V$.
+\end{proof}
+
+\begin{remark}
+Condition 1 (non-empty) can often be easily checked by verifying if the zero vector $0_V$ belongs to $W$. If $0_V \in W$, the set is non-empty. If $0_V \notin W$, then $W$ cannot be a subspace (as any subspace *must* contain the zero vector).
+\end{remark}
+
+\begin{example}[Standard Subspaces of $\F^n$]
+Recall from earlier studies:
+\begin{itemize}
+    \item The null space of a matrix $A \in \M{m}{n}(\F)$, $\nul(A) = \{ x \in \F^n \mid Ax = 0 \}$, is a subspace of $\F^n$.
+    \item The column space of $A$, $\col(A)$, which is the span of the columns of $A$, is a subspace of $\F^m$.
+    \item The row space of $A$, $\row(A)$, which is the span of the rows of $A$, is a subspace of $\F^n$.
+\end{itemize}
+You can verify these using the Subspace Criterion.
+\end{example}
+
+\begin{example}[Symmetric Matrices]
+Let $V = \M{n}{n}(\F)$. Consider the subset $W$ of symmetric matrices:
+\[ W = \{ A \in \M{n}{n}(\F) \mid A^T = A \} \]
+Is $W$ a subspace of $V$? Let's use the criterion:
+\begin{enumerate}
+    \item The zero matrix $O$ satisfies $O^T = O$, so $O \in W$. Thus $W$ is non-empty.
+    \item Let $A, B \in W$. This means $A^T = A$ and $B^T = B$. Consider their sum $A+B$. Using properties of transpose, $(A+B)^T = A^T + B^T = A + B$. So, $A+B$ is also symmetric, meaning $A+B \in W$. $W$ is closed under addition.
+    \item Let $A \in W$ (so $A^T = A$) and $c \in \F$. Consider the scalar product $cA$. Using properties of transpose, $(cA)^T = c A^T = c A$. So, $cA$ is also symmetric, meaning $cA \in W$. $W$ is closed under scalar multiplication.
+\end{enumerate}
+Since all three conditions hold, the set of symmetric $n \times n$ matrices is a subspace of $\M{n}{n}(\F)$.
+\end{example}
+
+\begin{example}[Polynomials]
+We saw that $\Fn{n} \subset \Fx$. Is $\Fn{n}$ a subspace of $\Fx$?
+\begin{enumerate}
+    \item The zero polynomial has degree $-\infty \le n$, so $0 \in \Fn{n}$. It's non-empty.
+    \item If $p, q \in \Fn{n}$, then $\deg(p) \le n$ and $\deg(q) \le n$. We know $\deg(p+q) \le \max(\deg(p), \deg(q)) \le n$. So $p+q \in \Fn{n}$. Closure under addition holds.
+    \item If $p \in \Fn{n}$ and $c \in \F$, then $\deg(cp) \le \deg(p) \le n$. So $cp \in \Fn{n}$. Closure under scalar multiplication holds.
+\end{enumerate}
+Yes, $\Fn{n}$ is a subspace of $\Fx$.
+\end{example}
+
+\begin{example}[Continuous Functions]
+Let $V = F(\R, \R)$, the space of all real-valued functions on $\R$. Let $W = C(\R, \R)$ be the subset of continuous functions.
+\begin{enumerate}
+    \item The zero function $z(x)=0$ is continuous, so $z \in W$. $W \neq \emptyset$.
+    \item From Calculus, if $f$ and $g$ are continuous, their sum $f+g$ is also continuous. So $W$ is closed under addition.
+    \item From Calculus, if $f$ is continuous and $c \in \R$, the scalar multiple $cf$ is also continuous. So $W$ is closed under scalar multiplication.
+\end{enumerate}
+Therefore, $C(\R, \R)$ is a subspace of $F(\R, \R)$. Similarly, spaces of differentiable functions, integrable functions (under suitable definitions), etc., often form subspaces.
+\end{example}
+
+\subsection{Examples that are NOT Subspaces}
+
+It's equally important to recognize when a subset is *not* a subspace. This usually happens when one of the closure properties fails, or when the zero vector is missing.
+
+\begin{example}[Invertible Matrices]
+Let $V = \M{n}{n}(\R)$. Consider the subset $U$ of invertible $n \times n$ matrices. Is $U$ a subspace?
+\begin{itemize}
+    \item The $n \times n$ zero matrix $O$ is not invertible (for $n \ge 1$). Since $0_V \notin U$, $U$ cannot be a subspace.
+    \item Alternatively, check closure. Let $I$ be the identity matrix. $I \in U$. Let $-I$ be its additive inverse. $-I$ is also invertible (since $\det(-I) = (-1)^n \det(I) = (-1)^n \neq 0$). Both $I$ and $-I$ are in $U$. However, their sum $I + (-I) = O$ (the zero matrix), which is not in $U$. So $U$ is not closed under addition.
+    \item Also, $I \in U$, but $0 \cdot I = O$, which is not in $U$. So $U$ is not closed under scalar multiplication.
+\end{itemize}
+$U$ fails the subspace test on multiple grounds.
+\end{example}
+
+\begin{example}[Increasing Functions]
+Let $V = F(\R, \R)$ and let $W$ be the subset of increasing functions (i.e., $f(x_1) \le f(x_2)$ whenever $x_1 < x_2$).
+\begin{itemize}
+    \item The zero function $z(x)=0$ is increasing (since $0 \le 0$), so $z \in W$. $W \neq \emptyset$.
+    \item If $f, g$ are increasing, is $f+g$ increasing? Yes. If $x_1 < x_2$, then $f(x_1) \le f(x_2)$ and $g(x_1) \le g(x_2)$. Adding these gives $(f+g)(x_1) \le (f+g)(x_2)$. So $W$ is closed under addition.
+    \item Let $f(x) = x$, which is increasing, so $f \in W$. Let $c = -1$. Consider $cf = (-1)f$. Then $(cf)(x) = -x$. If $x_1 < x_2$, then $-x_1 > -x_2$. So $(cf)(x_1) > (cf)(x_2)$. This function is decreasing, not increasing. Thus $(-1)f \notin W$.
+\end{itemize}
+Since $W$ is not closed under scalar multiplication, it is not a subspace.
+\end{example}
+
+\section{Operations on Subspaces}
+
+\begin{theorem}[Intersection of Subspaces]
+Let $V$ be a vector space, and let $W_1, W_2$ be subspaces of $V$. Then their intersection $W_1 \cap W_2 = \{ v \in V \mid v \in W_1 \text{ and } v \in W_2 \}$ is also a subspace of $V$.
+(This generalizes: the intersection of any collection of subspaces of $V$ is a subspace of $V$.)
+\end{theorem}
+
+\begin{proof}
+We use the Subspace Criterion for $W = W_1 \cap W_2$.
+\begin{enumerate}
+    \item Since $W_1$ and $W_2$ are subspaces, they both contain the zero vector $0_V$. Therefore, $0_V \in W_1 \cap W_2$, and the intersection is non-empty.
+    \item Let $v_1, v_2 \in W_1 \cap W_2$. This means $v_1, v_2$ are in $W_1$, and $v_1, v_2$ are in $W_2$. Since $W_1$ is a subspace, it's closed under addition, so $v_1 + v_2 \in W_1$. Similarly, since $W_2$ is a subspace, $v_1 + v_2 \in W_2$. Since $v_1 + v_2$ belongs to both $W_1$ and $W_2$, it belongs to their intersection: $v_1 + v_2 \in W_1 \cap W_2$. Thus, $W_1 \cap W_2$ is closed under addition.
+    \item Let $v \in W_1 \cap W_2$ and $c \in \F$. This means $v \in W_1$ and $v \in W_2$. Since $W_1$ is a subspace, $c \cdot v \in W_1$. Since $W_2$ is a subspace, $c \cdot v \in W_2$. Therefore, $c \cdot v \in W_1 \cap W_2$. Thus, $W_1 \cap W_2$ is closed under scalar multiplication.
+\end{enumerate}
+By the Subspace Criterion, $W_1 \cap W_2$ is a subspace of $V$.
+\end{proof}
+
+\begin{remark}[Union of Subspaces]
+In contrast to intersection, the union of two subspaces is \textbf{not} generally a subspace.
+Consider $V = \R^2$. Let $W_1$ be the $x$-axis ($\{(x, 0) \mid x \in \R\}$) and $W_2$ be the $y$-axis ($\{(0, y) \mid y \in \R\}$). Both are subspaces of $\R^2$.
+Their union $W_1 \cup W_2$ consists of all points lying on either axis.
+Consider the vector $v_1 = (1, 0) \in W_1 \subset W_1 \cup W_2$.
+Consider the vector $v_2 = (0, 1) \in W_2 \subset W_1 \cup W_2$.
+Their sum is $v_1 + v_2 = (1, 1)$. This point does not lie on the $x$-axis or the $y$-axis, so $v_1 + v_2 \notin W_1 \cup W_2$.
+Since the union is not closed under addition, it is not a subspace.
+(The union $W_1 \cup W_2$ is a subspace if and only if one subspace is contained within the other, i.e., $W_1 \subseteq W_2$ or $W_2 \subseteq W_1$.)
+\end{remark}
+
+\section{Linear Combinations and Span}
+
+These concepts generalize directly from $\R^n$.
+
+\begin{definition}[Linear Combination]
+Let $V$ be a vector space over $\F$. Let $v_1, \dots, v_k$ be vectors in $V$ and $c_1, \dots, c_k$ be scalars in $\F$. The vector
+\[ v = c_1 v_1 + c_2 v_2 + \dots + c_k v_k = \sum_{j=1}^k c_j v_j \]
+is called a \textbf{linear combination} of the vectors $v_1, \dots, v_k$ with coefficients (or weights) $c_1, \dots, c_k$.
+\end{definition}
+
+\begin{definition}[Span]
+Let $S$ be any subset of a vector space $V$ ( $S$ could be finite or infinite). The \textbf{span} of $S$, denoted $\Span{S}$, is the set of all possible finite linear combinations of vectors from $S$.
+\[ \Span{S} = \left\{ \sum_{j=1}^k c_j v_j \mid k \in \N, v_j \in S, c_j \in \F \right\} \]
+If $S$ is the empty set, $\emptyset$, we define $\Span{\emptyset} = \{0_V\}$, the subspace containing only the zero vector.
+\end{definition}
+
+The span of a set of vectors has a crucial property: it's always a subspace.
+
+\begin{theorem}[Span is a Subspace]
+Let $S$ be any subset of a vector space $V$. Then $\Span{S}$ is a subspace of $V$. Furthermore, it is the \emph{smallest} subspace of $V$ that contains the set $S$. (Smallest in the sense of set inclusion: if $W$ is any subspace of $V$ such that $S \subseteq W$, then $\Span{S} \subseteq W$.)
+\end{theorem}
+
+\begin{proof}
+We first show $\Span{S}$ is a subspace using the criterion.
+\begin{enumerate}
+    \item If $S = \emptyset$, $\Span{S} = \{0_V\}$, which is a subspace. If $S \neq \emptyset$, let $s \in S$. Then $0 \cdot s = 0_V$ is a finite linear combination of elements from $S$, so $0_V \in \Span{S}$. Thus $\Span{S}$ is non-empty.
+    \item Closure under addition: Let $u, v \in \Span{S}$. By definition, $u = \sum_{i=1}^k c_i s_i$ and $v = \sum_{j=1}^m d_j t_j$ for some $s_i, t_j \in S$ and $c_i, d_j \in \F$. Their sum $u+v = \sum_{i=1}^k c_i s_i + \sum_{j=1}^m d_j t_j$ is also a finite sum of scalar multiples of vectors from $S$. Therefore, $u+v$ is a linear combination of vectors from $S$, so $u+v \in \Span{S}$.
+    \item Closure under scalar multiplication: Let $u \in \Span{S}$ and $c \in \F$. Then $u = \sum_{i=1}^k c_i s_i$ for some $s_i \in S, c_i \in \F$. The scalar multiple $c \cdot u = c (\sum_{i=1}^k c_i s_i) = \sum_{i=1}^k (c c_i) s_i$. This is again a finite linear combination of vectors from $S$, so $c \cdot u \in \Span{S}$.
+\end{enumerate}
+Thus, $\Span{S}$ is a subspace of $V$.
+
+Now, we show it's the smallest subspace containing $S$.
+\begin{itemize}
+    \item Containment ($S \subseteq \Span{S}$): For any $s \in S$, we can write $s = 1 \cdot s$, which is a linear combination. So $s \in \Span{S}$.
+    \item Minimality: Let $W$ be any subspace of $V$ such that $S \subseteq W$. We need to show $\Span{S} \subseteq W$. Let $v$ be an arbitrary element of $\Span{S}$. Then $v = \sum_{j=1}^k c_j s_j$ for some $s_j \in S$ and $c_j \in \F$. Since $S \subseteq W$, all these $s_j$ belong to $W$. Since $W$ is a subspace, it must be closed under scalar multiplication and vector addition. Therefore, any linear combination of elements of $W$ must also be in $W$. In particular, $v = \sum c_j s_j \in W$. Since $v$ was an arbitrary element of $\Span{S}$, we conclude that $\Span{S} \subseteq W$.
+\end{itemize}
+This establishes that $\Span{S}$ is indeed the smallest subspace containing $S$.
+\end{proof}
+
+\begin{example}[Characterizing the Span of Matrices]
+Let $V = \M{2}{2}(\R)$. Consider the matrices
+\[ A = \begin{pmatrix} 1 & 1 \\ 0 & 0 \end{pmatrix}, \quad B = \begin{pmatrix} 0 & 1 \\ 1 & 0 \end{pmatrix}, \quad C = \begin{pmatrix} 0 & 0 \\ 1 & -1 \end{pmatrix} \]
+Let $S = \{A, B, C\}$. We want to find the general form of a matrix $D = \begin{pmatrix} a & b \\ c & d \end{pmatrix}$ that belongs to $\Span{S}$.
+
+A matrix $D$ is in $\Span{S}$ if and only if there exist scalars $x_1, x_2, x_3 \in \R$ such that $D = x_1 A + x_2 B + x_3 C$.
+Let's write this out:
+\[ \begin{pmatrix} a & b \\ c & d \end{pmatrix} = x_1 \begin{pmatrix} 1 & 1 \\ 0 & 0 \end{pmatrix} + x_2 \begin{pmatrix} 0 & 1 \\ 1 & 0 \end{pmatrix} + x_3 \begin{pmatrix} 0 & 0 \\ 1 & -1 \end{pmatrix} \]
+\[ \begin{pmatrix} a & b \\ c & d \end{pmatrix} = \begin{pmatrix} x_1 & x_1 \\ 0 & 0 \end{pmatrix} + \begin{pmatrix} 0 & x_2 \\ x_2 & 0 \end{pmatrix} + \begin{pmatrix} 0 & 0 \\ x_3 & -x_3 \end{pmatrix} \]
+\[ \begin{pmatrix} a & b \\ c & d \end{pmatrix} = \begin{pmatrix} x_1 & x_1 + x_2 \\ x_2 + x_3 & -x_3 \end{pmatrix} \]
+Equating corresponding entries gives a system of linear equations for $x_1, x_2, x_3$:
+\begin{align*} a &= x_1 \\ b &= x_1 + x_2 \\ c &= x_2 + x_3 \\ d &= -x_3 \end{align*}
+We want to know for which $a, b, c, d$ this system has a solution. We can write this in augmented matrix form (variables $x_1, x_2, x_3$):
+\[ \left[ \begin{array}{ccc|c} 1 & 0 & 0 & a \\ 1 & 1 & 0 & b \\ 0 & 1 & 1 & c \\ 0 & 0 & -1 & d \end{array} \right] \]
+Now, we perform row reduction:
+\begin{align*} \left[ \begin{array}{ccc|c} 1 & 0 & 0 & a \\ 1 & 1 & 0 & b \\ 0 & 1 & 1 & c \\ 0 & 0 & -1 & d \end{array} \right] \xrightarrow{R_2 \leftarrow R_2 - R_1} &\left[ \begin{array}{ccc|c} 1 & 0 & 0 & a \\ 0 & 1 & 0 & b-a \\ 0 & 1 & 1 & c \\ 0 & 0 & -1 & d \end{array} \right] \\ \xrightarrow{R_3 \leftarrow R_3 - R_2} &\left[ \begin{array}{ccc|c} 1 & 0 & 0 & a \\ 0 & 1 & 0 & b-a \\ 0 & 0 & 1 & c-(b-a) \\ 0 & 0 & -1 & d \end{array} \right] \\ \xrightarrow{R_4 \leftarrow R_4 + R_3} &\left[ \begin{array}{ccc|c} 1 & 0 & 0 & a \\ 0 & 1 & 0 & b-a \\ 0 & 0 & 1 & c-b+a \\ 0 & 0 & 0 & d+(c-b+a) \end{array} \right] \end{align*}
+The system has a solution if and only if the last row does not represent an inconsistent equation ($0 = \text{non-zero}$). This requires the entry in the bottom right corner to be zero.
+\[ d + c - b + a = 0 \quad \text{or} \quad a - b + c + d = 0 \]
+This is the condition that $a, b, c, d$ must satisfy for the matrix $D = \begin{pmatrix} a & b \\ c & d \end{pmatrix}$ to be in $\Span{S}$.
+For example, if $a=1, b=1, c=1, d=-1$, then $1-1+1+(-1)=0$, so $\begin{pmatrix} 1 & 1 \\ 1 & -1 \end{pmatrix}$ is in the span. If $a=1, b=0, c=0, d=0$, then $1-0+0+0=1 \neq 0$, so $\begin{pmatrix} 1 & 0 \\ 0 & 0 \end{pmatrix}$ is not in the span.
+
+The general form of a matrix in the span can be described by the condition $a - b + c + d = 0$. Since this condition must hold, not all $2 \times 2$ matrices are in $\Span{S}$, so $\Span{S}$ is a proper subspace of $\M{2}{2}(\R)$.
+\end{example}
+
+\section{Linear Independence}
+
+The concept of linear independence is central to understanding the structure of vector spaces, particularly for defining bases.
+
+\begin{definition}[Linear Independence and Dependence]
+Let $V$ be a vector space over $\F$. A finite set of vectors $S = \{v_1, \dots, v_k\}$ in $V$ is said to be \textbf{linearly independent} if the only solution to the vector equation
+\[ c_1 v_1 + c_2 v_2 + \dots + c_k v_k = 0_V \]
+is the trivial solution $c_1 = c_2 = \dots = c_k = 0$ (where $0$ is the zero scalar in $\F$).
+
+The set $S$ is said to be \textbf{linearly dependent} if it is not linearly independent. That is, there exist scalars $c_1, \dots, c_k \in \F$, \emph{not all zero}, such that $c_1 v_1 + c_2 v_2 + \dots + c_k v_k = 0_V$. Such an equation is called a non-trivial linear dependence relation.
+
+An infinite set $S$ is linearly independent if every finite subset of $S$ is linearly independent. Otherwise, it is linearly dependent.
+\end{definition}
+
+\begin{example}[Standard Basis Polynomials]
+Consider the vector space $\Fn{n}$ over $\F$. Let $S = \{1, x, x^2, \dots, x^n\}$. Is this set linearly independent?
+Consider the equation setting a general linear combination to the zero vector (the zero polynomial):
+\[ c_0 \cdot 1 + c_1 \cdot x + c_2 \cdot x^2 + \dots + c_n \cdot x^n = 0 \]
+Here, $0$ represents the zero polynomial, which is zero for all values of $x$. A fundamental property of polynomials states that a polynomial is identically zero (i.e., zero for all $x$) if and only if all of its coefficients are zero.
+Therefore, the equation above directly implies that
+\[ c_0 = 0, c_1 = 0, c_2 = 0, \dots, c_n = 0 \]
+Since the only solution is the trivial one, the set $S = \{1, x, x^2, \dots, x^n\}$ is linearly independent in $\Fn{n}$ (and also in $\Fx$).
+\end{example}
+
+We will continue developing these ideas, leading to the concepts of basis and dimension for vector spaces.
+
+\end{document} 
