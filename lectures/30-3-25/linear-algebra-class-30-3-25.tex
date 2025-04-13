@@ -5,6 +5,7 @@
 \usepackage{parskip} % Better paragraph spacing for notes
 \usepackage[utf8]{inputenc} % Handle UTF-8 input if needed
 \usepackage{hyperref} % Optional: for links if ever needed
+\usepackage[most]{tcolorbox} % For robust custom boxes
 
 % Theorem Environments
 \newtheorem{theorem}{Theorem}[section]
@@ -20,10 +21,16 @@
 \theoremstyle{remark}
 \newtheorem{remark}[theorem]{Remark}
 
-% Custom environment for announcements
-\newenvironment{announcement}
-  {\par\medskip\noindent\fbox{\begin{minipage}{\dimexpr\linewidth-2\fboxsep-2\fboxrule\relax}\textbf{Announcements:}\par\nobreak\medskip}
-  {\end{minipage}}\medskip\par}
+% Custom environment for announcements (robust, supports lists)
+\newtcolorbox{announcement}{
+  colback=yellow!10!white,
+  colframe=black,
+  fonttitle=\bfseries,
+  title=Announcements,
+  left=1mm, right=1mm, top=1mm, bottom=1mm,
+  boxrule=0.5pt,
+  breakable
+}
 
 % Blackboard Bold letters
 \newcommand{\R}{\mathbb{R}}

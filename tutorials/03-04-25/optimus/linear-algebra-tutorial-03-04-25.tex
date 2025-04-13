@@ -1,0 +1,396 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage{enumitem}
+\usepackage{tcolorbox}
+\usepackage[left=1.2in,right=1.2in,top=1.05in,bottom=1.05in]{geometry}
+\usepackage{fancyhdr}
+\usepackage{hyperref}
+\pagestyle{fancy}
+\fancyhead{}
+\fancyfoot{}
+\fancyhead[L]{Linear Algebra II -- Tutorial Exposition}
+\fancyfoot[C]{\thepage}
+
+% Custom environments for administrative notes
+\tcbuselibrary{skins, breakable}
+\newtcolorbox{administrative_note}[1][]{colback=blue!6!white,
+colframe=blue!80!black, fonttitle=\bfseries, coltitle=black, title=Administrative Note,#1}
+
+\newtcolorbox{original_example}[1][]{colback=green!5!white,
+colframe=green!40!black, fonttitle=\bfseries, coltitle=black, title=Original Example,#1}
+
+\newtcolorbox{additional_example}[1][]{colback=yellow!7!white,
+colframe=orange!70!black, fonttitle=\bfseries, coltitle=black, title=Additional Example,#1}
+
+% Theorem Environments
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}[section]
+\theoremstyle{plain}
+\newtheorem{theorem}[definition]{Theorem}
+\newtheorem{proposition}[definition]{Proposition}
+\newtheorem{lemma}[definition]{Lemma}
+\theoremstyle{remark}
+\newtheorem{remark}[definition]{Remark}
+\newtheorem{example}[definition]{Example}
+\setlength{\parskip}{0.7em}
+\setlength{\parindent}{0em}
+
+\begin{document}
+
+\begin{center}
+    {\LARGE \bf Linear Algebra II --- Subspaces, Examples, and Course Announcements}
+    \vspace{0.5em}
+
+    {\large Based on tutorial material, with enhancements and clarifications\\
+    Compiled by your undergraduate mathematics instructor}
+\end{center}
+
+\begin{administrative_note}
+\textbf{Course Announcements (as of this tutorial):}
+\begin{itemize}[itemsep=0.25em]
+    \item \textbf{Makeup Exam}: The ``Moed Bet'' (makeup) date is expected to be published on Sunday.
+    \item \textbf{Distribution of Notebooks}: Anyone attending follow-up meetings and receiving notebooks prior to the final grades will receive these under faculty supervision to prevent mishaps.
+    \item \textbf{No Classes}: \textbf{Next Thursday} there are no classes.
+    \item \textbf{Admissions Question}: Scheduled for \textbf{Monday}, at the regular hour (1pm--12pm). (Check for any further updates.)
+    \item \textbf{Pilot Session(s)}: Additional session(s) may be scheduled. Current timings are being held in reserve; further information will follow.
+    \item \textbf{Session Streaming}: For the coming week, the Sunday lecture will be as usual; the Monday exercise will be posted/streamed to accommodate those unable to attend.
+    \item \textbf{Upcoming Schedule Interruptions}: In approximately three weeks, the schedule will be affected by Independence Day (no class on that Thursday). There may be similar arrangements to those described (possibly lectures moved or additional recordings).
+    \item \textbf{Further Details}: Any changes for Thursday breaks, or ceremony day instructions, will be communicated in advance.
+    \item \textbf{Exercises}: At practice sessions, new material will be taught and then practiced the following day. Please keep up-to-date by watching recordings where necessary.
+    \item \textbf{Contact}: If you have technical/upload issues, or questions regarding material, email the instructor or contact support.
+\end{itemize}
+\textit{All administrative information above is faithfully included per the tutorial transcript.}
+\end{administrative_note}
+
+%-----------------------------------------------------------------
+\section{Motivation: Why Subspaces?}
+Mathematics, at its core, is about finding structure and extracting essential patterns from concrete situations. In linear algebra, we often begin by working with very ``concrete'' mathematical objects: spaces like $\mathbb{R}^n$ or $\mathbb{C}^n$. As our understanding deepens, it becomes clear that many ``tricks'' and properties we observe in these specific vector spaces arise from more general principles. To capture this, mathematicians distill definitions such as vector space, field, and group. 
+
+\textbf{Abstraction}---the process of focusing only on essential properties---allows us to apply a vast arsenal of results to new, unfamiliar settings, provided the axioms hold. However, abstraction alone can seem daunting, so it is vital to stay grounded in examples.
+
+Thus, every abstract notion---especially the concept of a \textbf{subspace} (vector subspace)---continues to be most naturally understood and motivated through concrete and illustrative instances. 
+
+\section{Vector Spaces and Subspaces: Definitions and Key Points}
+
+\begin{definition}[Vector Space]
+Let $F$ be a \emph{field} (e.g., $\mathbb{R}$ or $\mathbb{C}$), and $V$ a set. We say $V$ is a \emph{vector space over $F$} if:
+\begin{itemize}
+    \item Elements of $V$ are called \emph{vectors}.
+    \item Elements of $F$ are called \emph{scalars}.
+    \item The following operations are defined:
+    \begin{itemize}
+        \item \textbf{Vector addition:} $+: V \times V \to V$
+        \item \textbf{Scalar multiplication:} $\cdot: F \times V \to V$
+    \end{itemize}
+    \item The 8 vector space axioms (associativity, commutativity, identity, inverses, distributivity, etc.) are satisfied. 
+\end{itemize}
+\end{definition}
+
+\begin{definition}[Vector Subspace]
+Let $V$ be a vector space over $F$. A nonempty subset $W \subseteq V$ is called a \emph{subspace} (or \emph{vector subspace}) of $V$ if:
+\begin{enumerate}[label=(\roman*)]
+    \item For all $u, v \in W$, $u+v \in W$ (closure under addition).
+    \item For all $a \in F$, $v \in W$, $a v \in W$ (closure under scalar multiplication).
+\end{enumerate}
+\textit{Note:} $W$ inherits the operations from $V$.
+\end{definition}
+
+\begin{remark}
+It is standard to require $W$ to be \textbf{nonempty}. The quickest way to check this is to verify that the \emph{zero vector} $0_V$ belongs to $W$. If $W$ is nonempty and closed under both operations, the zero vector must be in $W$. If zero is missing, $W$ cannot be a subspace.
+\end{remark}
+
+\begin{original_example}[title=Nonempty Subspaces]
+Suppose $W$ is a nonempty subset of $V$ closed under addition and scalar multiplication. Then:
+\begin{align*}
+    & \text{Let } v \in W \\
+    & -v \in W \quad \text{(since } W \text{ is closed under scalar multiplication, take } a = -1).\\
+    & v + (-v) = 0 \in W \text{ (since } W \text{ is closed under addition).}
+\end{align*}
+Thus, every subspace contains $0$.
+\end{original_example}
+
+\section{Efficient Criteria for Subspaces: Practice and Insights}
+
+\subsection{Three Key Tests}
+
+In practice, when checking if a subset $W\subset V$ is a vector subspace, you only need to verify:
+\begin{enumerate}
+    \item $W \neq \varnothing$ (nonempty, often by showing $0 \in W$)
+    \item $u, v \in W \implies u+v \in W$ (addition closure)
+    \item $a \in F$, $v \in W \implies a v \in W$ (scalar closure)
+\end{enumerate}
+Often, if $V$ is already a vector space, you do not need to check all 8 vector space axioms again for $W$.
+
+\begin{remark}
+The empty set \emph{formally} satisfies closure conditions vacuously, but since it lacks the zero vector, it is not a subspace.
+\end{remark}
+
+\section{Worked Examples: Subspaces in Matrix and Function Spaces}
+
+Below, we present \emph{all original examples from the source transcript}, with added commentary and explanations to maximize clarity and intuition.
+
+%---- Example 1
+\begin{original_example}[title=Subspace of Anti-Symmetric Matrices]
+Let $V = M_{n\times n}(F)$, the space of all $n\times n$ matrices over a field $F$, and let 
+\[
+    W = \left\{A \in M_{n\times n}(F) \mid A^\top = -A \right\}.
+\]
+Does $W$ form a subspace of $M_{n\times n}(F)$?
+
+\textbf{Solution:}
+\begin{itemize}
+    \item \textbf{Nonempty:} The zero matrix $0$ clearly satisfies $0^\top = 0 = -0$. So $0 \in W$.
+    \item \textbf{Addition:} If $A, B \in W$, then $(A+B)^\top = A^\top + B^\top = -A + -B = -(A+B) \implies A+B \in W$.
+    \item \textbf{Scalar multiplication:} For $c \in F$, $(cA)^\top = cA^\top = c(-A) = -cA$. So $cA \in W$.
+\end{itemize}
+\textbf{Conclusion:} Yes; $W$ is a subspace.
+\end{original_example}
+
+\begin{additional_example}
+Let $n=2$ and $F = \mathbb{R}$.
+What are all $2 \times 2$ skew-symmetric (anti-symmetric) real matrices?
+
+Let $A = \begin{pmatrix} a & b \\ c & d \end{pmatrix}$. The condition $A^\top = -A$ reads
+\[
+    \begin{pmatrix} a & c \\ b & d \end{pmatrix} = \begin{pmatrix} -a & -b \\ -c & -d \end{pmatrix}.
+\]
+Matching entries, $a = -a \implies a=0$, $d=-d \implies d=0$, $c = -b$, $b = -c$, so $b = -c$, $c = -b$.
+
+Thus, all such $A$ are of the form $A = \begin{pmatrix} 0 & b \\ -b & 0 \end{pmatrix}$ for $b \in \mathbb{R}$, a subspace of dimension $1$.
+\end{additional_example}
+
+%---- Example 2
+\begin{original_example}[title=Hermitian Matrices as a Subspace]
+Let $V = M_{n\times n}(\mathbb{C})$, and let 
+\[
+    W = \{A \in M_{n\times n}(\mathbb{C}) : A^\star = A\}
+\]
+where $A^\star$ means conjugate transpose.
+
+Is $W$ a subspace over the field $\mathbb{C}$?
+
+\textbf{Solution:}
+\begin{itemize}
+    \item \textbf{Zero:} $0^\star = 0$.
+    \item \textbf{Addition:} If $A, B$ both Hermitian, then $(A+B)^\star = A^\star + B^\star = A + B$.
+    \item \textbf{Scalar multiplication:} Let $c \in \mathbb{C}$, $(cA)^\star = \bar{c}A^\star = \bar{c}A$. For this to be Hermitian, we require $\bar{c}A = cA$ for all $A$ Hermitian, so $\bar{c}=c$. That is, only real scalars maintain hermiticity.
+\end{itemize}
+\textbf{Conclusion:} $W$ is not a subspace of $M_{n\times n}(\mathbb{C})$ over $\mathbb{C}$, but it \emph{is} a subspace over $\mathbb{R}$.
+\end{original_example}
+
+%---- Example 3
+\begin{original_example}[title=Hermitian Matrices as Subspace over $\mathbb{R}$]
+With $W = \{A \in M_{n\times n}(\mathbb{C}) : A^\star = A\}$, is $W$ a subspace of $M_{n\times n}(\mathbb{C})$ over the field $\mathbb{R}$?
+
+\textbf{Solution:}
+\begin{itemize}
+    \item Closure under real scalar multiplication holds, since for $c \in \mathbb{R}$, $\overline{c}=c$.
+    \item Other criteria are as before.
+\end{itemize}
+\textbf{Conclusion:} Yes, $W$ is a real vector subspace.
+\end{original_example}
+
+%---- Example 4
+\begin{original_example}[title=Hermitian Matrices inside Real Matrices]
+Let $W$ be the set of Hermitian matrices inside $M_{n\times n}(\mathbb{R})$.
+
+\textbf{Analysis:} Hermitian matrices (by definition) may have complex entries, whereas $M_{n\times n}(\mathbb{R})$ consists only of real matrices. Therefore, the set of all Hermitian $n \times n$ matrices is generally not a subset of $M_{n\times n}(\mathbb{R})$, unless restricted further (namely, all real symmetric matrices).
+
+\textbf{Conclusion:} $W$ is not a subspace.
+\end{original_example}
+
+\begin{additional_example}
+Let $n = 2$. The matrix $A = \begin{pmatrix} 1 & i \\ -i & 2 \end{pmatrix}$ is Hermitian because $A^* = A$. But $A \notin M_{2\times 2}(\mathbb{R})$ because it is not real-valued.
+\end{additional_example}
+
+%---- Example 5
+\begin{original_example}[title=Set of Invertible Matrices]
+Let $W$ be the set of invertible matrices in $M_{n\times n}(F)$.
+
+Is this set a subspace?
+
+\textbf{Solution:}
+\begin{itemize}
+    \item The zero matrix is not invertible, so $0 \notin W$.
+    \item The sum of two invertible matrices need not be invertible.
+    \item Scalar multiples: $0 \cdot A = 0$, not invertible unless $A = 0$.
+\end{itemize}
+\textbf{Conclusion:} $W$ is not a subspace.
+\end{original_example}
+
+\section{Subspaces of Function Spaces: Analyzing Boundedness}
+
+\begin{original_example}[title=Space of Bounded Functions]
+Let $F$ be the set of all real-valued functions $f$ on $[a,b] \subseteq \mathbb{R}$ such that $f$ is bounded, i.e., 
+\[
+    \exists M \in \mathbb{R}, \forall x \in [a,b]: |f(x)| \le M.
+\]
+Is $F$ a subspace of the space of all real-valued functions on $[a,b]$?
+
+\textbf{Solution:} 
+\begin{itemize}
+    \item \textbf{Zero:} $f(x) = 0$ is bounded by $M=0$.
+    \item \textbf{Addition:} If $f, g$ are bounded by $M$ and $N$,
+    \[
+    |f(x) + g(x)| \le |f(x)| + |g(x)| \le M+N, \forall x.
+    \]
+    \item \textbf{Scalar multiplication:} $|c f(x)| = |c| |f(x)| \le |c| M, \forall x$.
+\end{itemize}
+So, $F$ is a subspace.
+\end{original_example}
+
+\begin{additional_example}
+Let $f(x) = \sin x$ on $[0, 2\pi]$. We know $|\sin x| \le 1$ everywhere, so $f$ is bounded.
+
+\textbf{Non-example:} Let $f(x) = x$ on $[0, \infty)$. Then, for any $M$, there exists $x > M$ such that $|f(x)| > M$, so $f$ is unbounded, and does not belong to the subspace of bounded functions.
+\end{additional_example}
+
+\section{Polynomials and Subspaces}
+
+\begin{original_example}[title=Polynomials of Degree at Most Two]
+Let $W$ be the set of all real polynomials of degree at most $2$:
+\[
+    W = \{ p(x) \in \mathbb{R}[x] : \deg p \leq 2 \}
+\]
+Is $W$ a subspace of $V = \{ q(x) \in \mathbb{R}[x] : \deg q \leq 3 \}$?
+
+\textbf{Solution:}
+\begin{itemize}
+    \item Every degree $\leq 2$ polynomial is also degree $\leq 3$.
+    \item The sum or scalar multiple of degree $\leq 2$ polynomials remains degree $\leq 2$.
+\end{itemize}
+Therefore, $W$ is a subspace.
+\end{original_example}
+
+\begin{additional_example}
+Is $U = \{p(x) \in \mathbb{R}[x]: \deg p = 2\}$ a subspace?
+\begin{itemize}
+    \item $0$ polynomial does not have degree $2$.
+    \item The sum of two degree $2$ polynomials may have lower degree.
+\end{itemize}
+Thus, $U$ is \emph{not} a subspace.
+\end{additional_example}
+
+\begin{original_example}[title=Polynomials of Even Degree]
+Let 
+\[
+    W = \{ p(x) \in \mathbb{R}[x] : \deg p \text{ is even} \}.
+\]
+Is $W$ a subspace?
+
+\textbf{Solution:}
+\begin{itemize}
+    \item The zero polynomial: (degree undefined or considered $-\infty$; not even).
+    \item The sum of two even-degree polynomials of degree $2$ (e.g., $x^2$, $-x^2$) may result in degree zero ($x^2 + (-x^2) = 0$, the zero polynomial).
+\end{itemize}
+Thus, $W$ is not a subspace.
+\end{original_example}
+
+%---- Example: Spanning in $\mathbb{R}^3$
+\begin{original_example}[title=Span in $\mathbb{R}^3$]
+Let $v_1, v_2, v_3 \in \mathbb{R}^3$, and consider a vector $(a, b, c) \in \mathbb{R}^3$. 
+
+For which $(a,b,c)$ is it in the span of $v_1, v_2, v_3$?
+
+\textbf{Solution:} When there exist $x_1, x_2, x_3 \in \mathbb{R}$ such that
+\[
+    (a, b, c) = x_1 v_1 + x_2 v_2 + x_3 v_3,
+\]
+i.e., when the system for $x_i$ has a solution.
+\end{original_example}
+
+\section{Spanning Sets and Coordinate Methods}
+
+\begin{original_example}[title=Span of Polynomials]
+Is $x^2 + 5x - 1$ in the span of $\{x^2 + 1,\ x^2 - 1,\ 2x + 3\}$ in the space of real polynomials?
+
+\textbf{Solution:}
+Seek $a, b, c \in \mathbb{R}$ such that
+\[
+a(x^2 + 1) + b(x^2 - 1) + c(2x + 3) = x^2 + 5x - 1.
+\]
+Expand:
+\begin{align*}
+    a(x^2 + 1) &= a x^2 + a \\
+    b(x^2 - 1) &= b x^2 - b \\
+    c(2x + 3) &= 2c x + 3c
+\end{align*}
+Sum:
+\[
+(a + b) x^2 + 2c x + (a - b + 3c)
+\]
+Set equal to $x^2 + 5x - 1$; match coefficients:
+\begin{align*}
+    \text{$x^2$:} &\quad a + b = 1 \\
+    \text{$x$:} &\quad 2c = 5 \implies c = 2.5 \\
+    \text{constant:} &\quad a - b + 3c = -1
+\end{align*}
+Now $c = 2.5$, $a + b = 1$, $a - b + 7.5 = -1$, so $a - b = -8.5$. Thus:
+\[
+a + b = 1 \\
+a - b = -8.5
+\]
+Adding: $2a = -7.5 \implies a = -3.75$, thus $b = 4.75$.
+
+\textbf{Conclusion:} $x^2 + 5x - 1$ is in the span with coefficients $a = -3.75$, $b = 4.75$, $c = 2.5$.
+\end{original_example}
+
+\section{Intersections and Unions of Subspaces}
+
+\begin{theorem}[Intersection of Subspaces]
+The intersection of any collection (possibly infinite) of subspaces of a vector space $V$ is again a subspace of $V$.
+\end{theorem}
+
+\begin{proof}
+Let $\{W_i\}_{i\in I}$ be subspaces of $V$, and put $W = \bigcap_{i\in I} W_i$.
+
+\begin{itemize}
+    \item \textbf{Nonempty:} Each $W_i$ contains $0$, so $0 \in W$.
+    \item \textbf{Addition:} $u, v \in W \implies u, v \in W_i\, \forall i$, so $u+v \in W_i$ for every $i$, thus $u+v \in W$.
+    \item \textbf{Scalar Multiplication:} $c \in F$, $u \in W \implies c u \in W_i\, \forall i$, so $cu \in W$.
+\end{itemize}
+\end{proof}
+
+\begin{additional_example}
+Suppose $V = \mathbb{R}^2$, $W_1$ is the $x$-axis, $W_2$ is the $y$-axis. The intersection $W_1 \cap W_2 = \{(0,0)\}$, which is the trivial subspace.
+\end{additional_example}
+
+\section{Common Errors: Union of Subspaces}
+
+\begin{remark}[Union is \emph{not} a Subspace]
+The union $W_1 \cup W_2$ of subspaces $W_1, W_2 \subseteq V$ is not in general a subspace (unless one is contained in the other).
+
+\begin{additional_example}
+Let $W_1$ be the $x$-axis in $\mathbb{R}^2$, $W_2$ the $y$-axis. Their union contains the vectors $(1,0)$ and $(0,1)$, but their sum, $(1,1)$, is not in $W_1$ nor $W_2$, hence not in the union.
+\end{additional_example}
+\end{remark}
+
+\section{Conceptual Commentary and Further Thoughts}
+
+\begin{remark}[The Power of Abstraction]
+Abstract properties such as those defining vector spaces and subspaces prevent us from having to reprove basic facts for every new example that comes our way. If an object satisfies the axioms, it inherits a wealth of known theory.
+\end{remark}
+
+\begin{remark}[Historical Side Note: Sizes of Sets]
+It was mentioned during the session that not all infinities are created equal: the set of real numbers between $0$ and $1$ is ``larger'' (uncountable) than the set of natural numbers (countable). Cantor’s diagonal argument shows that even the smallest real interval is ``bigger'' than the set of natural or even rational numbers. If you're interested, ask during office hours for an intuitive proof.
+\end{remark}
+
+%-----------------------------------------------------------------
+\section*{Summary and Closing}
+
+In this session, we have carefully unfolded the formal and intuitive understanding of subspaces, illustrated their properties with canonical examples (matricial, polynomial, and functional), discussed criteria for verifying subspaces, and highlighted both examples and non-examples faithfully from the original lecture. 
+
+Administrative information and upcoming scheduling were clearly separated and presented in full as per course requirements.
+
+\textit{Continue to practice by testing the subspace properties in new settings. Understanding when and why a subset forms a subspace is crucial for all advanced work in linear algebra.}
+
+\vspace{1em}
+\hrule
+\vspace{1em}
+\begin{administrative_note}[breakable, title=End of Administrative Section (see intro for logistics)]
+\vspace{1em}
+Attach all clarifications to your upcoming assignments or session questions to the course email address provided. Always check your institution’s learning platform for the latest announcements.
+\vspace{0.7em}
+\end{administrative_note}
+
+\end{document}

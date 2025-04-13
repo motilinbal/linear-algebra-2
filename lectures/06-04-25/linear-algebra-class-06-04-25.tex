@@ -1,0 +1,382 @@
+\documentclass[11pt]{article} 
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{geometry}
+\usepackage{enumitem}
+\usepackage{mathtools}
+\usepackage{fancyhdr}
+\usepackage{xcolor}
+
+% Theorem environments
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}[section]
+\newtheorem{example}[definition]{Example}
+\newtheorem{remark}[definition]{Remark}
+\newtheorem*{administrativenote}{Administrative Note}
+
+\theoremstyle{plain}
+\newtheorem{theorem}[definition]{Theorem}
+\newtheorem{lemma}[definition]{Lemma}
+\newtheorem{corollary}[definition]{Corollary}
+\newtheorem{proposition}[definition]{Proposition}
+
+% Custom environments for administrative information
+\newenvironment{administrativeblock}
+  {\begin{center}\begin{minipage}{0.95\linewidth}\color{blue}\hrule\vspace{2pt}\noindent\textbf{Administrative Information:}\par}
+  {\vspace{2pt}\hrule\end{minipage}\end{center}}
+
+\geometry{margin=1in}
+
+\pagestyle{fancy}
+\fancyhead[L]{Linear Algebra, Spring 2025}
+\fancyhead[C]{}
+\fancyhead[R]{Basis, Dimension, Sums of Subspaces}
+\fancyfoot[C]{\thepage}
+
+\begin{document}
+
+\begin{center}
+    {\LARGE \textbf{Linear Algebra: Basis, Dimension, and Sums of Subspaces}}\\[0.5em]
+    {\large Lecture Notes and Examples}\\[1em]
+\end{center}
+
+\begin{administrativeblock}
+\vspace{0.5em}
+\textit{No specific administrative announcements appear in this transcript. All logistical, policy-related, or scheduling details should continue to be communicated via the official course website and email, and reviewed in class as needed. If you have questions about homework, exams, or course structure, please contact the course staff during office hours.}
+\vspace{0.5em}
+\end{administrativeblock}
+
+\tableofcontents
+\newpage
+
+\section{Introduction and Motivation}
+
+Much of linear algebra revolves around understanding the structure of vector spaces, which, despite their abstract definition, show up everywhere in mathematics, physics, computer science, and engineering. A central question is: \emph{How can we efficiently describe or ``coordinate'' all vectors in a given space?}
+
+This leads us to the notions of \textbf{linear independence}, \textbf{span} (or ``spanning sets''), and \textbf{basis}. These concepts allow us to distill the complicated, possibly infinite set of vectors in a space down to a \emph{small, manageable, and efficient} collection of vectors with which we can describe every vector in the space uniquely.
+
+Understanding bases also leads directly to the notion of \emph{dimension}, a powerful invariant that counts, in a sense, ``how many directions'' the vector space has.
+
+But before we get there, let's revisit and generalize the fundamental concepts of dependence and independence---first for finite sets, then for infinite ones.
+
+\section{Linear (In)dependence for Infinite Sets}
+
+\subsection{Motivation}
+The notion of linear independence is familiar for finite lists of vectors: it's about whether any nontrivial linear combination of them can add to zero. But what about \textbf{infinite} sets? This occurs naturally, for example, in spaces of polynomials or functions.
+
+\begin{definition}
+Let $V$ be a vector space over a field $\mathbb{F}$. An (possibly infinite) subset $S \subseteq V$ is called \emph{linearly independent} if every \textbf{finite} subset of $S$ is linearly independent. 
+
+If there exists any finite subset of $S$ which is linearly dependent, then $S$ is called \emph{linearly dependent}.
+\end{definition}
+
+\begin{remark}
+This definition ensures that even in infinite collections, the ``bad'' behavior of dependence can't sneak in anywhere, no matter how large a finite selection we inspect.
+\end{remark}
+
+\subsection{Example: The Monomials in $\mathbb{F}[x]$}
+
+\begin{example}[All Monomials are Linearly Independent]
+Consider the set $S = \{1, x, x^2, x^3, \ldots\}$ in the vector space of all polynomials $\mathbb{F}[x]$. Is $S$ linearly independent?
+
+\emph{Solution:} By the definition above, we must check that every finite subset is linearly independent.
+It is enough to show that, for every $k\geq 0$, the set $\{1, x, x^2, \ldots, x^k\}$ is linearly independent.
+
+Suppose we have
+\[
+a_0 \cdot 1 + a_1 x + a_2 x^2 + \cdots + a_k x^k = 0
+\]
+as polynomials. Then, all coefficients must be zero (since the zero polynomial is uniquely represented in the basis of monomials). Thus, all $a_j = 0$, so independence holds.
+
+Therefore, the infinite set $S$ is indeed linearly independent.
+\end{example}
+
+\subsection{Discussion}
+
+The infinite case highlights the ``local'' nature of independence: no matter how large the set, as long as every finite piece behaves, the whole set is safe.
+
+\section{Bases of Vector Spaces}
+
+\subsection{What is a Basis?}
+
+A \emph{basis} has a very special role: it is \emph{minimal} for spanning and \emph{maximal} for independence. But how do we formalize this intuition?
+
+\begin{definition}
+A subset $B \subseteq V$ is called a \textbf{basis} for $V$ if:
+\begin{enumerate}[label=(\arabic*)]
+    \item $B$ is \textbf{linearly independent}
+    \item $B$ \textbf{spans} $V$; that is,
+    \[
+    V = \text{span}(B) = \left\{ \sum_{j=1}^{k} a_j b_j \mid k \in \mathbb{N},\ b_j \in B,\ a_j \in \mathbb{F} \right\}
+    \]
+    where all but finitely many $a_j$ are zero.
+\end{enumerate}
+\end{definition}
+
+\begin{remark}
+Even if $B$ is infinite, every vector in $V$ is a finite linear combination of elements of $B$.
+\end{remark}
+
+\subsection{Examples of Bases}
+
+\begin{example}[Standard Basis for F[x]]
+Revisiting $S = \{1, x, x^2, \ldots\}$ in $\mathbb{F}[x]$: this set not only is linearly independent, but also every polynomial can be expressed as a finite linear combination of these monomials. Hence, $S$ is a basis for $\mathbb{F}[x]$. This is an example of an \emph{infinite} basis!
+\end{example}
+
+\begin{remark}
+Strange as it may seem at first, infinite-dimensional spaces (like $\mathbb{F}[x]$) simply require an infinite basis. Later, we will see how finite and infinite-dimensional cases contrast.
+\end{remark}
+
+\section{Characterization of a Basis: Unique Representation}
+
+\subsection{Statement and Motivation}
+
+A more conceptual characterization of basis connects the ideas of independence and span through uniqueness of representation:
+
+\begin{theorem}[Unique Representation]
+A set $B \subseteq V$ is a basis for $V$ if and only if every $v \in V$ can be written uniquely as a \emph{finite} linear combination of the elements of $B$.
+\end{theorem}
+
+\begin{remark}
+This reveals that a basis provides ``coordinates'' for every vector, which allows for many powerful constructions.
+\end{remark}
+
+\subsection{Proof of Unique Representation Theorem}
+
+\begin{proof}
+$\Rightarrow$: Suppose $B$ is a basis. Then, $B$ spans $V$, so every $v \in V$ can be written as a linear combination $v = \sum_{j=1}^k a_j b_j$. Suppose there are two such representations:
+\[
+v = \sum_{j=1}^k a_j b_j = \sum_{j=1}^k c_j b_j
+\]
+After padding with zeros so that both sums are over the same set of $b_j$, subtract:
+\[
+0 = \sum_{j=1}^k (a_j - c_j) b_j
+\]
+Since $B$ is linearly independent, all $a_j - c_j = 0$, so $a_j = c_j$ for all $j$.
+
+$\Leftarrow$: Conversely, suppose $B$ is such that every $v \in V$ has a \emph{unique} representation as a finite linear combination of elements of $B$. To verify $B$ spans $V$: clearly, because every $v$ is a sum over elements in $B$! To see linear independence: suppose $a_1 b_1 + \cdots + a_k b_k = 0$. But $0$ has a unique representation: all coefficients must be zero. Therefore, $B$ is independent.
+\end{proof}
+
+\subsection{Pedagogical Commentary}
+
+This theorem not only shows what a basis is, but highlights why bases are so useful: they allow us to ``name'' every vector uniquely in terms of basic building blocks.
+
+\section{Worked Examples: Identifying Bases}
+
+Let’s see these concepts in action with concrete, step-by-step examples.
+
+\begin{example}[Basis for $M_{2\times 2}(\mathbb{F})$]
+Consider the set of matrices:
+\[
+E_1 = \begin{pmatrix}1 & 0 \\ 0 & 0\end{pmatrix}, \quad
+E_2 = \begin{pmatrix}0 & 1 \\ 0 & 0\end{pmatrix}, \quad
+E_3 = \begin{pmatrix}0 & 0 \\ 1 & 0\end{pmatrix}, \quad
+E_4 = \begin{pmatrix}0 & 0 \\ 0 & 1\end{pmatrix}
+\]
+in $M_{2\times 2}(\mathbb{F})$, the vector space of $2\times 2$ matrices.
+
+\textbf{Claim:} $\{E_1, E_2, E_3, E_4\}$ is a basis for $M_{2\times 2}(\mathbb{F})$.
+
+\textit{Proof:}
+\begin{enumerate}
+  \item \emph{Span:} Any matrix 
+  $
+  \begin{pmatrix}
+  a & b \\ c & d
+  \end{pmatrix}
+  $ can be written as
+  \[
+  aE_1 + bE_2 + cE_3 + dE_4 = \begin{pmatrix}a & b \\ c & d\end{pmatrix}
+  \]
+  \item \emph{Independence:} Suppose $x_1E_1 + x_2E_2 + x_3E_3 + x_4E_4 = 0$ (the zero matrix). Then, all $x_j = 0$ (since each appears in a different place).
+\end{enumerate}
+Thus, the set forms a basis.
+\end{example}
+
+\begin{example}[Other Bases in $M_{2\times 2}(\mathbb{F})$]
+Can there be other bases? Yes, and many! For instance, any set of 4 linearly independent $2 \times 2$ matrices spanning all of $M_{2\times 2}(\mathbb{F})$ is a basis.
+
+\textbf{Exercise:} Try to come up with your own set different from the standard one above, and check independence and spanning.
+\end{example}
+
+\begin{example}[Basis for the Space of Polynomials of Degree at Most $n$]
+Consider $V = \mathbb{F}_{n}[x]$, the space of polynomials of degree at most $n$. The set $B = \{1, x, x^2, \dots, x^{n}\}$ forms a basis.
+
+Indeed, independence is checked as before: a vanishing linear combination implies all coefficients are zero. Any polynomial degree at most $n$ is a linear combination of these monomials.
+\end{example}
+
+\begin{example}[Basis for F[x]]
+All monomials $1, x, x^2, \ldots$ in $\mathbb{F}[x]$ is a basis—every polynomial is a unique finite linear combination of these.
+\end{example}
+
+\begin{example}[Basis for $\mathbb{R}^{m \times n}$]
+Let $V = \mathbb{R}^{m \times n}$. For $1 \leq i \leq m$, $1 \leq j \leq n$, let $E_{i,j}$ be the $m\times n$ matrix with a $1$ in the $(i, j)$ entry, and all other entries zero.
+
+The set $\{E_{i,j}\}_{1 \leq i \leq m,\, 1 \leq j \leq n}$ is a basis for $V$.
+
+\emph{Dimension:} $mn$.
+\end{example}
+
+\section{A Key Lemma About Dependence in Ordered Sets}
+
+\subsection{Motivation}
+Understanding how dependence can ``creep in'' when adding vectors to a linearly independent set prepares us for rigorous arguments about bases and dimension.
+
+\begin{lemma}
+Let $v_1, \dots, v_k$ be vectors in a vector space $V$. If the set $\{v_1, \dots, v_k\}$ is linearly dependent, then there exists some $v_r$ (with $2 \leq r \leq k$) such that $v_r$ is a linear combination of $v_1,\dots,v_{r-1}$.
+\end{lemma}
+
+\begin{proof}
+Since the set is linearly dependent, there are scalars $a_1,\dots, a_k$, not all zero, with
+\[
+a_1 v_1 + a_2 v_2 + \cdots + a_k v_k = 0.
+\]
+Let $r$ be the largest index such that $a_r \neq 0$. Then,
+\[
+v_r = -\frac{1}{a_r}(a_1v_1 + \cdots + a_{r-1}v_{r-1}),
+\]
+showing $v_r$ is a linear combination of the preceding $v_i$.
+\end{proof}
+
+\begin{remark}
+This lemma is particularly useful in ``exchange'' arguments that underlie proofs about the dimension of a vector space.
+\end{remark}
+
+\section{Dimension and the Number of Basis Elements}
+
+\subsection{Motivation}
+The dimension of a vector space provides a powerful invariant: any two bases (if finite) have the same cardinality! This notion is central for organizing all vectors into coordinate systems.
+
+\begin{theorem}[Dimension is Well-Defined]
+Let $V$ be a finite-dimensional vector space. Then, any two bases of $V$ have the same number of elements.
+\end{theorem}
+
+\begin{proof}[Sketch of proof (exchange argument)]
+Let $B = \{b_1, \dots, b_m\}$ be an independent set, and $W = \{w_1, \dots, w_n\}$ a spanning set. By a process of exchanging elements (using the previous lemma), one shows $m \leq n$, and thus, the size of any basis is fixed.
+\end{proof}
+
+\subsection{Definition}
+
+\begin{definition}
+Let $V$ be a vector space. We say $V$ is \textbf{finite-dimensional} if there exists a finite basis $B \subseteq V$. In such case, the \textbf{dimension} of $V$ is $\dim V = |B|$ for any basis $B$.
+\end{definition}
+
+\begin{remark}
+If $V$ has no finite spanning independent set (e.g., all polynomials $\mathbb{F}[x]$), we say $V$ is \emph{infinite-dimensional}, and write $\dim V = \infty$.
+\end{remark}
+
+\begin{example}[Dimension Examples]
+\begin{itemize}
+    \item $\mathbb{F}_n[x]$ (degree at most $n$): $\dim \mathbb{F}_n[x] = n+1$.
+    \item $\mathbb{F}[x]$ (all polynomials): $\dim \mathbb{F}[x] = \infty$.
+    \item The space of all continuous functions $C(\mathbb{R})$: $\dim C(\mathbb{R}) = \infty$ (contains an infinite independent subset).
+    \item $M_{m \times n}(\mathbb{R})$: $\dim = mn$.
+    \item The zero vector space: $\dim\{0\} = 0$.
+\end{itemize}
+\end{example}
+
+\subsection{Subspaces and Dimension Comparison}
+
+If $W$ is a subspace of a finite-dimensional $V$, then $\dim W \leq \dim V$.
+
+\begin{proof}
+Any basis of $W$ is a set of linearly independent vectors in $V$, so its size cannot exceed the size of any basis for $V$.
+\end{proof}
+
+\section{Extending Linearly Independent Sets to Bases}
+
+\subsection{Motivation}
+
+A natural and important question: If I have just a few linearly independent vectors, can I ``grow'' them to a full basis? The answer, for finite-dimensional spaces, is yes.
+
+\begin{theorem}[Extension Lemma]
+Let $V$ be a finite-dimensional vector space. Every linearly independent set in $V$ can be extended to a basis for $V$ by adding further vectors.
+\end{theorem}
+
+\begin{proof}[Sketch of proof]
+If the span of your independent set $S$ is not all of $V$, take a vector $v \in V \setminus \operatorname{span}(S)$, and check that $S \cup \{v\}$ is still independent. Repeat until you span all of $V$.
+\end{proof}
+
+\subsection{Example: Completing to a Basis in $\mathbb{R}^n$}
+
+Suppose you are given $k$ independent vectors $v_1, \ldots, v_k$ in $\mathbb{R}^n$, $k < n$. How to complete them to a basis?
+
+\begin{enumerate}
+    \item Arrange the given vectors as rows of a matrix.
+    \item Row-reduce; the number of leading $1$'s is the current number of independent vectors.
+    \item For every column not containing a leading $1$, add the corresponding standard basis vector to your set.
+    \item The resulting set forms a basis.
+\end{enumerate}
+
+\begin{example}[Detailed Step]
+Let us illustrate with $n=3$:
+Suppose $v_1 = (1,0,0)$, $v_2 = (0,1,0)$. They are independent in $\mathbb{R}^3$. The standard basis vector $e_3 = (0,0,1)$ is not in their span, so $\{v_1, v_2, e_3\}$ is a basis.
+\end{example}
+
+\subsection{Caveat for Infinite-Dimensional Spaces}
+
+Extending a linearly independent set to a basis generally requires the underlying vector space to be finite-dimensional, or at least some use of axiom of choice in the infinite case.
+
+\section{Sums and Direct Sums of Subspaces}
+
+\subsection{Motivation}
+
+Many spaces can be ``built'' by summing subspaces together. Understanding how two subspaces combine is fundamental, especially for decompositions, projections, and applications such as statistics.
+
+\subsection{Sum of Subspaces}
+
+\begin{definition}
+Let $U$ and $W$ be subspaces of $V$. The \textbf{sum} of $U$ and $W$ is
+\[
+U + W = \{ u + w \mid u \in U,\, w \in W \}.
+\]
+\end{definition}
+
+\begin{remark}
+This is again a subspace. In contrast, the \emph{union} $U \cup W$ is generally not a subspace.
+\end{remark}
+
+\begin{proof}[Why is $U + W$ a subspace?]
+\begin{itemize}
+    \item Closure under addition: $(u_1 + w_1) + (u_2 + w_2) = (u_1 + u_2) + (w_1 + w_2) \in U + W$
+    \item Closure under scalar multiplication: For $\alpha \in \mathbb{F}$, $\alpha(u + w) = (\alpha u) + (\alpha w) \in U + W$
+    \item Contains $0$: $0 = 0_U + 0_W$
+\end{itemize}
+\end{proof}
+
+\subsection{Examples}
+
+\begin{example}[Sum in $\mathbb{R}^2$]
+Let $U = \operatorname{span}\{ (1,0) \} $ and $W = \operatorname{span}\{ (0,1) \} $. Then $U + W = \mathbb{R}^2$.
+\end{example}
+
+\begin{example}[Sum of Subspaces in $M_{2\times 2}(\mathbb{R})$]
+Consider the subspaces
+\[
+U = \left\{ \begin{pmatrix} a & 0 \\ b & 0 \end{pmatrix} : a,b \in \mathbb{R} \right\}, \quad
+W = \left\{ \begin{pmatrix} 0 & c \\ 0 & d \end{pmatrix} : c,d \in \mathbb{R} \right\}.
+\]
+Then $U + W$ is the space of all $2 \times 2$ matrices (since any matrix is a sum of an element from $U$ and one from $W$).
+\end{example}
+
+\subsection{Constructive Procedures}
+Given more complicated subspaces, to check $U + W$ is the whole space, try to express an arbitrary element as a sum of elements, one from each.
+
+\section*{Closing Remarks}
+
+The concepts of basis, dimension, and subspace sums form the backbone of a vast swath of linear algebra and underpin many further developments: diagonalization, linear operators, advanced geometry, and even areas like probability and statistics.
+
+In practice, mastering these concepts—and especially the procedures such as checking independence, completing to a basis, and decomposing spaces—pays enormous dividends in mathematical fluency and flexibility.
+
+As you proceed, keep a close watch on the role of \emph{examples}—the ones here (and in your problem sets) are chosen to illuminate subtle points; try crafting your own as well, and test boundaries by considering non-examples.
+
+If you have not yet done so, please review recent homework assignments, attend office hours with questions, and bring up any confusions promptly—a strong foundation here will serve you throughout mathematics and beyond.
+
+\begin{administrativeblock}
+\vspace{0.5em}
+\textit{Remember to check the course website regularly for further announcements, resources, and updated schedules.
+All administrative questions—homework logistics, exam details, grading, etc.—should be addressed to course staff as previously communicated.
+}
+\vspace{0.5em}
+\end{administrativeblock}
+
+\end{document}

@@ -1,0 +1,371 @@
+\documentclass[12pt]{article}
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage{enumitem}
+\usepackage{geometry}
+\usepackage{fancybox}
+\usepackage{hyperref}
+\geometry{margin=1in}
+
+% Environments for structure and clarity
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{remark}[theorem]{Remark}
+\newtheorem{example}[theorem]{Example}
+\newtheorem{exercise}[theorem]{Exercise}
+
+\newenvironment{announcement}
+  {\medskip\noindent\textbf{Administrative Note.}\begin{quote}\small}
+  {\end{quote}\medskip}
+
+\begin{document}
+
+\begin{center}
+    {\LARGE \textbf{Linear Algebra: Selected Topics and Examples}}\\[0.5em]
+    {\large Study Notes and Administrative Announcements}\\
+    \vspace{1em}
+    \textit{Aimed at supporting genuine conceptual understanding for undergraduate students}
+\end{center}
+
+% ==============================
+% Administrative Announcements
+% ==============================
+\section*{Administrative Announcements}
+\begin{announcement}
+\begin{itemize}
+    \item \textbf{Possible Interruption}: There is a small chance I may need to answer a phone call during the lecture. If this happens, I apologize in advance and will make up the lost time before the Q\&A period.
+    \item \textbf{Exam Logistics}: Regarding makeup exam (\emph{Moed Bet}) logistics: Student notebooks have been distributed to you. The distribution process is coordinated at the university level and is sometimes out of the teaching staff's direct control. If you are missing your graded notebook or have issues with the publishing of grades, please contact the relevant administrative office.
+    \item \textbf{Grade Publication Policy}: Final grades are intended to be released only after processing is complete. You should not have to piece together your true grade from multiple sources. Please await the official final grade before making any assumptions about passing or failing, particularly if you are new to the grading format.
+    \item \textbf{Session Scheduling}: This week's exercise session replaces the usual Thursday session. If at any point the explanations lack sufficient detail, especially this week, please alert me.
+    \item \textbf{Exercise Focus}: This exercise session emphasizes deeper, reference-worthy questions over technical computations. This is intended to aid your understanding and to serve as a resource for future study.
+    \item \textbf{Grading Questions and Appeals}: If you have concerns about specific grading or want to submit an appeal (``\emph{ira'ur}''), please prepare a clear explanation referencing both your solution and the marking scheme. If you feel an entire problem was incorrectly marked as zero despite a correct approach (for example, using the determinant where the official solution used row-reduction), please detail your reasoning step-by-step.
+    \item \textbf{General Grading Advice}: Always strive for legibility and logical sequencing when writing solutions. Markers may have difficulty awarding full credit if a solution is unclear or calculations are scattered across multiple pages without clear referencing. Submission of partial or disorganized argumentation may not obtain the credit, even with a correct final answer.
+    \item \textbf{Contact}: For unresolved issues, come speak directly with me or send an email with your question and supporting reasoning.
+\end{itemize}
+\end{announcement}
+
+% ==============================
+% Linear (In)dependence: Vectors and Functions
+% ==============================
+\section{Linear Independence: From Vectors to Functions}
+
+\subsection{Motivation and Conceptual Overview}
+Linear independence underpins the structure of vector spaces. It determines whether a family of vectors (or functions) can be ``built from'' each other, or whether each brings genuinely new information. 
+
+Recall:
+\begin{definition}[Linear Independence]
+Vectors $v_1, v_2, \ldots, v_n$ in a vector space $V$ are said to be \emph{linearly independent} if the only solution to
+\[
+c_1 v_1 + c_2 v_2 + \cdots + c_n v_n = 0
+\]
+is $c_1 = c_2 = \cdots = c_n = 0$.
+Equivalently: No nontrivial linear combination yields the zero vector.
+\end{definition}
+This definition extends from the finite-dimensional spaces like $\mathbb{R}^n$ to function spaces.
+
+\vspace{0.5em}
+\begin{remark}
+When working with functions, the ``zero vector'' is the \textbf{zero function}: the function assigning $0$ to every possible input.
+\end{remark}
+
+\subsection{Worked Example (Functions): Are \texorpdfstring{$\{1, \sin x, \cos x, \sin(2x)\}$}{1, sin x, cos x, sin 2x} Linearly Independent?}
+
+Let us give a careful, stepwise answer to this core example.
+
+\begin{example}
+\label{example:sinecos}
+Consider the set of functions $S = \{1, \sin x, \cos x, \sin(2x)\}$. Are they linearly independent as functions $\mathbb{R} \to \mathbb{R}$?
+\end{example}
+
+\subsubsection*{Step 1: Understanding the Definition in Context}
+To show $S$ is linearly independent, we must prove:
+\[
+c_1 \cdot 1 + c_2 \sin x + c_3 \cos x + c_4 \sin(2x) = 0 \quad \text{for all } x
+\]
+implies that $c_1 = c_2 = c_3 = c_4 = 0$.
+
+\subsubsection*{Step 2: Why Substitution is Key}
+Since the equation must hold for all $x$, we can plug in strategically chosen values to obtain a system of equations for the coefficients.
+
+\subsubsection*{Step 3: Counterexample Motivation}
+\begin{remark}
+You might be tempted to believe dependence if, for some tuple of nonzero coefficients, the linear combination equals zero for \textit{some} $x$. For example, using $c_1 = c_2 = c_3 = c_4 = 1$, one can check:
+\[
+1 + \sin x + \cos x + \sin(2x)
+\]
+could vanish at specific $x$ (e.g., $x = \pi$).
+\end{remark}
+
+But, recall: \textbf{Linear dependence} requires \emph{identical vanishing for all $x$}. The condition that a combination vanishes at individual points is far weaker and not sufficient.
+
+\subsubsection*{Step 4: Strategic Evaluation}
+Let us substitute four values of $x$ into the general combination:
+\[
+c_1 + c_2 \sin x + c_3 \cos x + c_4 \sin(2x) = 0
+\]
+for all $x$.
+
+We will use $x \in \{0, \frac{\pi}{4}, \frac{\pi}{2}, \pi\}$, computing the necessary trigonometric values at these points.
+
+\begin{enumerate}[label=\textbf{Case \arabic*:},leftmargin=*]
+    \item $x = 0$
+    \begin{align*}
+        &c_1 + c_2 \cdot 0 + c_3 \cdot 1 + c_4 \cdot 0 = 0\\
+        &\implies c_1 + c_3 = 0
+    \end{align*}
+
+    \item $x = \frac{\pi}{2}$
+    \begin{align*}
+        &c_1 + c_2 \cdot 1 + c_3 \cdot 0 + c_4 \cdot 0 = 0\\
+        &\implies c_1 + c_2 = 0
+    \end{align*}
+
+    \item $x = \pi$
+    \begin{align*}
+        &c_1 + c_2 \cdot 0 + c_3 \cdot (-1) + c_4 \cdot 0 = 0\\
+        &\implies c_1 - c_3 = 0
+    \end{align*}
+
+    \item $x = \frac{\pi}{4}$
+    \begin{align*}
+        &c_1 + c_2 \cdot \frac{\sqrt{2}}{2} + c_3 \cdot \frac{\sqrt{2}}{2} + c_4 \cdot 1 = 0
+    \end{align*}
+\end{enumerate}
+
+\textbf{Solving the System:}
+From the first three cases:
+\begin{align*}
+c_1 + c_3 &= 0 \tag{A}\\
+c_1 + c_2 &= 0 \tag{B}\\
+c_1 - c_3 &= 0 \tag{C}
+\end{align*}
+
+Adding (A) and (C): $2c_1 = 0 \implies c_1 = 0$
+
+Then $c_3 = -c_1 = 0$ from (A), and $c_2 = -c_1 = 0$ from (B).
+
+Now substitute $c_1 = c_2 = c_3 = 0$ in the fourth equation:
+\[
+0 + 0 + 0 + c_4 \cdot 1 = 0 \implies c_4 = 0
+\]
+
+\textbf{Conclusion:} The only solution is the trivial one; hence, $S$ is linearly independent.
+
+\begin{remark}
+Notice how evaluating at a carefully chosen set of points yields a system that only has the zero solution. In general, the number of points must at least equal the number of unknowns—each function ``contributes'' linearly, so $n$ functions require testing at $n$ independent points.
+\end{remark}
+
+\subsubsection*{Common Pitfall: Vanishing at a Single Point}
+
+The calculation above also illustrates a common misunderstanding. If, for a specific nontrivial combination, you find $f(x_0) = 0$ for a single $x_0$, this does not imply linear dependence. We require vanishing for \emph{all} $x$.
+
+\subsubsection*{When Would Our Argument Fail?}
+If instead we had only $3$ functions, only $3$ points would be available for evaluation, so a $3\times 3$ system of equations. If the functions overlap in their values too much (e.g., at periodic points), this may create redundant (linearly dependent) rows in the matrix system, and you might not get a unique solution. Choosing non-periodic and algebraically independent points is key.
+
+\subsection{Further Example: Exponential Functions}
+\begin{example}
+Let $S = \{1, e^x, e^{2x}, \dotsc, e^{n x}\}$. Show that these functions are linearly independent on $\mathbb{R}$.
+\end{example}
+
+\textbf{Strategy:} We use the connection between exponential functions and polynomials.
+
+Suppose
+\[
+c_0 \cdot 1 + c_1 e^x + c_2 e^{2x} + \cdots + c_n e^{n x} = 0 \quad \text{for all } x \in \mathbb{R}
+\]
+Substitute $y = e^x \in (0,\infty)$, yielding:
+\begin{align*}
+c_0 + c_1 y + c_2 y^2 + \cdots + c_n y^n = 0 \quad \forall y > 0
+\end{align*}
+This is a polynomial in $y$ vanishing for all $y > 0$.
+
+\textbf{Fundamental Result:} If a degree $n$ polynomial vanishes on infinitely many points, it must be the zero polynomial, so all coefficients $c_0, \ldots, c_n$ vanish.
+
+\textbf{Therefore:} The functions $1, e^x, e^{2x}, \dotsc, e^{n x}$ are linearly independent.
+
+\begin{remark}
+This powerful shortcut uses the algebraic structure of the functions. Whenever your functions can be linked via a change of variable to a polynomial family, this method is effective.
+\end{remark}
+
+\subsection{Key Pedagogical Insights}
+
+\begin{itemize}
+    \item \textbf{Key Principle:} Linear independence in function spaces means ``for all $x$''. Special values may help, but only when the implication is valid for all inputs.
+    \item \textbf{Methodological Value:} Setting up a system by evaluating at appropriate points is often the most straightforward approach, especially for polynomials and trigonometric or exponential functions.
+    \item \textbf{The Power of Algebraic Structure:} Recognizing when function families can be linked to polynomials (or, in advanced cases, to orthogonal families) can dramatically simplify independence arguments.
+\end{itemize}
+
+% ==============================
+% Linear Independence of Toeplitz-type Matrices
+% ==============================
+\section{Vector Spaces of Matrices: Toeplitz-Type Examples}
+
+\subsection{Motivation}
+Matrix subspaces arise in many applications—solving systems, signal processing, numerical analysis. Keeping track of the structure of special matrices not only aids calculations but also deepens our overall understanding of linear algebra.
+
+\subsection{Definition: Toeplitz Matrices}
+
+\begin{definition}[Toeplitz Matrix]
+An $n \times n$ matrix $A$ is called a \emph{Toeplitz matrix} if all elements along each diagonal (parallel to the main diagonal) are equal; that is,
+\[
+A_{i,j} = A_{i+1,j+1}, \quad \forall\, 1 \leq i, j \leq n-1
+\]
+\end{definition}
+
+This condition ensures each diagonal descending from left to right contains constant entries.
+
+\begin{remark}
+There is nothing special about which values appear on different diagonals; they can (and usually will) be distinct. What matters is only the within-diagonal consistency.
+\end{remark}
+
+\subsection{Proposition: The Toeplitz Matrices Form a Subspace}
+
+\begin{proposition}
+The set $\mathcal{T}_n$ of all $n \times n$ Toeplitz matrices over $\mathbb{R}$ forms a subspace of the vector space $M_n(\mathbb{R})$.
+\end{proposition}
+
+\begin{proof}
+To verify subspace criteria:
+
+\begin{itemize}
+    \item The zero matrix is clearly Toeplitz (all diagonals are identically $0$).
+    \item Given $A,B \in \mathcal{T}_n$, for all $i,j$:
+    \[
+    (A+B)_{i,j} = A_{i,j} + B_{i,j} = A_{i+1,j+1} + B_{i+1,j+1} = (A+B)_{i+1,j+1}
+    \]
+    Thus $A+B \in \mathcal{T}_n$.
+    \item For any scalar $\alpha$, $(\alpha A)_{i,j} = \alpha A_{i,j} = \alpha A_{i+1,j+1} = (\alpha A)_{i+1,j+1}$.
+\end{itemize}
+Therefore, $\mathcal{T}_n$ is a subspace.
+\end{proof}
+
+\subsection{Example: Explicit Construction of a Basis ($n=3$)}
+
+\begin{example}
+Let us explicitly construct a basis for the Toeplitz matrices of size $3 \times 3$.
+\end{example}
+
+A general $3 \times 3$ Toeplitz matrix has the form:
+\[
+\begin{pmatrix}
+a & b & c \\
+d & a & b \\
+e & d & a \\
+\end{pmatrix}
+\]
+But due to the Toeplitz condition: entries with the same $j-i$ (i.e., same diagonal) must be equal:
+\begin{itemize}
+    \item Main diagonal: $a$
+    \item First superdiagonal: $b$
+    \item Second superdiagonal: $c$
+    \item First subdiagonal: $d$
+    \item Second subdiagonal: $e$
+\end{itemize}
+
+Thus, dimension is $2n-1 = 5$.
+
+Let us now present a canonical basis:
+\[
+\begin{aligned}
+M_0 &= \text{all zeros except $1$ on the main diagonal,} \\
+M_1 &= \text{all zeros except $1$ on the first superdiagonal,} \\
+M_2 &= \text{all zeros except $1$ on the second superdiagonal,} \\
+M_{-1} &= \text{all zeros except $1$ on the first subdiagonal,} \\
+M_{-2} &= \text{all zeros except $1$ on the second subdiagonal.} \\
+\end{aligned}
+\]
+All $3 \times 3$ Toeplitz matrices are linear combinations of these five.
+
+\begin{remark}
+Observe: The basis is indexed by the diagonals. This pattern extends to $n \times n$, producing a basis of size $2n-1$.
+\end{remark}
+
+\subsection{Generalization: \texorpdfstring{$n$}{n} x \texorpdfstring{$n$}{n} Toeplitz Basis and Dimension}
+\begin{proposition}
+The dimension of the space of $n \times n$ Toeplitz matrices over $\mathbb{R}$ is $2n-1$.
+\end{proposition}
+\begin{proof}[Sketch]
+Each diagonal (from bottom-left to top-right) is independent. There are $n$ diagonals above (including) the main diagonal, and $n-1$ below it, totaling $2n-1$.
+\end{proof}
+
+\subsection{Non-Example: Standard Basis for Matrices \emph{Fails} for Toeplitz}
+
+For the space $M_2(\mathbb{R})$, the standard basis consists of matrices having a $1$ in one position and zeros elsewhere. However, Toeplitz matrices require entry coupling (diagonals equal), so not all standard basis elements fit in the subspace; the standard basis \emph{does not} span the Toeplitz matrices.
+
+% ==============================
+% Unifying Spanning Sets and Change of Basis
+% ==============================
+\section{Spanning Sets and Change of Basis: The Cumulative Sum Example}
+
+\subsection{Motivation}
+
+Understanding how to move between different generating sets (``bases'') is fundamental to using linear algebra to its full power. One of our key tools is expressing a set of new vectors in terms of an old basis, or vice versa, and exploring linear independence and spanning properties.
+
+\subsection{Worked Example: Partial Sums Transformation}
+
+\begin{example}
+Let $v_1, ..., v_n$ be a basis of $V$. Define new vectors:
+\[
+u_1 = v_1,\quad u_2 = v_1 + v_2,\quad u_3 = v_1 + v_2 + v_3,\quad \dotsc,\quad u_n = v_1 + v_2 + \dotsb + v_n.
+\]
+Is $\{u_1, ..., u_n\}$ also a basis of $V$?
+\end{example}
+
+\textbf{Step 1: Spanning Property.} \\
+We'll show that any $v_j$ can be written as a linear combination of the $u_i$.
+
+Observe:
+\[
+u_1 = v_1,\quad u_2 - u_1 = v_2,\quad u_3 - u_2 = v_3, \ldots, u_k - u_{k-1} = v_k.
+\]
+So, every $v_k$ is in the span of the $u_i$, and vice versa.
+
+\textbf{Step 2: Linear Independence.} \\
+Suppose $a_1 u_1 + a_2 u_2 + \cdots + a_n u_n = 0$.
+
+Write each $u_j$ as a sum:
+\[
+u_j = v_1 + v_2 + \dotsb + v_j.
+\]
+Substituting and grouping by $v_i$:
+\begin{align*}
+a_1 u_1 + a_2 u_2 + \cdots + a_n u_n 
+&= a_1 v_1 + a_2 (v_1 + v_2) + a_3 (v_1 + v_2 + v_3) + \cdots + a_n (v_1 + \ldots + v_n)\\
+&= (a_1 + a_2 + \ldots + a_n) v_1 \\
+&\quad+ (a_2 + a_3 + \ldots + a_n) v_2 \\
+&\quad+ (a_3 + a_4 + \ldots + a_n) v_3 + \cdots + a_n v_n
+\end{align*}
+Since the $v_j$ are a basis (i.e., independent), all coefficients must vanish:
+\textit{Backward substitution} yields all $a_i = 0$.
+
+\textbf{Conclusion:} $\{u_1, ..., u_n\}$ is a basis of $V$.
+
+\subsection{Key Insights}
+
+\begin{itemize}
+    \item \textbf{Triangular Systems:} This example yields a ``unitriangular'' transformation matrix between the two bases. Such matrices are always invertible, which guarantees that the change of basis preserves independence and spanning.
+    \item \textbf{Broader Implications:} Understanding how to relate summing bases to their differences echoes techniques throughout mathematics, from calculus (finite differences) to algebraic combinatorics.
+\end{itemize}
+
+% ==============================
+% Administrative Recap (End)
+% ==============================
+\section*{Administrative Information (Recap)}
+\begin{announcement}
+\begin{itemize}
+    \item For all grading or exam logistics issues, especially regarding Moed Bet or confusion about grades, please use official university channels or contact course staff directly. Administrative delays may occur but rest assured your concerns are being monitored.
+    \item When writing solutions for homework or exams, organize work legibly and sequentially. Refer to calculations by explicit page or step if spread out.
+    \item If submitting an appeal or challenge regarding grading, include a step-by-step reasoning of your argument, referencing calculations and clarifying how your method aligns with accepted solution paths (even if the marking scheme used a different route, e.g., determinant vs.\ row reduction).
+    \item You are welcome and encouraged to contact me for any further questions or clarification regarding either course content or logistics.
+\end{itemize}
+\end{announcement}
+
+\vspace{2em}
+\begin{center}
+    {\itshape Mathematics is not a spectator sport---it’s built by active engagement, thoughtful questioning, and a willingness to explore both the logic and beauty of structure. \\[0.5em]
+    Enjoy your study!}
+\end{center}
+
+\end{document}

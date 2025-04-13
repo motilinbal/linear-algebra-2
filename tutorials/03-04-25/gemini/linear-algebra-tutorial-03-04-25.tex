@@ -1,0 +1,462 @@
+\documentclass[11pt]{article}
+\usepackage{amsmath, amssymb, amsthm}
+\usepackage{geometry}
+\usepackage{parskip} % Adds space between paragraphs instead of indentation
+\usepackage{xcolor}
+% \usepackage{framed} % For boxing administrative notes
+
+% Page geometry
+\geometry{a4paper, margin=1in}
+
+% Theorem-like environments
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{proposition}[theorem]{Proposition}
+
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{example}[theorem]{Example}
+\newtheorem{exercise}[theorem]{Exercise}
+
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+
+% Custom command for zero vector for clarity
+\newcommand{\zerovec}{\mathbf{0}}
+
+% Environment for administrative notes
+\newenvironment{adminnote}{%
+  \par\medskip % Add space before the note
+  \begin{quote}%
+  \color{blue}% Change color if desired
+  \textbf{Administrative Note:} \normalcolor % Keep text color normal
+}
+{%
+  \end{quote}%
+  \par\medskip % Add space after the note
+}
+
+\title{Linear Algebra Lecture Notes: \\ Vector Spaces and Subspaces}
+\author{Lecture Notes} % Or specific name/course code
+\date{\today} % Or specific lecture date
+
+\begin{document}
+\maketitle
+
+%--------------------------------------------------------------------------
+\section*{Administrative Announcements}
+%--------------------------------------------------------------------------
+
+\begin{itemize}
+    \item \textbf{Moed Bet Grades:} We hope to release the grades for the second exam date (Moed Bet) this coming Sunday.
+    \item \textbf{Notebook Return:} Regarding the return of notebooks before final grades, we will manage this process closely to avoid any uncontrolled issues.
+    \item \textbf{Schedule Changes \& Holidays:}
+        \begin{itemize}
+            \item \textbf{Next Thursday:} There will be no classes.
+            \item \textbf{Office Hours:} Consequently, the regular Thursday office hour is moved to \textbf{Monday} (Time: 11:00 AM - 12:00 PM - *please confirm this time, transcript was ambiguous "one to twelve"*). This will be the fixed slot for the rest of the semester.
+            \item \textbf{Next Week's Classes (Pavel):} Per Pavel's announcement, the typical Sunday/Monday structure is adjusted for next week:
+                \begin{itemize}
+                    \item Sunday's class will be a \textbf{lecture}.
+                    \item Monday's class will be a \textbf{tutorial} (Tirgul).
+                    \item A recording will be available, assuming students who cannot attend the tutorial live can watch it later. Please try to watch the Sunday lecture recording before attending the Monday tutorial if you miss the lecture. If this poses a significant difficulty, please let me or Pavel know.
+                \end{itemize}
+            \item \textbf{Independence Day (Yom Ha'atzmaut):} In approximately three weeks, there will be no classes on Thursday due to Yom Ha'atzmaut. A similar schedule adjustment (Sunday lecture, Monday tutorial) is planned.
+            \item \textbf{Yom HaShoah (Tentative):} There is another Thursday (potentially around the 10th - *confirm which day*) where classes might be interrupted for ceremonies or a break. We will provide specific scheduling details closer to the date, likely involving teaching slightly before and after any scheduled break.
+        \end{itemize}
+    \item \textbf{Tutorial Content/Difficulty:} Regarding the nature of tutorial questions (difficulty level, relevance if material isn't fully covered), I will discuss this further with Pavel. The aim is for tutorials to be valuable whether covering review or slightly ahead of the lecture pace.
+\end{itemize}
+
+%--------------------------------------------------------------------------
+\section{Introduction: From Concrete to Abstract}
+%--------------------------------------------------------------------------
+
+Welcome! Today, we delve into the foundational concept of vector spaces and, more specifically, subspaces. You might notice some overlap with topics from last semester, but our perspective now is slightly more general, more abstract.
+
+Historically, mathematics often evolves from studying concrete examples to identifying underlying structures. We work with familiar objects like vectors in $\mathbb{R}^n$ or $\mathbb{C}^n$, or perhaps matrices, and begin to recognize common properties and behaviors related to addition and scalar multiplication. Through careful work and insight, mathematicians distill these essential properties into a set of axioms.
+
+This process leads to the definition of abstract structures like fields, groups, and, relevant to us now, \emph{vector spaces}. The power of this abstraction is immense: if we encounter a completely new set of objects $V$ (our "vectors") and a corresponding field $F$ (our "scalars") that satisfy the vector space axioms, we instantly inherit a vast collection of theorems and results that apply to them, even if they look nothing like the $\mathbb{R}^n$ we started with.
+
+Our approach, mirroring this historical development, involved seeing many concrete examples first. Now, we revisit these ideas within the formal axiomatic framework, focusing on how to efficiently work within this structure.
+
+%--------------------------------------------------------------------------
+\section{Vector Spaces and Subspaces}
+%--------------------------------------------------------------------------
+
+\subsection{Vector Spaces (Brief Recap)}
+
+Recall the core components of a vector space:
+\begin{enumerate}
+    \item A set $V$, whose elements we call \textbf{vectors}.
+    \item A field $F$, whose elements we call \textbf{scalars}. (Common examples are $\mathbb{R}$ or $\mathbb{C}$).
+    \item An operation called \textbf{vector addition}: $V \times V \to V$, denoted $u + v$.
+    \item An operation called \textbf{scalar multiplication}: $F \times V \to V$, denoted $c v$.
+\end{enumerate}
+These sets and operations must satisfy a list of axioms (associativity, commutativity, identity elements, inverses, distributivity, etc.) that capture the essential properties we expect from vector arithmetic. We won't list all eight (or sometimes ten, depending on the formulation) axioms here, but trust that familiar spaces like $\mathbb{R}^n$ over $\mathbb{R}$, $\mathbb{C}^n$ over $\mathbb{C}$, the set of $m \times n$ matrices over $\mathbb{R}$, or the set of polynomials over $\mathbb{R}$ are indeed vector spaces.
+
+\subsection{Subspaces: Vector Spaces Within Vector Spaces}
+
+Often, we are interested in subsets of a known vector space that are, in themselves, vector spaces using the *same* operations inherited from the larger space.
+
+\begin{definition}[Vector Subspace]
+Let $V$ be a vector space over a field $F$. A subset $W \subseteq V$ is called a \textbf{vector subspace} (or simply \textbf{subspace}) of $V$ if $W$ itself forms a vector space over $F$ using the same vector addition and scalar multiplication operations defined on $V$.
+\end{definition}
+
+The key insight is that if $W$ is a subset of $V$, many of the vector space axioms (like associativity, commutativity, distributivity) are automatically inherited from $V$. If $u, v \in W$, they are also in $V$, so $u+v=v+u$ holds simply because it holds in $V$. This drastically simplifies the process of checking if a subset $W$ is a subspace.
+
+\begin{theorem}[Subspace Criterion] \label{thm:subspace_criterion}
+Let $V$ be a vector space over a field $F$, and let $W$ be a subset of $V$ ($W \subseteq V$). Then $W$ is a subspace of $V$ if and only if all three of the following conditions hold:
+\begin{enumerate}
+    \item \textbf{Non-empty:} $W$ is not the empty set ($W \neq \emptyset$).
+    \item \textbf{Closure under Addition:} For all $u, v \in W$, their sum $u+v$ is also in $W$.
+    \item \textbf{Closure under Scalar Multiplication:} For all $u \in W$ and all scalars $c \in F$, the product $cu$ is also in $W$.
+\end{enumerate}
+\end{theorem}
+
+\begin{remark}[Checking the Non-Empty Condition]
+\begin{itemize}
+    \item To prove $W$ is non-empty, you just need to show that *at least one* element resides in $W$.
+    \item A very common and useful strategy is to check if the \textbf{zero vector} $\zerovec$ of $V$ is in $W$.
+    \item If $W$ *is* a subspace, it *must* contain $\zerovec$. (Proof sketch: If $W$ is non-empty, take any $w \in W$. By closure under scalar multiplication, $0 \cdot w = \zerovec$ must be in $W$. Also, $(-1)w = -w$ must be in $W$. By closure under addition, $w + (-w) = \zerovec$ must be in $W$.)
+    \item Therefore, if you find that $\zerovec \notin W$, you can immediately conclude that $W$ is \textbf{not} a subspace. This is often the quickest way to disqualify a set.
+    \item While checking $\zerovec \in W$ is sufficient to prove non-emptiness (since $\zerovec$ is an element), it's the closure properties that guarantee $\zerovec$ *must* be there if $W$ is indeed a subspace.
+    \item (A theoretical aside: The empty set vacuously satisfies the closure conditions, as you can't find elements within it to violate them. However, the standard definition requires a subspace to be non-empty, often implicitly by requiring $\zerovec \in W$.)
+\end{itemize}
+\end{remark}
+
+\begin{remark}[The Importance of the Field $F$]
+When determining if $W$ is a subspace of $V$ "over $F$", the field $F$ is critical, especially for the scalar multiplication closure property. As we will see, a set might be a subspace over one field (e.g., $\mathbb{R}$) but not over a larger field (e.g., $\mathbb{C}$). If the field isn't explicitly stated, the convention is usually to assume the "natural" field associated with $V$ (e.g., $\mathbb{R}$ for $\mathbb{R}^n$, $F$ for $M_n(F)$).
+\end{remark}
+
+%--------------------------------------------------------------------------
+\section{Examples of Subspaces}
+%--------------------------------------------------------------------------
+
+Let's examine several sets and determine if they are subspaces of a given vector space $V$ over a field $F$. Unless otherwise stated, assume the standard operations for matrix addition/scalar multiplication, function addition/scalar multiplication, etc.
+
+%----------------------------------
+\subsection{Anti-symmetric Matrices}
+%----------------------------------
+
+\begin{example}[Exercise 1a]
+Let $V = M_n(F)$ be the vector space of $n \times n$ matrices with entries from a field $F$. Let $W = \{ A \in V \mid A^T = -A \}$. Is $W$ a subspace of $V$ over $F$? (Such matrices are called anti-symmetric or skew-symmetric).
+
+\begin{proof}[Solution]
+We check the three conditions from Theorem \ref{thm:subspace_criterion}.
+
+1.  \textbf{Non-empty:} Consider the zero matrix $\zerovec \in M_n(F)$ (all entries are 0). Its transpose is $\zerovec^T = \zerovec$. Also, $-\zerovec = \zerovec$. Since $\zerovec^T = \zerovec = -\zerovec$, the condition $A^T = -A$ holds for $A=\zerovec$. Thus, $\zerovec \in W$, and $W$ is non-empty.
+
+2.  \textbf{Closure under Addition:} Let $A, B \in W$. This means $A^T = -A$ and $B^T = -B$. We want to check if $A+B \in W$, i.e., if $(A+B)^T = -(A+B)$.
+    We compute the transpose of the sum:
+    \[ (A+B)^T = A^T + B^T \quad (\text{Property of transpose}) \]
+    Since $A, B \in W$, we substitute their defining properties:
+    \[ A^T + B^T = (-A) + (-B) = -(A+B) \]
+    Thus, $(A+B)^T = -(A+B)$, which means $A+B \in W$.
+
+3.  \textbf{Closure under Scalar Multiplication:} Let $A \in W$ (so $A^T = -A$) and let $c \in F$ be any scalar. We want to check if $cA \in W$, i.e., if $(cA)^T = -(cA)$.
+    We compute the transpose of the scalar product:
+    \[ (cA)^T = c(A^T) \quad (\text{Property of transpose}) \]
+    Since $A \in W$, we substitute $A^T = -A$:
+    \[ c(A^T) = c(-A) = -(cA) \]
+    Thus, $(cA)^T = -(cA)$, which means $cA \in W$.
+
+Since all three conditions hold, $W$ (the set of anti-symmetric $n \times n$ matrices over $F$) is a subspace of $M_n(F)$ over $F$.
+\end{proof}
+\end{example}
+
+%----------------------------------
+\subsection{Hermitian Matrices}
+%----------------------------------
+Recall the definition of the conjugate transpose (or Hermitian conjugate) of a matrix $A \in M_n(\mathbb{C})$, denoted $A^*$: $A^* = \bar{A}^T$. A matrix is \textbf{Hermitian} if $A^* = A$.
+
+\begin{example}[Exercise 1b]
+Let $V = M_n(\mathbb{C})$ be the vector space of $n \times n$ matrices with complex entries. Let $W = \{ A \in V \mid A^* = A \}$. Is $W$ a subspace of $V$ over the field $F=\mathbb{C}$?
+
+\begin{proof}[Solution]
+We check the conditions.
+
+1.  \textbf{Non-empty:} The zero matrix $\zerovec \in M_n(\mathbb{C})$ has $\zerovec^* = \bar{\zerovec}^T = \zerovec^T = \zerovec$. Since $\zerovec^* = \zerovec$, we have $\zerovec \in W$. So $W$ is non-empty.
+
+2.  \textbf{Closure under Addition:} Let $A, B \in W$. So $A^*=A$ and $B^*=B$. We check $A+B$:
+    \[ (A+B)^* = \overline{(A+B)}^T = (\bar{A} + \bar{B})^T = \bar{A}^T + \bar{B}^T = A^* + B^* \]
+    Since $A, B \in W$:
+    \[ A^* + B^* = A + B \]
+    Thus, $(A+B)^* = A+B$, meaning $A+B \in W$.
+
+3.  \textbf{Closure under Scalar Multiplication:} Let $A \in W$ (so $A^* = A$) and let $c \in \mathbb{C}$ be any complex scalar. We check $cA$:
+    \[ (cA)^* = \overline{(cA)}^T = (\bar{c} \bar{A})^T = \bar{c} (\bar{A}^T) = \bar{c} A^* \]
+    Since $A \in W$:
+    \[ \bar{c} A^* = \bar{c} A \]
+    So we found $(cA)^* = \bar{c} A$. For $cA$ to be in $W$, we would need $(cA)^* = cA$. This requires $\bar{c} A = cA$ to hold for all $A \in W$ and all $c \in \mathbb{C}$. If we take a non-zero $A \in W$ (like the identity matrix $I$, which is Hermitian), this implies we need $\bar{c} = c$. However, $\bar{c} = c$ only holds if $c$ is a real number. It does not hold for all $c \in \mathbb{C}$.
+
+    *Counterexample:* Let $A = I$ (the identity matrix, which is Hermitian, $I^* = I$) and $c = i \in \mathbb{C}$. Then $A \in W$. We check $cA = iI$:
+    \[ (iI)^* = \bar{i} I^* = (-i) I = -iI \]
+    But for $iI$ to be in $W$, we would need $(iI)^* = iI$. Since $-iI \neq iI$, $iI \notin W$.
+
+Closure under scalar multiplication fails. Therefore, $W$ (the set of Hermitian matrices) is \textbf{not} a subspace of $M_n(\mathbb{C})$ when considered over the field $F=\mathbb{C}$.
+\end{proof}
+\end{example}
+
+\begin{example}[Exercise 1c]
+Let $V = M_n(\mathbb{C})$ and $W = \{ A \in V \mid A^* = A \}$ as before. Is $W$ a subspace of $V$ over the field $F=\mathbb{R}$?
+
+\begin{proof}[Solution]
+We re-check the conditions, but now our scalars $c$ must come from $\mathbb{R}$.
+
+1.  \textbf{Non-empty:} Same as before, $\zerovec \in W$. $W$ is non-empty.
+2.  \textbf{Closure under Addition:} Same as before, addition only involves elements of $W$ and doesn't depend on the field of scalars. If $A, B \in W$, then $A+B \in W$.
+3.  \textbf{Closure under Scalar Multiplication:} Let $A \in W$ (so $A^* = A$) and let $c \in \mathbb{R}$ be any \emph{real} scalar. We check $cA$:
+    \[ (cA)^* = \bar{c} A^* \quad (\text{As derived before}) \]
+    Since $A \in W$, $A^*=A$. Since $c \in \mathbb{R}$, we have $\bar{c} = c$. Substituting these:
+    \[ \bar{c} A^* = c A \]
+    Thus, $(cA)^* = cA$, which means $cA \in W$ for all $c \in \mathbb{R}$.
+
+All three conditions hold. Therefore, $W$ (the set of Hermitian matrices) \textbf{is} a subspace of $M_n(\mathbb{C})$ when considered over the field $F=\mathbb{R}$.
+\end{proof}
+\end{example}
+
+\begin{remark}
+Examples 1b and 1c powerfully illustrate the importance of the underlying field $F$. The *set* $W$ of Hermitian matrices is the same, but its status as a subspace depends on whether we allow multiplication by complex scalars or only real scalars.
+\end{remark}
+
+\begin{example}[Exercise 1d]
+Let $W = \{ A \in M_n(\mathbb{C}) \mid A^* = A \}$ (Hermitian matrices). Is $W$ a subspace of $V = M_n(\mathbb{R})$ (the space of $n \times n$ matrices with *real* entries) over the field $F=\mathbb{R}$?
+
+\begin{proof}[Solution]
+For $W$ to be a subspace of $V=M_n(\mathbb{R})$, $W$ must first be a \emph{subset} of $V$. That is, every Hermitian matrix must have only real entries. Is this true? No.
+
+Consider the matrix $A = \begin{pmatrix} 1 & i \\ -i & 1 \end{pmatrix}$.
+Let's check if it's Hermitian:
+\[ A^* = \bar{A}^T = \overline{\begin{pmatrix} 1 & i \\ -i & 1 \end{pmatrix}}^T = \begin{pmatrix} 1 & -i \\ i & 1 \end{pmatrix}^T = \begin{pmatrix} 1 & i \\ -i & 1 \end{pmatrix} = A \]
+So, $A$ is Hermitian ($A \in W$). However, $A$ contains non-real entries ($i, -i$), so $A \notin M_n(\mathbb{R})$.
+
+Since $W$ is not a subset of $M_n(\mathbb{R})$, it cannot be a subspace of $M_n(\mathbb{R})$.
+\end{proof}
+\end{example}
+
+%----------------------------------
+\subsection{Invertible Matrices}
+%----------------------------------
+
+\begin{example}[Exercise 1e]
+Let $V = M_n(F)$ and let $W = \{ A \in V \mid A \text{ is invertible} \}$. (This is equivalent to $\det(A) \neq 0$ if $F$ is $\mathbb{R}$ or $\mathbb{C}$). Is $W$ a subspace of $V$ over $F$?
+
+\begin{proof}[Solution]
+Let's check the conditions.
+
+1.  \textbf{Non-empty / Contains Zero Vector?} The zero vector in $V = M_n(F)$ is the zero matrix $\zerovec$. Is the zero matrix invertible? No. For $n \ge 1$, $\det(\zerovec) = 0$. An invertible matrix must have a non-zero determinant. Since $\zerovec \notin W$, $W$ cannot be a subspace.
+
+We could stop here, but let's check the other conditions for completeness, as they also fail.
+
+2.  \textbf{Closure under Addition:} Is the sum of two invertible matrices always invertible? Consider $A = I$ (identity matrix) and $B = -I$. Both are invertible (assuming $n \ge 1$), since $\det(I)=1 \neq 0$ and $\det(-I) = (-1)^n \neq 0$. So $A, B \in W$.
+    However, their sum is $A+B = I + (-I) = \zerovec$. As we saw, $\zerovec$ is not invertible, so $A+B \notin W$. Closure under addition fails.
+
+3.  \textbf{Closure under Scalar Multiplication:} Let $A \in W$ (so $A$ is invertible) and $c \in F$. Is $cA$ always in $W$? If $c \neq 0$, then $\det(cA) = c^n \det(A)$. Since $c \neq 0$ and $\det(A) \neq 0$, then $\det(cA) \neq 0$, so $cA$ is invertible.
+    However, the criterion requires closure for *all* scalars $c \in F$. What if $c=0$? Then $c A = 0 \cdot A = \zerovec$. As we saw, $\zerovec$ is not invertible, so $0 \cdot A \notin W$. Closure under scalar multiplication fails (specifically for the scalar $c=0$).
+
+Since all three conditions fail (though finding just one failure is sufficient), $W$ (the set of invertible matrices) is \textbf{not} a subspace of $M_n(F)$.
+\end{proof}
+\end{example}
+
+%----------------------------------
+\subsection{Bounded Functions}
+%----------------------------------
+
+Let $F([a, b], \mathbb{R})$ denote the vector space of all real-valued functions defined on the closed interval $[a, b]$, with the standard operations $(f+g)(x) = f(x) + g(x)$ and $(cf)(x) = c f(x)$.
+
+\begin{definition}[Bounded Function]
+A function $f: [a, b] \to \mathbb{R}$ is \textbf{bounded} if there exists a real number $M \ge 0$ such that $|f(x)| \le M$ for all $x \in [a, b]$.
+\end{definition}
+
+\begin{example}[Exercise 1f]
+Let $V = F([a, b], \mathbb{R})$ be the vector space of all real-valued functions on $[a, b]$. Let $W = \{ f \in V \mid f \text{ is bounded} \}$. Is $W$ a subspace of $V$ over $F=\mathbb{R}$?
+
+\begin{proof}[Solution]
+We check the conditions.
+
+1.  \textbf{Non-empty:} Consider the zero function $f_0(x) = 0$ for all $x \in [a, b]$. We can choose $M=0$ (or $M=1$, etc.), and indeed $|f_0(x)| = |0| = 0 \le M$ for all $x$. Thus, the zero function is bounded, $f_0 \in W$, and $W$ is non-empty.
+
+2.  \textbf{Closure under Addition:} Let $f, g \in W$. This means $f$ is bounded and $g$ is bounded. So, there exist constants $M_f \ge 0$ and $M_g \ge 0$ such that $|f(x)| \le M_f$ for all $x$, and $|g(x)| \le M_g$ for all $x$. We want to check if $f+g$ is bounded. Consider $|(f+g)(x)|$:
+    \[ |(f+g)(x)| = |f(x) + g(x)| \]
+    By the triangle inequality for real numbers:
+    \[ |f(x) + g(x)| \le |f(x)| + |g(x)| \]
+    Using the bounds for $f$ and $g$:
+    \[ |f(x)| + |g(x)| \le M_f + M_g \]
+    Let $M = M_f + M_g$. Then $M$ is a non-negative real number. We have shown that $|(f+g)(x)| \le M$ for all $x \in [a, b]$. Therefore, $f+g$ is bounded, and $f+g \in W$.
+
+3.  \textbf{Closure under Scalar Multiplication:} Let $f \in W$ (so there exists $M_f \ge 0$ with $|f(x)| \le M_f$ for all $x$) and let $c \in \mathbb{R}$ be any scalar. We want to check if $cf$ is bounded. Consider $|(cf)(x)|$:
+    \[ |(cf)(x)| = |c \cdot f(x)| = |c| \cdot |f(x)| \]
+    Using the bound for $f$:
+    \[ |c| \cdot |f(x)| \le |c| \cdot M_f \]
+    Let $M = |c| M_f$. Since $|c| \ge 0$ and $M_f \ge 0$, $M$ is a non-negative real number. We have shown that $|(cf)(x)| \le M$ for all $x \in [a, b]$. Therefore, $cf$ is bounded, and $cf \in W$.
+
+Since all three conditions hold, $W$ (the set of bounded functions on $[a,b]$) \textbf{is} a subspace of the space of all functions on $[a,b]$.
+\end{proof}
+\end{example}
+
+%----------------------------------
+\subsection{Polynomials}
+%----------------------------------
+
+Let $F[x]$ denote the vector space of all polynomials with coefficients from a field $F$. Let $P_n(F)$ (or sometimes $F_n[x]$) denote the set of polynomials of degree \emph{at most} $n$.
+
+\begin{example}[Exercise 3b]
+Is $P_2(\mathbb{R})$ (polynomials of degree at most 2) a subspace of $P_3(\mathbb{R})$ (polynomials of degree at most 3) over $F=\mathbb{R}$?
+
+\begin{proof}[Solution]
+Let $V = P_3(\mathbb{R})$ and $W = P_2(\mathbb{R})$.
+
+1.  \textbf{Subset Check:} Is $W \subseteq V$? Yes. Any polynomial of degree at most 2, say $ax^2+bx+c$, can be written as $0x^3 + ax^2+bx+c$, which is a polynomial of degree at most 3. So $P_2(\mathbb{R}) \subseteq P_3(\mathbb{R})$.
+
+2.  \textbf{Non-empty:} The zero polynomial $p(x)=0$ has degree $-\infty$ (by convention) or 0 (if considered constant). In either case, its degree is $\le 2$. So $\zerovec \in W$, and $W$ is non-empty.
+
+3.  \textbf{Closure under Addition:} Let $p(x), q(x) \in W = P_2(\mathbb{R})$. This means $\deg(p) \le 2$ and $\deg(q) \le 2$. We know that $\deg(p+q) \le \max\{\deg(p), \deg(q)\}$. Therefore, $\deg(p+q) \le \max\{2, 2\} = 2$. So $p+q \in P_2(\mathbb{R})$. $W$ is closed under addition.
+
+4.  \textbf{Closure under Scalar Multiplication:} Let $p(x) \in W = P_2(\mathbb{R})$ (so $\deg(p) \le 2$) and let $c \in \mathbb{R}$.
+    If $c=0$, then $c p(x) = 0$, which is the zero polynomial, and $\deg(0) \le 2$.
+    If $c \neq 0$, then $\deg(c p(x)) = \deg(p(x)) \le 2$.
+    In either case, $c p(x)$ has degree at most 2, so $c p(x) \in W$. $W$ is closed under scalar multiplication.
+
+Since $W$ is a non-empty subset of $V$ closed under both operations, $P_2(\mathbb{R})$ \textbf{is} a subspace of $P_3(\mathbb{R})$.
+\end{proof}
+\end{example}
+
+\begin{remark}
+The key property used here is that adding polynomials or multiplying by a non-zero scalar does not *increase* the degree. The degree can potentially *decrease* (e.g., $(x^2+1) + (-x^2+x) = x+1$, degree dropped from 2 to 1; or multiplying by $c=0$ drops degree). The definition "degree \emph{at most} n" is crucial because it allows for this potential decrease in degree while remaining within the set.
+\end{remark}
+
+\begin{example}[Exercise 1h]
+Let $V = F[x]$ be the space of all polynomials over a field $F$. Let $W = \{ p(x) \in V \mid \deg(p) \text{ is odd} \}$. Is $W$ a subspace of $V$?
+
+\begin{proof}[Solution]
+We check the conditions.
+
+1.  \textbf{Non-empty / Contains Zero Vector?} The zero polynomial $p(x)=0$ typically has degree defined as $-\infty$ or sometimes undefined. Oddness is usually applied to positive integers. If we consider degree 0 for non-zero constants, that's even. Let's consider the definition of degree as the highest power with a non-zero coefficient. The zero polynomial has no non-zero coefficients. There's ambiguity here, often resolved by defining $\deg(0) = -\infty$. Under this standard convention, $-\infty$ is not odd. Let's check if *any* constant polynomial is in $W$. A non-zero constant $p(x)=c$ has degree 0, which is even. So it seems $\zerovec \notin W$.
+
+    However, let's definitively check closure, which often reveals issues more clearly.
+
+2.  \textbf{Closure under Addition:} Let's find two polynomials with odd degrees whose sum does not have an odd degree.
+    Consider $p(x) = x^3 + x$ ($\deg(p)=3$, odd) and $q(x) = -x^3 + 1$ ($\deg(q)=3$, odd). Both $p, q \in W$.
+    Their sum is $p(x) + q(x) = (x^3+x) + (-x^3+1) = x+1$.
+    The degree of $p+q$ is 1, which *is* odd. This example didn't break closure.
+
+    Let's try another pair, designed to cancel the leading term:
+    Let $p(x) = x$ ($\deg(p)=1$, odd) and $q(x) = -x+1$ ($\deg(q)=1$, odd). Both $p, q \in W$.
+    Their sum is $p(x) + q(x) = x + (-x+1) = 1$.
+    The degree of $p+q$ is 0, which is even (not odd). Thus $p+q \notin W$.
+
+    Closure under addition fails.
+
+3.  \textbf{Closure under Scalar Multiplication:} Let $p(x) \in W$, so $\deg(p)$ is odd. Let $c \in F$.
+    If $c \neq 0$, $\deg(c p(x)) = \deg(p(x))$, which is odd. So $c p(x) \in W$.
+    If $c=0$, $c p(x) = 0$. As discussed, the degree of the zero polynomial is typically not considered odd. So $0 \cdot p(x) \notin W$.
+    Closure under scalar multiplication also fails (for $c=0$).
+
+Since closure fails (and $\zerovec$ is likely not in $W$ by standard degree conventions), $W$ (the set of polynomials with odd degree) is \textbf{not} a subspace of $F[x]$.
+\end{proof}
+\end{example}
+
+\begin{remark}
+Contrast this with $P_n(F)$. The definition "degree is odd" is too restrictive. Unlike "degree at most $n$", it doesn't allow for the degree reduction that can happen during addition or multiplication by zero.
+\end{remark}
+
+%--------------------------------------------------------------------------
+\section{Intersection of Subspaces}
+%--------------------------------------------------------------------------
+
+What happens when we take the intersection of subspaces?
+
+\begin{theorem}
+Let $V$ be a vector space over a field $F$. Let $\{W_i\}_{i \in I}$ be any collection of subspaces of $V$ (where $I$ is some index set, possibly infinite). Then their intersection, $W = \bigcap_{i \in I} W_i$, is also a subspace of $V$.
+\end{theorem}
+
+\begin{proof}
+We must show that $W$ satisfies the three conditions of the Subspace Criterion (Theorem \ref{thm:subspace_criterion}).
+
+1.  \textbf{Non-empty:} Since each $W_i$ is a subspace of $V$, each $W_i$ must contain the zero vector $\zerovec$ of $V$. By definition of intersection, an element belongs to $W = \bigcap_{i \in I} W_i$ if and only if it belongs to *every* $W_i$. Since $\zerovec$ belongs to every $W_i$ for all $i \in I$, it follows that $\zerovec \in W$. Thus, $W$ is non-empty.
+
+2.  \textbf{Closure under Addition:} Let $u, v \in W$. By definition of $W$, this means $u \in W_i$ and $v \in W_i$ for all $i \in I$. Since each $W_i$ is a subspace, it is closed under addition. Therefore, for each $i \in I$, the sum $u+v$ must be in $W_i$. Since $u+v$ belongs to every $W_i$ for all $i \in I$, it must belong to their intersection, $W$. Thus, $W$ is closed under addition.
+
+3.  \textbf{Closure under Scalar Multiplication:} Let $u \in W$ and let $c \in F$ be any scalar. By definition of $W$, $u \in W_i$ for all $i \in I$. Since each $W_i$ is a subspace, it is closed under scalar multiplication. Therefore, for each $i \in I$, the scalar product $cu$ must be in $W_i$. Since $cu$ belongs to every $W_i$ for all $i \in I$, it must belong to their intersection, $W$. Thus, $W$ is closed under scalar multiplication.
+
+Since $W$ is non-empty and closed under both operations, the intersection $W = \bigcap_{i \in I} W_i$ is a subspace of $V$.
+\end{proof}
+
+\begin{remark}
+\begin{itemize}
+    \item Note the crucial (and sometimes implicit) assumption that all $W_i$ are subspaces of the \emph{same} parent vector space $V$. The intersection of subspaces from different parent spaces (like $\mathbb{R}^2$ and $\mathbb{R}^3$) is typically empty or not meaningfully defined in this context.
+    \item This theorem holds for *any* collection of subspaces, whether finite, countably infinite (like $i=1, 2, 3, \dots$), or even uncountably infinite. The logic remains the same.
+    \item The same is *not* generally true for the \emph{union} of subspaces. For example, the union of the x-axis and y-axis in $\mathbb{R}^2$ is not a subspace, because it's not closed under addition (e.g., $(1,0) + (0,1) = (1,1)$, which is not on either axis).
+\end{itemize}
+\end{remark}
+
+%--------------------------------------------------------------------------
+\section{Spanning Sets and Membership}
+%--------------------------------------------------------------------------
+
+Recall the concept of the span of a set of vectors.
+
+\begin{definition}[Span]
+Let $V$ be a vector space over $F$, and let $S = \{v_1, v_2, \dots, v_k\}$ be a finite set of vectors in $V$. The \textbf{span} of $S$, denoted $\operatorname{span}(S)$ or $\operatorname{span}\{v_1, \dots, v_k\}$, is the set of all possible linear combinations of the vectors in $S$:
+\[ \operatorname{span}(S) = \{ c_1 v_1 + c_2 v_2 + \dots + c_k v_k \mid c_1, c_2, \dots, c_k \in F \} \]
+The span of a set of vectors is always a subspace of $V$.
+\end{definition}
+
+A common question is: given a vector $w$, how do we determine if it belongs to the span of a set $S = \{v_1, \dots, v_k\}$? This means asking: do there exist scalars $c_1, \dots, c_k$ such that $w = c_1 v_1 + \dots + c_k v_k$?
+
+\subsection{Membership in Span: The $\mathbb{R}^n$ Case}
+
+\begin{example}[Sketch of Exercise 5]
+Suppose we have vectors $v_1, v_2, v_3 \in \mathbb{R}^3$. When does a given vector $w = (a, b, c)$ belong to $\operatorname{span}\{v_1, v_2, v_3\}$?
+
+\emph{Solution Approach:}
+We are looking for scalars $x_1, x_2, x_3 \in \mathbb{R}$ such that
+\[ x_1 v_1 + x_2 v_2 + x_3 v_3 = w \]
+If we write the vectors $v_1, v_2, v_3$ as columns of a matrix $A = [v_1 | v_2 | v_3]$, and let $\vec{x} = \begin{pmatrix} x_1 \\ x_2 \\ x_3 \end{pmatrix}$, then the equation above is precisely the matrix equation:
+\[ A \vec{x} = w \]
+Thus, $w$ is in the span of $\{v_1, v_2, v_3\}$ if and only if this system of linear equations has a solution for $\vec{x}$. We can determine this by forming the augmented matrix $[A | w]$ and using Gaussian elimination (row reduction) to check for consistency. The conditions on $a, b, c$ that ensure consistency define the subspace spanned by $v_1, v_2, v_3$.
+\end{example}
+
+\subsection{Membership in Span: Polynomials}
+
+The same principle applies to other vector spaces, like polynomials. We check if the target vector (polynomial) can be expressed as a linear combination of the spanning set vectors (polynomials).
+
+\begin{example}[Exercise 6]
+Show that the polynomial $p(x) = x^2 + 5x - 1$ is in the span of the set $S = \{ p_1(x)=x^2+1, p_2(x)=x^2-1, p_3(x)=2x+3 \}$ in the vector space $P_2(\mathbb{R})$ over $\mathbb{R}$.
+
+\begin{proof}[Solution]
+We need to determine if there exist real scalars $\alpha, \beta, \gamma \in \mathbb{R}$ such that:
+\[ p(x) = \alpha p_1(x) + \beta p_2(x) + \gamma p_3(x) \]
+Substitute the polynomials:
+\[ x^2 + 5x - 1 = \alpha(x^2+1) + \beta(x^2-1) + \gamma(2x+3) \]
+Now, we expand the right side and collect terms based on the powers of $x$:
+\begin{align*} x^2 + 5x - 1 &= (\alpha x^2 + \alpha) + (\beta x^2 - \beta) + (2\gamma x + 3\gamma) \\ &= (\alpha + \beta)x^2 + (2\gamma)x + (\alpha - \beta + 3\gamma) \end{align*}
+Two polynomials are equal if and only if the coefficients of corresponding powers of $x$ are equal. Comparing coefficients:
+\begin{itemize}
+    \item Coefficient of $x^2$: $\alpha + \beta = 1$
+    \item Coefficient of $x^1$: $2\gamma = 5$
+    \item Coefficient of $x^0$ (constant term): $\alpha - \beta + 3\gamma = -1$
+\end{itemize}
+This gives us a system of three linear equations in the three unknowns $\alpha, \beta, \gamma$. We can solve this system.
+From the second equation: $2\gamma = 5 \implies \gamma = 5/2 = 2.5$.
+Substitute $\gamma=5/2$ into the third equation:
+\[ \alpha - \beta + 3(5/2) = -1 \implies \alpha - \beta + 15/2 = -1 \implies \alpha - \beta = -1 - 15/2 = -17/2 \]
+Now we have a system of two equations for $\alpha$ and $\beta$:
+\begin{align*} \alpha + \beta &= 1 \\ \alpha - \beta &= -17/2 \end{align*}
+Adding the two equations gives: $2\alpha = 1 - 17/2 = 2/2 - 17/2 = -15/2$, so $\alpha = -15/4 = -3.75$.
+Substituting $\alpha = -15/4$ into the first equation: $(-15/4) + \beta = 1 \implies \beta = 1 + 15/4 = 4/4 + 15/4 = 19/4 = 4.75$.
+
+We found a unique solution: $\alpha = -15/4$, $\beta = 19/4$, $\gamma = 5/2$. Since we found scalars that work, the polynomial $p(x) = x^2+5x-1$ is indeed a linear combination of the polynomials in $S$.
+
+\[ -\frac{15}{4}(x^2+1) + \frac{19}{4}(x^2-1) + \frac{5}{2}(2x+3) = x^2+5x-1 \]
+(It's always a good idea to quickly check this calculation!)
+
+Therefore, $x^2+5x-1 \in \operatorname{span}\{x^2+1, x^2-1, 2x+3\}$.
+\end{proof}
+\end{example}
+
+\begin{remark}
+The process of equating coefficients effectively transforms the problem about polynomial linear combinations into a problem about solving a system of linear equations for the coefficients, similar to the $\mathbb{R}^n$ case. This relies on the fact that the set $\{1, x, x^2, \dots, x^n\}$ forms a basis for $P_n(F)$.
+\end{remark}
+
+\end{document}
