@@ -1,0 +1,406 @@
+\documentclass[11pt]{article}
+
+\usepackage{amsmath, amssymb, amsthm}
+\usepackage{geometry}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern} % Or another modern font package
+\usepackage{xcolor} % For colored boxes or text
+\usepackage{amsfonts} % For \mathbb
+
+% Page geometry
+\geometry{a4paper, margin=1in}
+
+% Theorem Environments
+\theoremstyle{plain}
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{proposition}[theorem]{Proposition}
+
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{example}[theorem]{Example}
+\newtheorem{exercise}[theorem]{Exercise}
+
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+
+% Custom command for administrative notes
+\newcommand{\adminnote}[1]{%
+    \par\medskip % Add some space before the note
+    \noindent\fbox{\begin{minipage}{\dimexpr\linewidth-2\fboxsep-2\fboxrule\relax}
+    \textbf{Administrative Note:} #1
+    \end{minipage}}%
+    \par\medskip % Add some space after the note
+}
+
+% Math operators
+\DeclareMathOperator{\dimv}{dim} % Using dimv to avoid potential conflict with 'dim'
+\DeclareMathOperator{\spanv}{span}
+
+% Macros for common symbols
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\mat}[1]{\mathbf{#1}} % For matrices
+\newcommand{\veczero}{\mathbf{0}} % Zero vector
+
+\title{Lecture Notes: Sums and Direct Sums of Subspaces}
+\author{Undergraduate Mathematics Educator} % Persona
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\adminnote{
+Good afternoon, everyone. Let's continue our exploration of vector spaces.
+\begin{itemize}
+    \item Remember that homework exercises, like the ones mentioned today, are very important for understanding the material. Don't hesitate to work through them carefully.
+    \item We had a break scheduled, but given the upcoming holidays and the amount of material to cover, I've shortened it slightly. We'll finish the lecture around the usual time. We took a 10-minute break and aimed to reconvene at 2:35 PM (based on the 35 reference).
+    \item I understand that the pace might feel fast sometimes, but these concepts, especially direct sums and projections (which we'll build towards), are fundamental, particularly for fields like data science. Ensuring we cover them thoroughly now will prepare you better for future topics.
+\end{itemize}
+}
+
+\section{Sums of Subspaces}
+
+We begin by recalling and formalizing the idea of adding subspaces together. Throughout, let $V$ be a vector space over a field (typically $\R$ in our examples).
+
+\begin{definition}[Sum of Sets/Subspaces]
+Let $U$ and $W$ be subsets (not necessarily subspaces yet) of a vector space $V$. The \emph{sum} of $U$ and $W$, denoted $U+W$, is the set of all possible sums of an element from $U$ and an element from $W$:
+\[ U+W = \{ u + w \mid u \in U, w \in W \} \]
+\end{definition}
+
+\begin{remark}
+This definition is very general. It applies to any two subsets. However, it becomes particularly interesting and structured when $U$ and $W$ are subspaces.
+\end{remark}
+
+\begin{proposition}
+If $U$ and $W$ are subspaces of $V$, then their sum $U+W$ is also a subspace of $V$.
+\end{proposition}
+\begin{proof}
+(Sketch) We need to check closure under addition and scalar multiplication.
+Let $v_1, v_2 \in U+W$. Then $v_1 = u_1 + w_1$ and $v_2 = u_2 + w_2$ for some $u_1, u_2 \in U$ and $w_1, w_2 \in W$.
+Then $v_1 + v_2 = (u_1 + u_2) + (w_1 + w_2)$. Since $U$ and $W$ are subspaces, $u_1+u_2 \in U$ and $w_1+w_2 \in W$. Thus, $v_1+v_2 \in U+W$.
+Let $v = u+w \in U+W$ and $c$ be a scalar. Then $cv = c(u+w) = cu + cw$. Since $U, W$ are subspaces, $cu \in U$ and $cw \in W$. Thus $cv \in U+W$.
+Also, $\veczero = \veczero + \veczero \in U+W$ since $\veczero \in U$ and $\veczero \in W$.
+Therefore, $U+W$ is a subspace.
+\end{proof}
+
+\begin{exercise}
+Prove that the sum operation is commutative for subspaces: $U+W = W+U$. Is this difficult? Think about the definition.
+\end{exercise}
+
+\section{The Dimension Theorem}
+
+A fundamental question arises: If we know the dimensions of $U$ and $W$, can we determine the dimension of their sum $U+W$? It turns out we can, but we also need information about how much $U$ and $W$ "overlap" – that is, their intersection.
+
+\begin{theorem}[The Dimension Theorem]
+Let $V$ be a vector space, and let $U$ and $W$ be \emph{finite-dimensional} subspaces of $V$. Then $U+W$ and $U \cap W$ are also finite-dimensional, and
+\[ \dimv(U+W) = \dimv(U) + \dimv(W) - \dimv(U \cap W) \]
+\end{theorem}
+
+\begin{remark}
+The assumption of finite dimensionality for $U$ and $W$ is crucial here. The formula involves arithmetic operations on dimensions, which are ill-defined for infinite dimensions (e.g., $\infty + \infty - \infty$ is indeterminate).
+\end{remark}
+
+\begin{proof}
+The strategy is to construct a basis for $U+W$ by cleverly starting with a basis for the intersection $U \cap W$ and extending it.
+
+1.  \textbf{Basis for the Intersection:} Since $U$ and $W$ are finite-dimensional, their intersection $U \cap W$ (which is also a subspace) must also be finite-dimensional. Let $\dimv(U \cap W) = r$. Choose a basis for $U \cap W$:
+    \[ B_{U \cap W} = \{v_1, \dots, v_r\} \]
+    (If $U \cap W = \{\veczero\}$, then $r=0$ and this basis is empty.)
+
+2.  \textbf{Extend to Basis for U:} Since $B_{U \cap W}$ is a linearly independent set within $U$, we can extend it to a basis for $U$. Let $\dimv(U) = m$. We add $m-r$ vectors $u_1, \dots, u_{m-r}$ to $B_{U \cap W}$ to get a basis for $U$:
+    \[ B_U = \{v_1, \dots, v_r, u_1, \dots, u_{m-r}\} \]
+
+3.  \textbf{Extend to Basis for W:} Similarly, we can extend $B_{U \cap W}$ to a basis for $W$. Let $\dimv(W) = n$. We add $n-r$ vectors $w_1, \dots, w_{n-r}$ to $B_{U \cap W}$ to get a basis for $W$:
+    \[ B_W = \{v_1, \dots, v_r, w_1, \dots, w_{n-r}\} \]
+
+4.  \textbf{Candidate Basis for U+W:} Consider the set formed by taking the union of all these vectors:
+    \[ S = \{v_1, \dots, v_r, u_1, \dots, u_{m-r}, w_1, \dots, w_{n-r}\} \]
+    The number of vectors in $S$ is $r + (m-r) + (n-r) = m + n - r$.
+    We claim that $S$ is a basis for $U+W$. If we prove this, the theorem follows immediately, since $\dimv(U+W)$ will be the number of vectors in $S$, which is $m+n-r = \dimv(U) + \dimv(W) - \dimv(U \cap W)$.
+
+5.  \textbf{Proof that S spans U+W:}
+    Let $x \in U+W$. By definition, $x = u + w$ for some $u \in U$ and $w \in W$.
+    Since $B_U$ is a basis for $U$, $u$ can be written as a linear combination of vectors in $B_U$.
+    Since $B_W$ is a basis for $W$, $w$ can be written as a linear combination of vectors in $B_W$.
+    Therefore, $x = u+w$ can be written as a linear combination of vectors from $B_U \cup B_W = S$.
+    This shows that $U+W \subseteq \spanv(S)$.
+    (The reverse inclusion, $\spanv(S) \subseteq U+W$, is straightforward since every vector in $S$ is either in $U$ or in $W$, and $U+W$ is a subspace. This part is left as an exercise.)
+    Thus, $S$ spans $U+W$.
+
+6.  \textbf{Proof that S is Linearly Independent:}
+    Suppose we have a linear combination of vectors in $S$ that equals the zero vector:
+    \[ \sum_{j=1}^{r} b_j v_j + \sum_{i=1}^{m-r} a_i u_i + \sum_{k=1}^{n-r} c_k w_k = \veczero \]
+    We want to show that all coefficients ($a_i, b_j, c_k$) must be zero. Rearrange the equation:
+    \[ \sum_{k=1}^{n-r} c_k w_k = - \left( \sum_{j=1}^{r} b_j v_j + \sum_{i=1}^{m-r} a_i u_i \right) \]
+    Let $y = \sum_{k=1}^{n-r} c_k w_k$.
+    The left side, $y$, is clearly in $W$ (as it's a linear combination of $w_k$'s which are in $W$).
+    The right side is the negative of a linear combination of $v_j$'s and $u_i$'s, all of which are in $U$. Since $U$ is a subspace, the right side is in $U$.
+    Therefore, $y$ is in $U$ and $y$ is in $W$, which means $y \in U \cap W$.
+    Since $y \in U \cap W$, it must be expressible as a linear combination of the basis vectors for $U \cap W$, namely $\{v_1, \dots, v_r\}$. So,
+    \[ y = \sum_{j=1}^{r} b'_j v_j \]
+    for some scalars $b'_j$.
+    Now we have two expressions for $y$:
+    \[ \sum_{k=1}^{n-r} c_k w_k = y = \sum_{j=1}^{r} b'_j v_j \]
+    This gives $\sum_{k=1}^{n-r} c_k w_k - \sum_{j=1}^{r} b'_j v_j = \veczero$.
+    But the set $\{w_1, \dots, w_{n-r}, v_1, \dots, v_r\}$ is precisely $B_W$, the basis for $W$, and is therefore linearly independent. This implies all coefficients in this combination must be zero. In particular, $c_k = 0$ for all $k$, and $b'_j = 0$ for all $j$.
+    Since $c_k=0$ for all $k$, we have $y = \sum c_k w_k = \veczero$.
+    Substituting $y=\veczero$ and $c_k=0$ back into the original equation gives:
+    \[ \sum_{j=1}^{r} b_j v_j + \sum_{i=1}^{m-r} a_i u_i = \veczero \]
+    But the set $\{v_1, \dots, v_r, u_1, \dots, u_{m-r}\}$ is precisely $B_U$, the basis for $U$, and is therefore linearly independent. This implies all coefficients in this combination must be zero. Thus, $b_j = 0$ for all $j$, and $a_i = 0$ for all $i$.
+    We have shown that all coefficients $a_i, b_j, c_k$ must be zero. Therefore, the set $S$ is linearly independent.
+
+Since $S$ spans $U+W$ and is linearly independent, $S$ is a basis for $U+W$. The size of $S$ is $m+n-r$, so $\dimv(U+W) = m+n-r$, which proves the theorem.
+\end{proof}
+
+\begin{example}[Faithfully reproduced from transcript]
+Let $V = \R^4$. Consider the subspaces:
+\[ U = \{ (a, b, c, d) \in \R^4 \mid b + c + d = 0 \} \]
+\[ W = \{ (a, b, c, d) \in \R^4 \mid a + b = 0 \text{ and } c = 2d \} \]
+
+1.  \textbf{Verify they are subspaces:}
+    *   $U$ is the solution set of the single homogeneous linear equation $0a + 1b + 1c + 1d = 0$. The solution set of any homogeneous system is a subspace.
+    *   $W$ is the solution set of the homogeneous system:
+        \begin{align*} 1a + 1b + 0c + 0d &= 0 \\ 0a + 0b + 1c - 2d &= 0 \end{align*}
+        Again, this is the solution space of a homogeneous system, hence a subspace.
+
+2.  \textbf{Find $\dimv(U)$:}
+    The equation $b+c+d=0$ implies $b = -c-d$. The variables $a, c, d$ can be chosen freely (they are free variables). The dimension is the number of free variables.
+    So, $\dimv(U) = 3$.
+
+3.  \textbf{Find $\dimv(W)$:}
+    The equations are $a = -b$ and $c = 2d$. The variables $b$ and $d$ can be chosen freely.
+    So, $\dimv(W) = 2$.
+
+4.  \textbf{Find $\dimv(U \cap W)$:}
+    A vector $(a, b, c, d)$ is in $U \cap W$ if it satisfies all three conditions:
+    \begin{align*} b + c + d &= 0 \\ a + b &= 0 \\ c - 2d &= 0 \end{align*}
+    Let's solve this system. From the second equation, $a = -b$. From the third, $c = 2d$. Substitute into the first: $b + (2d) + d = 0 \implies b + 3d = 0 \implies b = -3d$.
+    Then $a = -b = -(-3d) = 3d$.
+    So, any vector in the intersection has the form $(3d, -3d, 2d, d) = d(3, -3, 2, 1)$.
+    The variable $d$ is free. The intersection is spanned by the single non-zero vector $(3, -3, 2, 1)$.
+    Thus, $\dimv(U \cap W) = 1$.
+
+5.  \textbf{Apply the Dimension Theorem:}
+    \begin{align*} \dimv(U+W) &= \dimv(U) + \dimv(W) - \dimv(U \cap W) \\ &= 3 + 2 - 1 \\ &= 4 \end{align*}
+
+6.  \textbf{Conclusion:}
+    Since $U+W$ is a subspace of $\R^4$ and its dimension is 4, it must be that $U+W = \R^4$. The sum of these two subspaces spans the entire space.
+\end{example}
+
+\begin{remark}
+Finding the dimension of the intersection often involves combining the conditions (equations) that define each subspace and finding the dimension of the solution space to the combined system, as shown in the example.
+\end{remark}
+
+\section{Direct Sums}
+
+While the sum $U+W$ is always a subspace, some sums have a particularly desirable property related to how vectors are represented.
+
+\begin{definition}[Direct Sum]
+Let $U$ and $W$ be subspaces of $V$. The sum $U+W$ is called a \emph{direct sum}, denoted $U \oplus W$, if every vector $v \in U+W$ can be written \emph{uniquely} as $v = u + w$, where $u \in U$ and $w \in W$.
+\end{definition}
+
+The key difference between a general sum and a direct sum is this \textbf{uniqueness} of representation.
+
+\begin{example}[Faithfully reproduced from transcript]
+Let $V = \R^3$. Consider the subspaces:
+\[ Z = \{ (0, 0, z) \mid z \in \R \} = \spanv\{(0, 0, 1)\} \quad (\text{the } z\text{-axis}) \]
+\[ W = \{ (x, 0, z) \mid x, z \in \R \} = \spanv\{(1, 0, 0), (0, 0, 1)\} \quad (\text{the } xz\text{-plane}) \]
+\[ U = \{ (0, y, 0) \mid y \in \R \} = \spanv\{(0, 1, 0)\} \quad (\text{the } y\text{-axis}) \]
+
+1.  \textbf{Is $Z+W$ a direct sum?}
+    Consider the vector $v = (4, 0, 8)$. This vector is in $Z+W$ (it lies in the $xz$-plane, which is $W$, and $W \subseteq Z+W$).
+    Can we decompose $v$ as $z' + w'$ where $z' \in Z$ and $w' \in W$?
+    *   Decomposition 1: $v = \underbrace{(0, 0, 8)}_{z'_1 \in Z} + \underbrace{(4, 0, 0)}_{w'_1 \in W}$
+    *   Decomposition 2: $v = \underbrace{(0, 0, 4)}_{z'_2 \in Z} + \underbrace{(4, 0, 4)}_{w'_2 \in W}$
+    Since we found two different ways to write $v$ as a sum of an element from $Z$ and an element from $W$ (note $z'_1 \neq z'_2$ and $w'_1 \neq w'_2$), the representation is not unique.
+    Therefore, $Z+W$ is \textbf{not} a direct sum.
+
+2.  \textbf{Is $Z+U$ a direct sum?}
+    Let $v = (v_1, v_2, v_3) \in Z+U$. Then $v = z' + u'$ where $z' \in Z$ and $u' \in U$.
+    $z'$ must be of the form $(0, 0, z)$ for some $z \in \R$.
+    $u'$ must be of the form $(0, y, 0)$ for some $y \in \R$.
+    So, $v = (0, 0, z) + (0, y, 0) = (0, y, z)$.
+    Comparing this with $v = (v_1, v_2, v_3)$, we must have:
+    *   $v_1 = 0$
+    *   $v_2 = y$
+    *   $v_3 = z$
+    This means that if $v \in Z+U$, it must have $v_1=0$. Furthermore, the components $y$ and $z$ in the decomposition $v = (0, y, z)$ are uniquely determined by $v_2$ and $v_3$. The vector $z'$ must be $(0, 0, v_3)$ and the vector $u'$ must be $(0, v_2, 0)$.
+    Since the decomposition is unique for any $v \in Z+U$, the sum $Z+U$ \textbf{is} a direct sum. We write $Z \oplus U$. Note that $Z \oplus U = \{ (0, y, z) \mid y, z \in \R \}$ (the $yz$-plane).
+\end{example}
+
+Checking uniqueness directly can be tedious. Fortunately, there's a much simpler criterion.
+
+\begin{theorem}[Characterization of Direct Sums]
+Let $U$ and $W$ be subspaces of $V$. The sum $U+W$ is direct (i.e., $U+W = U \oplus W$) if and only if their intersection contains only the zero vector, i.e., $U \cap W = \{\veczero\}$.
+\end{theorem}
+
+\begin{proof}
+($\impliedby$) Assume $U \cap W = \{\veczero\}$. We want to show the sum is direct (unique decomposition).
+Let $v \in U+W$. Suppose $v$ has two decompositions:
+$v = u_1 + w_1$ and $v = u_2 + w_2$, where $u_1, u_2 \in U$ and $w_1, w_2 \in W$.
+Then $u_1 + w_1 = u_2 + w_2$. Rearranging gives $u_1 - u_2 = w_2 - w_1$.
+Let $x = u_1 - u_2$. Since $U$ is a subspace, $x \in U$.
+Also, $x = w_2 - w_1$. Since $W$ is a subspace, $x \in W$.
+Thus, $x \in U \cap W$. By our assumption, $U \cap W = \{\veczero\}$, so $x$ must be the zero vector.
+$x = u_1 - u_2 = \veczero \implies u_1 = u_2$.
+$x = w_2 - w_1 = \veczero \implies w_1 = w_2$.
+The two decompositions are actually the same. Thus, the decomposition is unique, and the sum is direct.
+
+($\implies$) Assume the sum $U+W$ is direct. We want to show $U \cap W = \{\veczero\}$. We prove this by contradiction.
+Suppose there exists a vector $x \in U \cap W$ such that $x \neq \veczero$.
+Consider the zero vector $\veczero$. It is certainly in $U+W$.
+We can write $\veczero$ in two ways:
+\begin{itemize}
+    \item Decomposition 1: $\veczero = \underbrace{\veczero}_{\in U} + \underbrace{\veczero}_{\in W}$
+    \item Decomposition 2: Since $x \in U \cap W$, we know $x \in U$ and $x \in W$. Also $-x \in W$ (since $W$ is a subspace). We can write $\veczero = \underbrace{x}_{\in U} + \underbrace{(-x)}_{\in W}$.
+\end{itemize}
+Since we assumed $x \neq \veczero$, the vector $x$ used in the second decomposition is different from the vector $\veczero$ used in the first decomposition. This gives two distinct decompositions of $\veczero$ into a sum of an element from $U$ and an element from $W$.
+This contradicts the assumption that the sum $U+W$ is direct (which requires unique decomposition for *all* vectors in the sum, including $\veczero$).
+Therefore, our initial supposition must be false. There cannot exist a non-zero vector $x$ in $U \cap W$.
+Thus, $U \cap W = \{\veczero\}$.
+\end{proof}
+
+\begin{example}[Revisiting $\R^3$ Example]
+\begin{itemize}
+    \item For $Z = \spanv\{(0, 0, 1)\}$ and $W = \spanv\{(1, 0, 0), (0, 0, 1)\}$, the intersection $Z \cap W$ consists of vectors of the form $(0, 0, z)$ that are also in the $xz$-plane. This is just $Z$ itself. Since $Z \neq \{\veczero\}$, the intersection is non-trivial, so $Z+W$ is not direct.
+    \item For $Z = \spanv\{(0, 0, 1)\}$ and $U = \spanv\{(0, 1, 0)\}$, a vector in the intersection must be $(0, 0, z)$ and also $(0, y, 0)$. This requires $y=0$ and $z=0$. So $Z \cap U = \{(0, 0, 0)\} = \{\veczero\}$. By the theorem, $Z+U$ is a direct sum, $Z \oplus U$.
+\end{itemize}
+\end{example}
+
+\begin{example}[Symmetric and Anti-symmetric Matrices, faithfully reproduced]
+Let $V = M_{n \times n}(\R)$, the space of $n \times n$ real matrices.
+Let $U = \{ A \in V \mid A = A^T \}$ (Symmetric matrices).
+Let $W = \{ A \in V \mid A = -A^T \}$ (Anti-symmetric matrices).
+We know $U$ and $W$ are subspaces.
+
+1.  \textbf{Find the Intersection $U \cap W$:}
+    Let $A \in U \cap W$. Then $A$ must satisfy both conditions:
+    $A = A^T$ (since $A \in U$)
+    $A = -A^T$ (since $A \in W$)
+    Substituting the first into the second gives $A = -(A)$. This means $2A = \mat{0}$ (the zero matrix).
+    Therefore, $A = \mat{0}$.
+    The only matrix that is both symmetric and anti-symmetric is the zero matrix.
+    So, $U \cap W = \{\mat{0}\}$.
+
+2.  \textbf{Conclusion about the Sum:}
+    Since the intersection is only the zero matrix, the sum $U+W$ is a direct sum: $U \oplus W$.
+
+3.  \textbf{Is $U \oplus W = V$?}
+    We claim that this direct sum equals the entire space $V = M_{n \times n}(\R)$. To show this, we need to demonstrate that any matrix $A \in V$ can be written as the sum of a symmetric matrix and an anti-symmetric matrix. Consider the following decomposition for any $A \in V$:
+    \[ A = \underbrace{\frac{1}{2}(A + A^T)}_{A_s} + \underbrace{\frac{1}{2}(A - A^T)}_{A_a} \]
+    Let's check if $A_s \in U$ and $A_a \in W$:
+    *   $A_s^T = \left(\frac{1}{2}(A + A^T)\right)^T = \frac{1}{2}(A^T + (A^T)^T) = \frac{1}{2}(A^T + A) = A_s$. So $A_s$ is symmetric ($A_s \in U$).
+    *   $A_a^T = \left(\frac{1}{2}(A - A^T)\right)^T = \frac{1}{2}(A^T - (A^T)^T) = \frac{1}{2}(A^T - A) = -\frac{1}{2}(A - A^T) = -A_a$. So $A_a$ is anti-symmetric ($A_a \in W$).
+    Since any matrix $A$ can be written as $A_s + A_a$ where $A_s \in U$ and $A_a \in W$, we have shown that $V = U+W$.
+    Combining this with the fact that the sum is direct, we conclude:
+    \[ M_{n \times n}(\R) = U \oplus W \]
+    Every $n \times n$ matrix has a unique decomposition into the sum of a symmetric matrix and an anti-symmetric matrix.
+\end{example}
+
+\begin{corollary}
+If $V = U \oplus W$ and $V$ is finite-dimensional, then
+\[ \dimv(V) = \dimv(U) + \dimv(W) \]
+\end{corollary}
+\begin{proof}
+This follows directly from the Dimension Theorem and the Characterization Theorem. Since the sum is direct, $U \cap W = \{\veczero\}$, which implies $\dimv(U \cap W) = 0$. Plugging this into the Dimension Theorem gives the result.
+\end{proof}
+
+\section{Bases and Direct Sums}
+
+How does the concept of a basis interact with direct sums? Can we form a basis for a direct sum from the bases of its constituent subspaces?
+
+\begin{theorem}
+Let $W_1, W_2$ be subspaces of a vector space $V$. Let $S_1$ be a basis for $W_1$ and $S_2$ be a basis for $W_2$.
+
+1.  If $V = W_1 \oplus W_2$, then the union $S = S_1 \cup S_2$ is a basis for $V$.
+2.  Conversely, if $S_1 \cap S_2 = \emptyset$ and the union $S = S_1 \cup S_2$ is a basis for $V$, then $V = W_1 \oplus W_2$.
+\end{theorem}
+
+\begin{proof}[Proof of Part 1]
+Assume $V = W_1 \oplus W_2$. Let $S_1 = \{u_1, \dots, u_m\}$ be a basis for $W_1$ ($\dimv(W_1)=m$) and $S_2 = \{v_1, \dots, v_n\}$ be a basis for $W_2$ ($\dimv(W_2)=n$). Let $S = S_1 \cup S_2 = \{u_1, \dots, u_m, v_1, \dots, v_n\}$. We need to show $S$ spans $V$ and is linearly independent.
+
+(a) \textbf{Spanning:} Let $x \in V$. Since $V = W_1 + W_2$, we can write $x = w_1 + w_2$ for some $w_1 \in W_1$ and $w_2 \in W_2$.
+Since $S_1$ spans $W_1$, $w_1$ is a linear combination of vectors in $S_1$.
+Since $S_2$ spans $W_2$, $w_2$ is a linear combination of vectors in $S_2$.
+Therefore, $x = w_1 + w_2$ is a linear combination of vectors in $S_1 \cup S_2 = S$.
+Thus, $S$ spans $V$.
+
+(b) \textbf{Linear Independence:} Consider a linear combination of vectors in $S$ equalling the zero vector:
+\[ \sum_{j=1}^{m} c_j u_j + \sum_{i=1}^{n} d_i v_i = \veczero \]
+Rearrange:
+\[ \underbrace{\sum_{j=1}^{m} c_j u_j}_{w_1 \in W_1} = \underbrace{- \sum_{i=1}^{n} d_i v_i}_{w_2 \in W_2} \]
+Let $x = \sum c_j u_j$. Then $x \in W_1$. Also, $x = -\sum d_i v_i$, which means $x \in W_2$.
+So, $x \in W_1 \cap W_2$.
+Since the sum is direct ($V = W_1 \oplus W_2$), we know $W_1 \cap W_2 = \{\veczero\}$.
+Thus, $x$ must be the zero vector: $x = \veczero$.
+So, $\sum_{j=1}^{m} c_j u_j = \veczero$. Since $S_1 = \{u_j\}$ is a basis for $W_1$, it is linearly independent. This implies $c_j = 0$ for all $j$.
+Also, $x = -\sum_{i=1}^{n} d_i v_i = \veczero$, which means $\sum_{i=1}^{n} d_i v_i = \veczero$. Since $S_2 = \{v_i\}$ is a basis for $W_2$, it is linearly independent. This implies $d_i = 0$ for all $i$.
+We have shown all coefficients $c_j$ and $d_i$ must be zero. Therefore, $S$ is linearly independent.
+
+Since $S$ spans $V$ and is linearly independent, $S$ is a basis for $V$.
+(Note: Since $W_1 \cap W_2 = \{\veczero\}$, the only vector that could possibly be in both $S_1$ and $S_2$ is $\veczero$, but $\veczero$ cannot be in a basis. Thus $S_1 \cap S_2 = \emptyset$ is implicitly true here if $W_1, W_2$ are non-zero subspaces).
+\end{proof}
+
+\begin{proof}[Proof of Part 2 (Sketch and Remarks)]
+Assume $S_1$ is a basis for $W_1$, $S_2$ is a basis for $W_2$, $S_1 \cap S_2 = \emptyset$, and $S = S_1 \cup S_2$ is a basis for $V$. We want to show $V = W_1 \oplus W_2$.
+
+(a) \textbf{Show $V = W_1 + W_2$:} Since $S$ spans $V$, any $v \in V$ is a linear combination of vectors in $S$. We can group the terms involving vectors from $S_1$ (call this sum $w_1$) and terms involving vectors from $S_2$ (call this sum $w_2$). Since $W_1 = \spanv(S_1)$ and $W_2 = \spanv(S_2)$, we have $w_1 \in W_1$ and $w_2 \in W_2$. So $v = w_1 + w_2$, showing $V = W_1 + W_2$.
+
+(b) \textbf{Show $W_1 \cap W_2 = \{\veczero\}$:} Let $x \in W_1 \cap W_2$.
+Since $x \in W_1$, $x = \sum c_j u_j$ for some $u_j \in S_1$.
+Since $x \in W_2$, $x = \sum d_i v_i$ for some $v_i \in S_2$.
+Then $\sum c_j u_j = \sum d_i v_i$, which implies $\sum c_j u_j - \sum d_i v_i = \veczero$.
+This is a linear combination of vectors in $S = S_1 \cup S_2$. Since $S$ is a basis for $V$, it is linearly independent. Therefore, all coefficients must be zero: $c_j = 0$ for all $j$ and $d_i = 0$ for all $i$.
+This means $x = \sum c_j u_j = \veczero$.
+So, the only vector in the intersection is $\veczero$.
+
+Since $V = W_1 + W_2$ and $W_1 \cap W_2 = \{\veczero\}$, the sum is direct: $V = W_1 \oplus W_2$.
+
+\begin{remark}
+The condition $S_1 \cap S_2 = \emptyset$ in Part 2 is crucial. If $S_1$ and $S_2$ shared a vector $v$, then $S_1 \cup S_2$ would contain $v$ only once. If $S_1 \cup S_2$ were a basis, it would be linearly independent. However, the vector $v$ would be in $W_1 \cap W_2$, preventing the intersection from being just $\{\veczero\}$ (unless $v=\veczero$, which isn't in a basis), and thus preventing the sum from being direct. The proof relies on the linear independence of the full set $S_1 \cup S_2$ where vectors are treated distinctly based on their origin ($S_1$ or $S_2$). The disjointness ensures this setup works correctly when inferring $W_1 \cap W_2 = \{\veczero\}$. Proving Part 2 rigorously requires careful handling of this linear combination across the disjoint union. (This is noted as a potentially trickier exercise).
+\end{remark}
+\end{proof}
+
+\section{Generalizations and Complements}
+
+\subsection{Sums of Multiple Subspaces}
+
+The concepts of sum and direct sum extend naturally to more than two subspaces.
+
+\begin{definition}
+Let $W_1, \dots, W_l$ be subspaces of $V$.
+\begin{itemize}
+    \item The \textbf{sum} is $W_1 + \dots + W_l = \{ w_1 + \dots + w_l \mid w_j \in W_j \text{ for each } j=1,\dots,l \}$.
+    \item The sum is \textbf{direct}, denoted $W_1 \oplus \dots \oplus W_l$ or $\bigoplus_{j=1}^l W_j$, if every vector $v$ in the sum has a \emph{unique} representation as $v = w_1 + \dots + w_l$ with $w_j \in W_j$.
+\end{itemize}
+\end{definition}
+
+\begin{remark}
+For a sum of multiple subspaces to be direct, a stronger condition than just pairwise intersections being $\{\veczero\}$ is needed. The condition is that for each $k=1,\dots,l$, the intersection of $W_k$ with the sum of all the *other* subspaces must be $\{\veczero\}$:
+\[ W_k \cap \left( \sum_{j \neq k} W_j \right) = \{\veczero\} \quad \text{for all } k=1, \dots, l \]
+This condition implies that all pairwise intersections are $\{\veczero\}$, but the converse is not true.
+\end{remark}
+
+\subsection{Complements}
+
+Direct sums lead to the idea of complementary subspaces.
+
+\begin{definition}[Complementary Subspace]
+Let $U$ be a subspace of $V$. A subspace $W$ of $V$ is called a \textbf{complement} of $U$ if $V = U \oplus W$.
+\end{definition}
+
+Essentially, a complement $W$ "completes" $U$ to fill the entire space $V$ with minimal overlap (only the zero vector).
+
+\begin{remark}
+If $V$ is finite-dimensional, every subspace $U$ has a complement. This can be shown by taking a basis for $U$ and extending it to a basis for $V$. The span of the newly added basis vectors forms a complement $W$. However, complements are generally \textbf{not unique}. A given subspace $U$ can have many different complements $W$.
+\end{remark}
+
+
+\adminnote{
+Remember to review these concepts, especially the definitions and the statements and proofs of the theorems. The examples are key to building intuition. Work through the homework exercises diligently.
+}
+
+\end{document}
