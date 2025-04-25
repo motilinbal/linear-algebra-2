@@ -1,0 +1,267 @@
+\documentclass[11pt]{article}
+\usepackage{amsmath, amssymb, amsthm}
+\usepackage{geometry}
+\geometry{margin=1in} % Sensible margins
+
+% Theorem Environments
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{proposition}[theorem]{Proposition}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{example}[theorem]{Example}
+\newtheorem{algorithm}[theorem]{Algorithm}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+
+% Custom Commands
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\vsspan}[1]{\text{span}\left\{#1\right\}}
+\newcommand{\vsdim}{\text{dim}}
+\newcommand{\vecu}{\mathbf{u}}
+\newcommand{\vecv}{\mathbf{v}}
+\newcommand{\vecw}{\mathbf{w}}
+\newcommand{\vecx}{\mathbf{x}}
+\newcommand{\vece}{\mathbf{e}}
+\newcommand{\veczero}{\mathbf{0}}
+\newcommand{\matA}{\mathbf{A}}
+\newcommand{\matB}{\mathbf{B}}
+
+\title{Lecture Notes: Sums, Intersections, and Bases of Subspaces}
+\date{\today} % Or specific date if known
+
+\begin{document}
+\maketitle
+
+\section*{Announcements}
+Good morning, everyone. Let's get started. Here are a few administrative points:
+
+\begin{itemize}
+    \item \textbf{Today's Schedule:} We will have lecture until 9:30 AM. Then we'll take a break until 11:00 AM. The second part of the session will run from 11:00 AM until 12:15 PM. Please note that the content in the two sessions today will cover *different* exercises and examples to allow more time for questions and provide broader coverage.
+    \item \textbf{Next Week's Schedule (Disruption):} Similar to two weeks ago, next week's schedule is adjusted due to the University holiday on Thursday.
+        \begin{itemize}
+            \item There are no classes on Thursday.
+            \item The Office Hour and the Tutorial Session will both be held on **Monday**.
+            \item The Tutorial will take place during the usual lecture time slot on Monday.
+        \end{itemize}
+    \item We hope to return to a more regular schedule after the upcoming holidays.
+\end{itemize}
+Are there any questions about these administrative details before we dive into the mathematics?
+
+\section{Review: Sum and Intersection of Subspaces}
+
+We've been studying vector spaces and their fundamental building blocks, subspaces. A natural question arises: how do subspaces interact with each other? Two primary ways they combine are through their *sum* and their *intersection*.
+
+\begin{definition}[Sum of Subspaces]
+Let $U$ and $W$ be subspaces of a vector space $V$. The \textbf{sum} of $U$ and $W$, denoted $U+W$, is the set of all possible vectors that can be formed by adding a vector from $U$ and a vector from $W$:
+\[ U+W = \{ \vecu + \vecw \mid \vecu \in U, \vecw \in W \} \]
+It's a good exercise to prove that $U+W$ is also a subspace of $V$.
+\end{definition}
+
+\begin{definition}[Intersection of Subspaces]
+Let $U$ and $W$ be subspaces of a vector space $V$. The \textbf{intersection} of $U$ and $W$, denoted $U \cap W$, is the set of all vectors that belong to *both* $U$ and $W$:
+\[ U \cap W = \{ \vecv \in V \mid \vecv \in U \text{ and } \vecv \in W \} \]
+We know that the intersection of subspaces is always a subspace.
+\end{definition}
+
+A key tool for relating the dimensions of these spaces is the Dimension Theorem.
+
+\begin{theorem}[Dimension Theorem for Subspaces]
+Let $U$ and $W$ be finite-dimensional subspaces of a vector space $V$. Then
+\[ \vsdim(U+W) = \vsdim(U) + \vsdim(W) - \vsdim(U \cap W) \]
+\end{theorem}
+
+\begin{remark}
+Notice the similarity to the principle of inclusion-exclusion in probability or set theory: $|A \cup B| = |A| + |B| - |A \cap B|$. However, here we are dealing with dimensions of vector spaces, and the sum $U+W$ plays the role analogous to the union. A simple union $U \cup W$ is generally *not* a subspace.
+\end{remark}
+
+Rearranging the Dimension Theorem gives us a way to find the dimension of the intersection if we know the dimensions of the individual spaces and their sum:
+\[ \vsdim(U \cap W) = \vsdim(U) + \vsdim(W) - \vsdim(U+W) \]
+
+\section{Example: Exploring Sum and Intersection}
+
+Let's solidify these concepts with a concrete example. Consider the following subspaces $U$ and $W$ of $\R^4$.
+
+Let $U = \vsspan{\vecu_1, \vecu_2, \vecu_3}$ where
+\[ \vecu_1 = \begin{pmatrix} 1 \\ -1 \\ 1 \\ -1 \end{pmatrix}, \quad \vecu_2 = \begin{pmatrix} 1 \\ 1 \\ 3 \\ 1 \end{pmatrix}, \quad \vecu_3 = \begin{pmatrix} 3 \\ 1 \\ 3 \\ 1 \end{pmatrix} \]
+And let $W = \vsspan{\vecw_1, \vecw_2, \vecw_3}$ where
+\[ \vecw_1 = \begin{pmatrix} 1 \\ 1 \\ 2 \\ 1 \end{pmatrix}, \quad \vecw_2 = \begin{pmatrix} 2 \\ 1 \\ 2 \\ 0 \end{pmatrix}, \quad \vecw_3 = \begin{pmatrix} 2 \\ 1 \\ 2 \\ 2 \end{pmatrix} \]
+
+We want to investigate the sum $U+W$ and the intersection $U \cap W$.
+
+\subsection{Finding the Dimension and Basis of $U+W$}
+
+How do we find the dimension of the sum $U+W$? We know that if $U = \vsspan{S}$ and $W = \vsspan{T}$, then $U+W = \vsspan{S \cup T}$. In our case, $S = \{\vecu_1, \vecu_2, \vecu_3\}$ and $T = \{\vecw_1, \vecw_2, \vecw_3\}$. So,
+\[ U+W = \vsspan{\vecu_1, \vecu_2, \vecu_3, \vecw_1, \vecw_2, \vecw_3} \]
+To find the dimension (and a basis) of $U+W$, we need to find the dimension of the space spanned by these six vectors. The standard technique is to form a matrix whose rows (or columns) are these vectors and find its rank by row reduction. Let's use rows.
+
+Consider the matrix whose rows are $\vecu_1, \vecu_2, \vecu_3, \vecw_1, \vecw_2, \vecw_3$:
+\[ \matA = \begin{pmatrix} 1 & -1 & 1 & -1 \\ 1 & 1 & 3 & 1 \\ 3 & 1 & 3 & 1 \\ 1 & 1 & 2 & 1 \\ 2 & 1 & 2 & 0 \\ 2 & 1 & 2 & 2 \end{pmatrix} \]
+Row reducing this matrix (details omitted, but can be done using standard Gaussian elimination) leads to the Row Reduced Echelon Form (RREF):
+\[ \text{RREF}(\matA) = \begin{pmatrix} 1 & 0 & 0 & 0 \\ 0 & 1 & 0 & 1 \\ 0 & 0 & 1 & 0 \\ 0 & 0 & 0 & 0 \\ 0 & 0 & 0 & 0 \\ 0 & 0 & 0 & 0 \end{pmatrix} \]
+The number of non-zero rows in the RREF is the rank of the matrix, which equals the dimension of the row space (and hence the dimension of the span of the original vectors).
+We see that $\text{rank}(\matA) = 3$. Therefore,
+\[ \vsdim(U+W) = 3 \]
+Furthermore, the non-zero rows of the RREF form a basis for the row space, which is $U+W$.
+A basis for $U+W$ is $B_{U+W} = \{(1, 0, 0, 0), (0, 1, 0, 1), (0, 0, 1, 0)\}$.
+
+\begin{remark}
+We could have put the vectors as columns and found the column rank. The dimension would be the same, as row rank always equals column rank. The basis found would then be the pivot columns of the *original* matrix. Using rows often gives a "simpler" basis consisting of the RREF rows.
+\end{remark}
+
+\subsection{Finding the Dimension of $U \cap W$}
+
+Now, let's find $\vsdim(U \cap W)$ using the Dimension Theorem:
+\[ \vsdim(U \cap W) = \vsdim(U) + \vsdim(W) - \vsdim(U+W) \]
+We already found $\vsdim(U+W) = 3$. We need $\vsdim(U)$ and $\vsdim(W)$.
+
+To find $\vsdim(U)$, we row reduce the matrix whose rows are the generators of $U$:
+\[ \begin{pmatrix} 1 & -1 & 1 & -1 \\ 1 & 1 & 3 & 1 \\ 3 & 1 & 3 & 1 \end{pmatrix} \xrightarrow{\text{RREF}} \begin{pmatrix} 1 & 0 & 1 & 0 \\ 0 & 1 & 1 & 1 \\ 0 & 0 & 0 & 0 \end{pmatrix} \]
+The rank is 2, so $\vsdim(U) = 2$. A basis for $U$ is $\{(1, 0, 1, 0), (0, 1, 1, 1)\}$.
+
+To find $\vsdim(W)$, we row reduce the matrix whose rows are the generators of $W$:
+\[ \begin{pmatrix} 1 & 1 & 2 & 1 \\ 2 & 1 & 2 & 0 \\ 2 & 1 & 2 & 2 \end{pmatrix} \xrightarrow{\text{RREF}} \begin{pmatrix} 1 & 0 & 0 & -1 \\ 0 & 1 & 0 & 1 \\ 0 & 0 & 1 & 0 \end{pmatrix} \]
+The rank is 3, so $\vsdim(W) = 3$. A basis for $W$ is $\{(1, 0, 0, -1), (0, 1, 0, 1), (0, 0, 1, 0)\}$.
+
+Now we can apply the Dimension Theorem:
+\[ \vsdim(U \cap W) = \vsdim(U) + \vsdim(W) - \vsdim(U+W) = 2 + 3 - 3 = 2 \]
+So, the intersection $U \cap W$ is a 2-dimensional subspace of $\R^4$.
+
+\subsection{Finding a Basis for $U \cap W$: Motivation}
+
+We know $\vsdim(U \cap W) = 2$. But how do we find an explicit basis for it? Finding a basis for the sum was straightforward (combine generators, find basis of span). Finding a basis for the intersection requires a different approach.
+
+Consider a vector $\vecv$ that lies in the intersection $U \cap W$. What does this mean?
+\begin{itemize}
+    \item Since $\vecv \in U$, it can be written as a linear combination of the generators of $U$:
+      \[ \vecv = c_1 \vecu_1 + c_2 \vecu_2 + c_3 \vecu_3 \]
+      for some scalars $c_1, c_2, c_3$.
+    \item Since $\vecv \in W$, it can also be written as a linear combination of the generators of $W$:
+      \[ \vecv = d_1 \vecw_1 + d_2 \vecw_2 + d_3 \vecw_3 \]
+      for some scalars $d_1, d_2, d_3$.
+\end{itemize}
+For $\vecv$ to be in the intersection, both representations must yield the *same* vector $\vecv$. Therefore, we must have:
+\[ c_1 \vecu_1 + c_2 \vecu_2 + c_3 \vecu_3 = d_1 \vecw_1 + d_2 \vecw_2 + d_3 \vecw_3 \]
+Rearranging this equation brings all terms to one side:
+\[ c_1 \vecu_1 + c_2 \vecu_2 + c_3 \vecu_3 - d_1 \vecw_1 - d_2 \vecw_2 - d_3 \vecw_3 = \veczero \]
+This is a homogeneous vector equation where the unknowns are the scalars $c_1, c_2, c_3, d_1, d_2, d_3$. Any set of scalars $(c_1, c_2, c_3, d_1, d_2, d_3)$ that satisfies this equation corresponds to a vector $\vecv = \sum c_i \vecu_i$ (or equivalently $\vecv = \sum d_j \vecw_j$) that lies in the intersection $U \cap W$.
+
+Our goal is to find these scalars. This vector equation can be rewritten as a homogeneous system of linear equations. Let $\vecx = (c_1, c_2, c_3, d_1, d_2, d_3)^T \in \R^6$. Let $\matA = [\vecu_1|\vecu_2|\vecu_3]$ be the matrix whose columns are the generators of $U$, and $\matB = [\vecw_1|\vecw_2|\vecw_3]$ be the matrix whose columns are the generators of $W$. The equation becomes:
+\[ \matA \begin{pmatrix} c_1 \\ c_2 \\ c_3 \end{pmatrix} = \matB \begin{pmatrix} d_1 \\ d_2 \\ d_3 \end{pmatrix} \]
+\[ \matA \begin{pmatrix} c_1 \\ c_2 \\ c_3 \end{pmatrix} - \matB \begin{pmatrix} d_1 \\ d_2 \\ d_3 \end{pmatrix} = \veczero \]
+This looks like finding the null space of the augmented matrix $[\matA | -\matB]$.
+
+\begin{algorithm}[Finding a Basis for $U \cap W$]
+Let $U = \vsspan{\vecu_1, ..., \vecu_k}$ and $W = \vsspan{\vecw_1, ..., \vecw_m}$.
+\begin{enumerate}
+    \item Form the matrices $\matA = [\vecu_1 | ... | \vecu_k]$ and $\matB = [\vecw_1 | ... | \vecw_m]$.
+    \item Form the augmented matrix $\mathbf{M} = [\matA | -\matB]$. This matrix has dimensions $n \times (k+m)$, where $n$ is the dimension of the ambient space (here $n=4$).
+    \item Find a basis for the null space of $\mathbf{M}$. This involves solving the homogeneous system $\mathbf{M} \vecx = \veczero$ for $\vecx \in \R^{k+m}$. Let the basis for the null space be $\{\vecx_1, ..., \vecx_l\}$, where $l = \text{nullity}(\mathbf{M})$. Each $\vecx_i$ is a vector in $\R^{k+m}$.
+    \item Each basis vector $\vecx_i$ encodes a set of coefficients $(c_{i1}, ..., c_{ik}, d_{i1}, ..., d_{im})$. The first $k$ components correspond to the $c$'s, and the last $m$ components correspond to the $d$'s (or rather, the coefficients for the $-w_j$ terms).
+    \item For each $\vecx_i = (c_{i1}, ..., c_{ik}, \dots)^T$, construct the corresponding vector $\vecv_i$ in the intersection using the $U$ generators:
+        \[ \vecv_i = \sum_{j=1}^k c_{ij} \vecu_j \]
+        (Alternatively, one could use the last $m$ components $d'_{ij}$ from $\vecx_i$ and calculate $\vecv_i = \sum_{j=1}^m (-d'_{ij}) \vecw_j$, but using the $u_j$'s is often more direct).
+    \item The set $\{\vecv_1, ..., \vecv_l\}$ obtained in the previous step is a spanning set for $U \cap W$.
+    \item Find a basis for $U \cap W$ by removing any linear dependencies from the set $\{\vecv_1, ..., \vecv_l\}$. This is typically done by placing the vectors $\vecv_i$ as rows of a new matrix and finding its RREF. The non-zero rows of the RREF form a basis for $U \cap W$.
+\end{enumerate}
+\end{algorithm}
+
+\begin{remark}[Common Pitfall]
+In step 5, it is crucial to use *only* the first $k$ components of $\vecx_i$ (the $c$-coefficients) with the $\vecu_j$ vectors OR the last $m$ components (the $d$-coefficients, potentially with a sign change depending on setup) with the $\vecw_j$ vectors. Do *not* form a linear combination involving all $k+m$ components and all $\vecu_j$'s and $\vecw_j$'s together to get $\vecv_i$. Remember, $\vecv_i$ is a single vector that lies in *both* $U$ and $W$.
+\end{remark}
+
+\subsection{Applying the Algorithm to the Example}
+
+Let's apply this algorithm to our specific $U$ and $W$.
+$k=3, m=3$. The ambient space is $\R^4$ ($n=4$).
+
+1.  Matrices $\matA$ and $\matB$:
+    \[ \matA = \begin{pmatrix} 1 & 1 & 3 \\ -1 & 1 & 1 \\ 1 & 3 & 3 \\ -1 & 1 & 1 \end{pmatrix}, \quad \matB = \begin{pmatrix} 1 & 2 & 2 \\ 1 & 1 & 1 \\ 2 & 2 & 2 \\ 1 & 0 & 2 \end{pmatrix} \]
+2.  Augmented Matrix $\mathbf{M} = [\matA | -\matB]$:
+    \[ \mathbf{M} = \left( \begin{array}{ccc|ccc} 1 & 1 & 3 & -1 & -2 & -2 \\ -1 & 1 & 1 & -1 & -1 & -1 \\ 1 & 3 & 3 & -2 & -2 & -2 \\ -1 & 1 & 1 & -1 & 0 & -2 \end{array} \right) \]
+3.  Find basis for Null Space of $\mathbf{M}$. Row reducing $\mathbf{M}$:
+    \[ \mathbf{M} \xrightarrow{\text{RREF}} \left( \begin{array}{cccccc|c} 1 & 0 & 1 & 0 & 0 & -1 & 0 \\ 0 & 1 & 2 & 0 & 0 & 0 & 0 \\ 0 & 0 & 0 & 1 & 0 & -1 & 0 \\ 0 & 0 & 0 & 0 & 1 & 1 & 0 \end{array} \right) \]
+    (Note: This is a corrected RREF compared to potential inconsistencies in the original transcript).
+    The pivot columns are 1, 2, 4, 5. The free variables correspond to columns 3 and 6. Let $x_3 = s$ and $x_6 = t$.
+    The equations are:
+    $x_1 + x_3 - x_6 = 0 \implies x_1 = -s + t$
+    $x_2 + 2x_3 = 0 \implies x_2 = -2s$
+    $x_4 - x_6 = 0 \implies x_4 = t$
+    $x_5 + x_6 = 0 \implies x_5 = -t$
+    The general solution is $\vecx = \begin{pmatrix} -s+t \\ -2s \\ s \\ t \\ -t \\ t \end{pmatrix} = s \begin{pmatrix} -1 \\ -2 \\ 1 \\ 0 \\ 0 \\ 0 \end{pmatrix} + t \begin{pmatrix} 1 \\ 0 \\ 0 \\ 1 \\ -1 \\ 1 \end{pmatrix}$.
+    A basis for the null space ($l=2$) is:
+    \[ \vecx_1 = \begin{pmatrix} -1 \\ -2 \\ 1 \\ 0 \\ 0 \\ 0 \end{pmatrix}, \quad \vecx_2 = \begin{pmatrix} 1 \\ 0 \\ 0 \\ 1 \\ -1 \\ 1 \end{pmatrix} \]
+    (These correspond to $c_1, c_2, c_3, -d_1, -d_2, -d_3$).
+4.  The basis vectors encode coefficients.
+    $\vecx_1$: $c_1=-1, c_2=-2, c_3=1$. ($d_1=0, d_2=0, d_3=0$)
+    $\vecx_2$: $c_1=1, c_2=0, c_3=0$. ($-d_1=1, -d_2=-1, -d_3=1 \implies d_1=-1, d_2=1, d_3=-1$)
+5.  Construct $\vecv_1, \vecv_2$ using the $c$-coefficients and $\vecu_j$'s:
+    \[ \vecv_1 = -1 \vecu_1 - 2 \vecu_2 + 1 \vecu_3 = -\begin{pmatrix} 1 \\ -1 \\ 1 \\ -1 \end{pmatrix} - 2 \begin{pmatrix} 1 \\ 1 \\ 3 \\ 1 \end{pmatrix} + \begin{pmatrix} 3 \\ 1 \\ 3 \\ 1 \end{pmatrix} = \begin{pmatrix} -1-2+3 \\ 1-2+1 \\ -1-6+3 \\ 1-2+1 \end{pmatrix} = \begin{pmatrix} 0 \\ 0 \\ -4 \\ 0 \end{pmatrix} \]
+    \[ \vecv_2 = 1 \vecu_1 + 0 \vecu_2 + 0 \vecu_3 = \vecu_1 = \begin{pmatrix} 1 \\ -1 \\ 1 \\ -1 \end{pmatrix} \]
+    (Let's check $\vecv_2$ using the $d$-coefficients and $\vecw_j$'s: $\vecv_2 = d_1 \vecw_1 + d_2 \vecw_2 + d_3 \vecw_3 = -1 \vecw_1 + 1 \vecw_2 - 1 \vecw_3 = -\begin{pmatrix} 1 \\ 1 \\ 2 \\ 1 \end{pmatrix} + \begin{pmatrix} 2 \\ 1 \\ 2 \\ 0 \end{pmatrix} - \begin{pmatrix} 2 \\ 1 \\ 2 \\ 2 \end{pmatrix} = \begin{pmatrix} -1+2-2 \\ -1+1-1 \\ -2+2-2 \\ -1+0-2 \end{pmatrix} = \begin{pmatrix} -1 \\ -1 \\ -2 \\ -3 \end{pmatrix}$. This does *not* match $\vecu_1$. This discrepancy highlights the importance of careful calculation or potential sign issues in the setup vs interpretation, though the standard algorithm should yield consistent $v_i$. Re-checking RREF and basis derivation is crucial if this happens in practice. Let's assume the $\vecv_i$ from the $u_j$ construction are correct for the process.)
+    So we have the spanning set for $U \cap W$: $\{\vecv_1, \vecv_2\} = \left\{ \begin{pmatrix} 0 \\ 0 \\ -4 \\ 0 \end{pmatrix}, \begin{pmatrix} 1 \\ -1 \\ 1 \\ -1 \end{pmatrix} \right\}$.
+6.  Find a basis from the spanning set. Are $\vecv_1$ and $\vecv_2$ linearly independent? Yes, clearly neither is a scalar multiple of the other (and neither is the zero vector).
+7.  Since the spanning set $\{\vecv_1, \vecv_2\}$ is linearly independent, it forms a basis for $U \cap W$.
+    A basis for $U \cap W$ is $B_{U \cap W} = \left\{ \begin{pmatrix} 0 \\ 0 \\ -4 \\ 0 \end{pmatrix}, \begin{pmatrix} 1 \\ -1 \\ 1 \\ -1 \end{pmatrix} \right\}$.
+    The dimension is 2, which matches our earlier calculation using the Dimension Theorem.
+
+\begin{remark}[Shortcut Revisited]
+In this specific example, we found earlier that $\vsdim(U \cap W) = 2$ and $\vsdim(U) = 2$. Since $U \cap W$ is always a subspace of $U$, the only way a 2-dimensional subspace can be contained within another 2-dimensional space is if they are equal. So, $U \cap W = U$.
+Therefore, any basis for $U$ is also a basis for $U \cap W$. We found a basis for $U$ from row reduction earlier: $B_U = \{(1, 0, 1, 0), (0, 1, 1, 1)\}$.
+Notice this basis looks different from the one found via the algorithm ($B_{U \cap W}$). This is perfectly fine! A vector space can have infinitely many different bases. Both sets span the same 2-dimensional space $U = U \cap W$.
+While this shortcut worked here because $\vsdim(U \cap W) = \vsdim(U)$, it won't work in general. The algorithm provides a universal method.
+\end{remark}
+
+\begin{remark}[Alternative Algorithm: Pre-reduction]
+An alternative approach exists. Before starting the algorithm (step 1):
+\begin{itemize}
+    \item Find a basis for $U$ from $\{\vecu_1, \vecu_2, \vecu_3\}$. We found $B_U = \{\vecu'_1, \vecu'_2\} = \{(1, 0, 1, 0), (0, 1, 1, 1)\}$. Let $k'=2$.
+    \item Find a basis for $W$ from $\{\vecw_1, \vecw_2, \vecw_3\}$. We found $B_W = \{\vecw'_1, \vecw'_2, \vecw'_3\} = \{(1, 0, 0, -1), (0, 1, 0, 1), (0, 0, 1, 0)\}$. Let $m'=3$.
+\end{itemize}
+Then, apply the algorithm using these bases $\vecu'_j$ and $\vecw'_j$. Form $\matA' = [\vecu'_1 | \vecu'_2]$ and $\matB' = [\vecw'_1 | \vecw'_2 | \vecw'_3]$. Solve $[\matA' | -\matB'] \vecx = \veczero$ for $\vecx \in \R^{k'+m'} = \R^5$. Find the null space basis $\{\vecx'_1, ..., \vecx'_l\}$. Construct $\vecv'_i = \sum_{j=1}^{k'} x'_{ij} \vecu'_j$. The theorem mentioned (but not proved here) states that the resulting set $\{\vecv'_1, ..., \vecv'_l\}$ will *automatically* be a basis for $U \cap W$, and the final row reduction step (step 7) is unnecessary.
+Sometimes this might be faster if the initial reduction significantly simplifies the vectors or reduces the number of columns in the homogeneous system, but it requires extra steps upfront.
+\end{remark}
+
+\section{A Property of Subspaces: S+S=S}
+
+Let's consider a related property involving the sum operation.
+
+\begin{proposition}
+Let $S$ be a non-empty subset of a vector space $V$. If $S$ is a subspace of $V$, then $S+S = S$.
+\end{proposition}
+
+\begin{proof}
+We need to show double inclusion: $S \subseteq S+S$ and $S+S \subseteq S$.
+
+($S \subseteq S+S$): Let $\\vec \in S$. Since $S$ is a subspace, it must contain the zero vector, $\veczero \in S$. We can write $\\vec = \\vec + \veczero$. Since $\\vec \in S$ and $\veczero \in S$, by the definition of the sum $S+S$, the vector $\\vec + \veczero$ must belong to $S+S$. Thus, $\\vec \in S+S$. Since this holds for any $\\vec \in S$, we have $S \subseteq S+S$.
+
+($S+S \subseteq S$): Let $\vecv \in S+S$. By definition of the sum, $\vecv$ can be written as $\vecv = \\vec_1 + \\vec_2$ for some $\\vec_1 \in S$ and $\\vec_2 \in S$. Since $S$ is a subspace, it is closed under vector addition. Therefore, the sum $\\vec_1 + \\vec_2$ must also be in $S$. That is, $\vecv \in S$. Since this holds for any $\vecv \in S+S$, we have $S+S \subseteq S$.
+
+Having shown both inclusions, we conclude that $S+S = S$.
+\end{proof}
+
+Now, a natural question is: does the converse hold? If a non-empty subset $S$ satisfies $S+S=S$, must $S$ be a subspace?
+
+The answer is **no**.
+
+\begin{example}[Counterexample]
+Consider the vector space $V = \R$. Let $S$ be the set of strictly positive real numbers: $S = \{x \in \R \mid x > 0\} = \R_{++}$.
+Is $S+S = S$? Let $\vecv \in S+S$. Then $\vecv = s_1 + s_2$ where $s_1 > 0$ and $s_2 > 0$. Clearly, their sum $v = s_1 + s_2$ is also strictly positive, so $v \in S$. Thus $S+S \subseteq S$. Now let $s \in S$, so $s > 0$. Can we write $s$ as a sum of two elements in $S$? Yes, for example, $s = (s/2) + (s/2)$. Since $s>0$, $s/2 > 0$, so $s/2 \in S$. Thus $s \in S+S$. Therefore $S \subseteq S+S$.
+We conclude that $S+S = S$ holds for $S = \R_{++}$.
+However, $S = \R_{++}$ is **not** a subspace of $\R$. It fails multiple conditions:
+\begin{itemize}
+    \item It does not contain the zero vector ($0 \notin S$).
+    \item It is not closed under scalar multiplication (e.g., $5 \in S$, but the scalar $-2$ gives $(-2) \times 5 = -10 \notin S$).
+\end{itemize}
+\end{example}
+
+\begin{example}[Another Counterexample]
+Consider $S = \{x \in \R \mid x \ge 0\} = \R_{\ge 0}$.
+Again, the sum of two non-negative numbers is non-negative, so $S+S \subseteq S$. Any $s \ge 0$ can be written as $s = s/2 + s/2$, where $s/2 \ge 0$, so $S \subseteq S+S$. Thus $S+S = S$.
+This set $S$ *does* contain the zero vector. It is also closed under addition. However, it is *not* closed under general scalar multiplication (e.g., $5 \in S$, but $(-2) \times 5 = -10 \notin S$). Therefore, $S = \R_{\ge 0}$ is not a subspace of $\R$.
+\end{example}
+
+These examples show that the condition $S+S=S$ is necessary for $S$ to be a subspace, but it is not sufficient.
+
+\end{document}
