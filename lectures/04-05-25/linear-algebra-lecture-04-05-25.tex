@@ -1,0 +1,376 @@
+\documentclass[11pt]{article}
+\usepackage{amsmath, amssymb, amsthm}
+\usepackage[margin=1in]{geometry}
+\usepackage{tcolorbox}
+
+% Theorem Environments
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{conjecture}[theorem]{Conjecture}
+
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{example}[theorem]{Example}
+\newtheorem{exercise}[theorem]{Exercise}
+
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+
+% Custom Commands
+\newcommand{\F}{\mathbb{F}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\M}[2]{\mathrm{M}_{#1 \times #2}} % Matrices m x n
+\newcommand{\Mn}[1]{\mathrm{M}_{#1}} % Square matrices n x n
+\newcommand{\Poly}[1]{\mathcal{P}_{#1}} % Polynomials up to degree n
+\newcommand{\Rn}[1]{\R^{#1}}
+\newcommand{\Fn}[1]{\F^{#1}}
+\newcommand{\coord}[2]{[#1]_{#2}} % Coordinate vector [v]_S
+\newcommand{\img}{\mathrm{Im}} % Image of a map
+\newcommand{\nul}{\mathrm{Null}} % Null space
+\newcommand{\col}{\mathrm{Col}} % Column space
+\newcommand{\rank}{\mathrm{rank}}
+\newcommand{\id}{\mathrm{Id}}
+\newcommand{\tr}{^\mathsf{T}} % Transpose
+
+% Administrative Note Box
+\newtcolorbox{adminnote}[1][]{%
+  colback=blue!5!white, colframe=blue!50!black, arc=2mm, boxrule=0.5pt,
+  title=Administrative Note, fonttitle=\bfseries\sffamily,
+  #1
+}
+
+\title{Linear Algebra: Isomorphisms, Change of Basis, and Linear Mappings}
+\author{Lecture Notes} % Placeholder
+\date{\today} % Placeholder
+
+\begin{document}
+\maketitle
+
+\begin{adminnote}
+    Welcome everyone! A couple of quick notes before we dive into today's material:
+    \begin{itemize}
+        \item Please remember the homework exercise related to proving that the composition of isomorphisms (specifically $\Psi_V^{-1} \circ \Phi_U$ from our discussion on equivalent spaces) is indeed an isomorphism. You'll need to verify linearity, injectivity, and surjectivity.
+        \item Later today, we'll encounter an integral operator $L(f)(x) = \int_a^x f(s) ds$. Showing this operator is injective (one-to-one) is a nice exercise that connects linear algebra concepts back to calculus – this will also be part of your homework.
+        \item We took a short break during the original lecture recording after discussing the proof of the coordinate change formula.
+    \end{itemize}
+\end{adminnote}
+
+\section{Recap: Coordinate Mappings and Isomorphism}
+
+We've been exploring vector spaces, which are fundamental structures in mathematics. While the abstract definitions give us power and generality, it's often incredibly useful to have a concrete way to represent and compute with vectors. This is where the idea of coordinates comes in.
+
+\subsection{Coordinate Vectors}
+
+Imagine a finite-dimensional vector space $V$ over a field $\F$. If we choose an **ordered basis** $S = \{u_1, u_2, \dots, u_n\}$ for $V$, then any vector $v \in V$ can be written as a unique linear combination of these basis vectors:
+\[ v = c_1 u_1 + c_2 u_2 + \dots + c_n u_n \]
+The coefficients $(c_1, c_2, \dots, c_n)$ are the **coordinates** of $v$ relative to the basis $S$. We collect these coordinates into a column vector:
+\begin{definition}[Coordinate Vector]
+    Let $V$ be a vector space over $\F$ with an ordered basis $S = \{u_1, \dots, u_n\}$. For any $v \in V$, if $v = c_1 u_1 + \dots + c_n u_n$, the **coordinate vector of $v$ relative to $S$** is
+    \[ \coord{v}{S} = \begin{pmatrix} c_1 \\ c_2 \\ \vdots \\ c_n \end{pmatrix} \in \Fn{n}. \]
+\end{definition}
+
+\begin{remark}
+    The choice of basis $S$ is crucial! Changing the basis will change the coordinate vector for the same abstract vector $v$. The subscript $S$ emphasizes this dependency.
+\end{remark}
+
+\subsection{The Coordinate Map as an Isomorphism}
+
+The process of finding coordinates defines a mapping from the abstract vector space $V$ to the familiar concrete space $\Fn{n}$:
+\[ \Phi_S: V \to \Fn{n} \quad \text{defined by} \quad \Phi_S(v) = \coord{v}{S}. \]
+This mapping is incredibly special. It doesn't just pair vectors; it preserves the entire vector space structure.
+
+\begin{theorem}[Coordinate Map Isomorphism]
+    Let $V$ be an $n$-dimensional vector space over $\F$ with ordered basis $S$. The coordinate map $\Phi_S: V \to \Fn{n}$ is an **isomorphism**.
+\end{theorem}
+
+Recall that an isomorphism is a linear map that is both one-to-one (injective) and onto (surjective).
+\begin{itemize}
+    \item \textbf{Linearity:} $\Phi_S(av + bw) = a\Phi_S(v) + b\Phi_S(w)$. This follows from the properties of vector addition and scalar multiplication combined with the uniqueness of coordinate representations.
+    \item \textbf{One-to-one:} If $\Phi_S(v) = \Phi_S(w)$, then $\coord{v}{S} = \coord{w}{S}$, which implies $v=w$ due to the uniqueness of the linear combination for a given basis. Equivalently, the kernel is just $\{0_V\}$.
+    \item \textbf{Onto:} For any coordinate vector $(c_1, \dots, c_n)\tr \in \Fn{n}$, the vector $v = c_1 u_1 + \dots + c_n u_n$ exists in $V$ and maps to it, i.e., $\Phi_S(v) = (c_1, \dots, c_n)\tr$.
+\end{itemize}
+This isomorphism tells us that any $n$-dimensional vector space $V$ over $\F$, no matter how abstract it seems (like spaces of polynomials or functions), behaves structurally exactly like $\Fn{n}$.
+
+\section{Isomorphism Between Vector Spaces}
+
+The idea that different-looking spaces can have the same underlying structure is powerful. Isomorphism formalizes this.
+
+\begin{theorem}[Equivalence via Dimension]
+    Let $U$ and $V$ be finite-dimensional vector spaces over the same field $\F$. Then $U$ is isomorphic to $V$ (denoted $U \cong V$) if and only if $\dim(U) = \dim(V)$.
+\end{theorem}
+
+\begin{proof}[Proof Sketch]
+    ($\Rightarrow$) If $U \cong V$, there exists an isomorphism $T: U \to V$. Isomorphisms preserve linear independence and spanning sets, so they map bases to bases. Thus, $\dim(U) = \dim(V)$.
+
+    ($\Leftarrow$) Suppose $\dim(U) = \dim(V) = n$. Let $S_U$ be a basis for $U$ and $S_V$ be a basis for $V$. We have coordinate isomorphisms $\Phi_{S_U}: U \to \Fn{n}$ and $\Phi_{S_V}: V \to \Fn{n}$. Since $\Phi_{S_V}$ is an isomorphism, its inverse $\Phi_{S_V}^{-1}: \Fn{n} \to V$ is also an isomorphism.
+    Consider the composition:
+    \[ \Phi = \Phi_{S_V}^{-1} \circ \Phi_{S_U} : U \to V \]
+    This map takes a vector $u \in U$, finds its coordinates $\coord{u}{S_U}$ in $\Fn{n}$, and then uses $\Phi_{S_V}^{-1}$ to construct the vector $v \in V$ that has those same coordinates relative to the basis $S_V$.
+    Since $\Phi_{S_U}$ and $\Phi_{S_V}^{-1}$ are both isomorphisms (linear, 1-1, onto), their composition $\Phi$ is also an isomorphism. (Verifying this is a useful exercise, as mentioned in the administrative notes).
+\end{proof}
+
+\subsection{Why Isomorphism Matters: Solving Problems}
+
+This theorem is more than just a theoretical curiosity. It provides a practical strategy:
+\begin{enumerate}
+    \item Have a problem in an abstract $n$-dimensional space $V$?
+    \item Choose a basis $S$ for $V$.
+    \item Use the coordinate map $\Phi_S$ to translate the problem into $\Fn{n}$. This often involves converting vectors into coordinate vectors.
+    \item Solve the problem in $\Fn{n}$ using familiar tools (like matrices, row reduction, etc.).
+    \item Use the inverse map $\Phi_S^{-1}$ to translate the solution back to the original space $V$.
+\end{enumerate}
+Because isomorphisms preserve structure (like linear independence), the solution translated back will be valid in $V$.
+
+Let's see this in action.
+
+\begin{example}[Checking Linear Independence via Coordinates (Original Example 1)]
+    Consider the vector space $\Poly{2}(\R)$, the space of real polynomials of degree at most 2. Its dimension is 3. Let's determine if the set $T = \{p_1(x), p_2(x), p_3(x)\}$ is linearly independent, where:
+    \[ p_1(x) = 1+x, \quad p_2(x) = x+x^2, \quad p_3(x) = 1+x^2 \]
+    We could try to solve $c_1 p_1(x) + c_2 p_2(x) + c_3 p_3(x) = 0$ directly, but let's use the isomorphism strategy.
+
+    \textbf{Step 1 \& 2: Choose Basis and Translate.}
+    The standard basis for $\Poly{2}(\R)$ is $S = \{1, x, x^2\}$. This is convenient because finding coordinates is easy. Let $\Phi_S: \Poly{2}(\R) \to \Rn{3}$ be the coordinate map. We find the coordinate vectors for our polynomials:
+    \begin{align*} %\label{eq:polycoords} % Label inside align* has no effect
+        p_1(x) = 1 \cdot 1 + 1 \cdot x + 0 \cdot x^2 &\implies \coord{p_1}{S} = \begin{pmatrix} 1 \\ 1 \\ 0 \end{pmatrix} \\
+        p_2(x) = 0 \cdot 1 + 1 \cdot x + 1 \cdot x^2 &\implies \coord{p_2}{S} = \begin{pmatrix} 0 \\ 1 \\ 1 \end{pmatrix} \\
+        p_3(x) = 1 \cdot 1 + 0 \cdot x + 1 \cdot x^2 &\implies \coord{p_3}{S} = \begin{pmatrix} 1 \\ 0 \\ 1 \end{pmatrix}
+    \end{align*}
+    The question now becomes: Is the set $\{\coord{p_1}{S}, \coord{p_2}{S}, \coord{p_3}{S}\}$ linearly independent in $\Rn{3}$?
+
+    \textbf{Step 3: Solve in $\Rn{3}$.}
+    We check the independence of these column vectors by forming a matrix and row reducing (or checking the determinant):
+    \[ A = \begin{pmatrix} 1 & 0 & 1 \\ 1 & 1 & 0 \\ 0 & 1 & 1 \end{pmatrix} \]
+    Let's row reduce:
+    \[ \begin{pmatrix} 1 & 0 & 1 \\ 1 & 1 & 0 \\ 0 & 1 & 1 \end{pmatrix} \xrightarrow{R_2 \leftarrow R_2 - R_1} \begin{pmatrix} 1 & 0 & 1 \\ 0 & 1 & -1 \\ 0 & 1 & 1 \end{pmatrix} \xrightarrow{R_3 \leftarrow R_3 - R_2} \begin{pmatrix} 1 & 0 & 1 \\ 0 & 1 & -1 \\ 0 & 0 & 2 \end{pmatrix} \]
+    Since we have 3 pivots (or the determinant is $1(1\cdot 1 - (-1)\cdot 1) - 0 + 1(1\cdot 1 - 1\cdot 0) = 2 \neq 0$), the columns are linearly independent.
+
+    \textbf{Step 4: Translate Back.}
+    Because the coordinate vectors $\{\coord{p_1}{S}, \coord{p_2}{S}, \coord{p_3}{S}\}$ are linearly independent in $\Rn{3}$, and $\Phi_S$ is an isomorphism (preserving linear independence), the original set of polynomials $T = \{1+x, x+x^2, 1+x^2\}$ must be linearly independent in $\Poly{2}(\R)$.
+
+    \textit{Why basis $S=\{1,x,x^2\}$?} It was chosen purely for convenience. Finding the coordinates (the coefficients $c_1, c_2, c_3$) is trivial by inspection for this basis. Any other basis would work, but the coordinate finding step might be more involved.
+\end{example}
+
+\section{Change of Basis}
+
+We've seen that coordinates depend on the chosen basis. What happens if we switch from one basis to another? How are the coordinates related? This is the "change of basis" problem.
+
+Let $V$ be an $n$-dimensional vector space with two ordered bases:
+\begin{itemize}
+    \item $S = \{u_1, u_2, \dots, u_n\}$ (the "old" basis)
+    \item $T = \{v_1, v_2, \dots, v_n\}$ (the "new" basis)
+\end{itemize}
+We want to find a way to convert coordinates relative to $T$ into coordinates relative to $S$, and vice versa.
+
+\begin{definition}[Change of Basis Matrix]
+    The **change of basis matrix from $T$ to $S$** (or the transition matrix from $T$-basis vectors to $S$-coordinates) is the $n \times n$ matrix $P = P_{S \leftarrow T}$ whose columns are the coordinate vectors of the *new* basis vectors ($v_j$) expressed in terms of the *old* basis ($S$):
+    \[ P = P_{S \leftarrow T} = \begin{pmatrix} | & | & & | \\ \coord{v_1}{S} & \coord{v_2}{S} & \dots & \coord{v_n}{S} \\ | & | & & | \end{pmatrix} \]
+\end{definition}
+
+\begin{remark}[Naming Convention]
+    The notation $P_{S \leftarrow T}$ visually suggests converting from $T$-coordinates to $S$-coordinates (via multiplication: $\coord{x}{S} = P_{S \leftarrow T} \coord{x}{T}$). Some texts use $P_{T \to S}$ for the same matrix, focusing on the basis transformation itself (how $T$ is built from $S$). We'll primarily use the coordinate view: $P_{S \leftarrow T}$ converts $T$-coordinates to $S$-coordinates. The definition itself involves expressing the $T$-basis vectors ($v_j$) in the $S$-basis.
+\end{remark}
+
+Why is this matrix useful? Let $x \in V$. We can express $x$ using either basis:
+\[ x = \sum_{j=1}^n c_j v_j \implies \coord{x}{T} = (c_1, \dots, c_n)\tr \]
+\[ x = \sum_{i=1}^n d_i u_i \implies \coord{x}{S} = (d_1, \dots, d_n)\tr \]
+We also know how to express the new basis vectors $v_j$ in the old basis $S$:
+\[ v_j = \sum_{i=1}^n p_{ij} u_i \]
+where $(p_{1j}, \dots, p_{nj})\tr = \coord{v_j}{S}$ is the $j$-th column of $P = P_{S \leftarrow T}$.
+Substituting the expression for $v_j$ into the expression for $x$:
+\[ x = \sum_{j=1}^n c_j v_j = \sum_{j=1}^n c_j \left( \sum_{i=1}^n p_{ij} u_i \right) = \sum_{i=1}^n \left( \sum_{j=1}^n p_{ij} c_j \right) u_i \]
+Comparing this to $x = \sum_{i=1}^n d_i u_i$, by the uniqueness of coordinates in basis $S$, we must have:
+\[ d_i = \sum_{j=1}^n p_{ij} c_j \]
+This is precisely the formula for matrix multiplication! It says that the $i$-th coordinate in the $S$ basis ($d_i$) is the $i$-th entry of the product of the matrix $P$ and the coordinate vector in the $T$ basis ($(c_1, \dots, c_n)\tr$).
+
+\begin{theorem}[Change of Coordinates Formula]
+    Let $S$ and $T$ be two ordered bases for a finite-dimensional vector space $V$, and let $P = P_{S \leftarrow T}$ be the change of basis matrix from $T$ to $S$. Then for any vector $x \in V$:
+    \[ \coord{x}{S} = P \coord{x}{T} \]
+\end{theorem}
+
+\begin{proposition}
+    The change of basis matrix $P = P_{S \leftarrow T}$ is always invertible.
+\end{proposition}
+\begin{proof}
+    The columns of $P$ are $\coord{v_1}{S}, \dots, \coord{v_n}{S}$. Since $T = \{v_1, \dots, v_n\}$ is a basis, it is a linearly independent set. The coordinate map $\Phi_S: V \to \Fn{n}$ is an isomorphism and thus preserves linear independence. Therefore, the set of coordinate vectors $\{\coord{v_1}{S}, \dots, \coord{v_n}{S}\}$ is linearly independent in $\Fn{n}$. An $n \times n$ matrix whose columns are linearly independent is invertible.
+\end{proof}
+
+Since $P$ is invertible, we can also write the transformation the other way:
+\[ \coord{x}{T} = P^{-1} \coord{x}{S} \]
+This gives rise to alternative terminology:
+\begin{itemize}
+    \item $P = P_{S \leftarrow T}$ is the **change of basis matrix** (its columns relate the bases, converting $T$-coords to $S$-coords).
+    \item $P^{-1} = P_{T \leftarrow S}$ is the **change of coordinates matrix** (it transforms $S$-coords to $T$-coords).
+\end{itemize}
+Note that $P_{T \leftarrow S} = (P_{S \leftarrow T})^{-1}$.
+
+\begin{example}[Finding a Change of Basis Matrix (Original Example 2)]
+    Let $V = \Rn{2}$. Consider the bases:
+    \begin{itemize}
+        \item $S = \{u_1, u_2\} = \left\{ \begin{pmatrix} 2 \\ 3 \end{pmatrix}, \begin{pmatrix} -1 \\ 1 \end{pmatrix} \right\}$ (Old basis)
+        \item $T = \{v_1, v_2\} = \left\{ \begin{pmatrix} 1 \\ 4 \end{pmatrix}, \begin{pmatrix} 3 \\ 2 \end{pmatrix} \right\}$ (New basis)
+    \end{itemize}
+    We want to find the change of basis matrix $P = P_{S \leftarrow T}$. Its columns are $\coord{v_1}{S}$ and $\coord{v_2}{S}$.
+
+    \textbf{Column 1: Find $\coord{v_1}{S}$.} We need to find $c_1, c_2$ such that $v_1 = c_1 u_1 + c_2 u_2$:
+    \[ \begin{pmatrix} 1 \\ 4 \end{pmatrix} = c_1 \begin{pmatrix} 2 \\ 3 \end{pmatrix} + c_2 \begin{pmatrix} -1 \\ 1 \end{pmatrix} = \begin{pmatrix} 2c_1 - c_2 \\ 3c_1 + c_2 \end{pmatrix} \]
+    This gives the system:
+    \begin{align*} 2c_1 - c_2 &= 1 \\ 3c_1 + c_2 &= 4 \end{align*}
+    Adding the equations gives $5c_1 = 5 \implies c_1 = 1$. Substituting back gives $2(1) - c_2 = 1 \implies c_2 = 1$.
+    So, $\coord{v_1}{S} = \begin{pmatrix} 1 \\ 1 \end{pmatrix}$.
+
+    \textbf{Column 2: Find $\coord{v_2}{S}$.} We need to find $d_1, d_2$ such that $v_2 = d_1 u_1 + d_2 u_2$:
+    \[ \begin{pmatrix} 3 \\ 2 \end{pmatrix} = d_1 \begin{pmatrix} 2 \\ 3 \end{pmatrix} + d_2 \begin{pmatrix} -1 \\ 1 \end{pmatrix} = \begin{pmatrix} 2d_1 - d_2 \\ 3d_1 + d_2 \end{pmatrix} \]
+    This gives the system:
+    \begin{align*} 2d_1 - d_2 &= 3 \\ 3d_1 + d_2 &= 2 \end{align*}
+    Adding the equations gives $5d_1 = 5 \implies d_1 = 1$. Substituting back gives $2(1) - d_2 = 3 \implies d_2 = -1$.
+    So, $\coord{v_2}{S} = \begin{pmatrix} 1 \\ -1 \end{pmatrix}$.
+
+    \textbf{Result:} The change of basis matrix is:
+    \[ P = P_{S \leftarrow T} = \begin{pmatrix} \coord{v_1}{S} & \coord{v_2}{S} \end{pmatrix} = \begin{pmatrix} 1 & 1 \\ 1 & -1 \end{pmatrix} \]
+    Therefore, for any vector $x \in \Rn{2}$, its coordinates in the $S$ and $T$ bases are related by:
+    \[ \coord{x}{S} = \begin{pmatrix} 1 & 1 \\ 1 & -1 \end{pmatrix} \coord{x}{T} \]
+    And conversely:
+    \[ \coord{x}{T} = P^{-1} \coord{x}{S} = \begin{pmatrix} 1 & 1 \\ 1 & -1 \end{pmatrix}^{-1} \coord{x}{S} = \frac{1}{-2} \begin{pmatrix} -1 & -1 \\ -1 & 1 \end{pmatrix} \coord{x}{S} = \begin{pmatrix} 1/2 & 1/2 \\ 1/2 & -1/2 \end{pmatrix} \coord{x}{S} \]
+\end{example}
+
+\begin{remark}[Proof of Coordinate Change Formula]
+    The proof presented earlier by substituting $v_j = \sum_i p_{ij} u_i$ into $x = \sum_j c_j v_j$ is the standard way. The original lecture involved manipulating summations and identifying the result as $P \coord{x}{T}$. While correct, it can be notationally dense. The core idea is that the matrix $P$ encodes how to build the new basis vectors from the old ones, and this relationship directly translates coordinate representations.
+\end{remark}
+
+\section{A Survey of Linear Mappings}
+
+We've focused heavily on isomorphisms, especially coordinate maps. But linear mappings are much broader. A linear mapping (or linear transformation) is simply a function between vector spaces that preserves the vector space operations.
+
+\begin{definition}[Linear Mapping]
+    Let $U$ and $V$ be vector spaces over the same field $\F$. A function $T: U \to V$ is a **linear mapping** if for all $u_1, u_2 \in U$ and all scalars $c \in \F$:
+    \begin{enumerate}
+        \item $T(u_1 + u_2) = T(u_1) + T(u_2)$ (Additivity)
+        \item $T(c u_1) = c T(u_1)$ (Homogeneity)
+    \end{enumerate}
+    These two conditions can be combined into one: $T(c u_1 + d u_2) = c T(u_1) + d T(u_2)$ for all $u_1, u_2 \in U$ and $c, d \in \F$.
+\end{definition}
+
+Before diving into examples, let's review some general function concepts and introduce two specific ones relevant here.
+
+\subsection{General Function Concepts}
+Let $f: X \to Y$ be a function.
+\begin{itemize}
+    \item \textbf{Domain:} The set $X$.
+    \item \textbf{Codomain:} The set $Y$.
+    \item \textbf{Image (or Range):} $\img(f) = \{f(x) \mid x \in X\} \subseteq Y$.
+    \item \textbf{One-to-one (Injective):} If $f(x_1) = f(x_2)$ implies $x_1 = x_2$. Distinct inputs map to distinct outputs. For linear maps $T: U \to V$, this is equivalent to $\ker(T) = \{0_U\}$.
+    \item \textbf{Onto (Surjective):} If $\img(f) = Y$. Every element in the codomain is the image of at least one element in the domain.
+\end{itemize}
+
+\begin{definition}[Inverse Image]
+    Let $f: X \to Y$ be a function and let $B \subseteq Y$. The **inverse image** of $B$ under $f$ is the set of all elements in the domain that map into $B$:
+    \[ f^{-1}(B) = \{x \in X \mid f(x) \in B\} \subseteq X \]
+\end{definition}
+\begin{remark}
+    This notation $f^{-1}(B)$ is defined even if $f$ is not invertible (i.e., not one-to-one and onto). It represents a set in the domain, not the application of an inverse function (which might not exist).
+\end{remark}
+
+\begin{definition}[Restriction]
+    Let $f: X \to Y$ be a function and let $S \subseteq X$. The **restriction** of $f$ to $S$, denoted $f|_S$, is the function $f|_S: S \to Y$ defined by $f|_S(x) = f(x)$ for all $x \in S$. It's the same rule as $f$, but applied only to elements within the subset $S$.
+\end{definition}
+
+\subsection{Examples of Linear Mappings}
+
+Let's explore the variety of linear mappings.
+
+\begin{example}[Zero Mapping (Original Ex 1)]
+    Let $U, V$ be vector spaces over $\F$. The **zero mapping** $Z: U \to V$ is defined by $Z(u) = 0_V$ for all $u \in U$.
+    \begin{itemize}
+        \item \textbf{Linear:} $Z(c u_1 + d u_2) = 0_V$ and $c Z(u_1) + d Z(u_2) = c 0_V + d 0_V = 0_V$. Yes.
+        \item \textbf{One-to-one?} No, unless $U = \{0_U\}$. If $U$ contains non-zero vectors, they all map to $0_V$.
+        \item \textbf{Onto?} No, unless $V = \{0_V\}$. The image is just $\{0_V\}$.
+    \end{itemize}
+\end{example}
+
+\begin{example}[Identity Mapping (Original Ex 2)]
+    Let $V$ be a vector space. The **identity mapping** $\id: V \to V$ is defined by $\id(v) = v$ for all $v \in V$.
+    \begin{itemize}
+        \item \textbf{Linear:} $\id(c v_1 + d v_2) = c v_1 + d v_2 = c \id(v_1) + d \id(v_2)$. Yes.
+        \item \textbf{One-to-one?} Yes. $\ker(\id) = \{v \mid \id(v) = 0_V\} = \{0_V\}$.
+        \item \textbf{Onto?} Yes. For any $v$ in the codomain, $v$ is the image of $v$ from the domain.
+        \item \textbf{Operator:} A linear map from a space to itself ($T: V \to V$) is often called a linear **operator**.
+    \end{itemize}
+\end{example}
+
+\begin{example}[Matrix Transformation (Original Ex 3)]
+    Let $A \in \M{n}{m}(\F)$. The map $T_A: \Fn{m} \to \Fn{n}$ defined by $T_A(u) = Au$ (matrix multiplication) is linear.
+    \begin{itemize}
+        \item \textbf{Linear:} $T_A(c u_1 + d u_2) = A(c u_1 + d u_2) = c(Au_1) + d(Au_2) = c T_A(u_1) + d T_A(u_2)$. Yes, by properties of matrix multiplication.
+        \item \textbf{One-to-one?} Yes, if and only if $\ker(T_A) = \nul(A) = \{0_m\}$. This happens iff the columns of $A$ are linearly independent (iff $\rank(A) = m$).
+        \item \textbf{Onto?} Yes, if and only if $\img(T_A) = \col(A) = \Fn{n}$. This happens iff the columns of $A$ span $\Fn{n}$ (iff $\rank(A) = n$).
+        \item \textbf{Sub-example:} $f: \Rn{2} \to \R$ by $f(x_1, x_2) = x_1 + x_2$. This is $T_A$ with $A = \begin{pmatrix} 1 & 1 \end{pmatrix}$.
+            Here $m=2, n=1$. Rank is 1.
+            Since $\rank(A) = 1 < m=2$, it's not one-to-one. E.g., $f(1,-1)=0, f(-1,1)=0$.
+            Since $\rank(A) = 1 = n=1$, it is onto.
+    \end{itemize}
+\end{example}
+
+\begin{example}[Matrix Multiplication Map (Original Ex 4)]
+    Let $A \in \M{p}{m}(\F)$ and $B \in \M{n}{q}(\F)$ be fixed matrices. Define $T: \M{m}{n}(\F) \to \M{p}{q}(\F)$ by $T(X) = AXB$.
+    \begin{itemize}
+        \item \textbf{Linear:} $T(cX + dY) = A(cX+dY)B = A(cX)B + A(dY)B = c(AXB) + d(AYB) = cT(X) + dT(Y)$. Yes.
+        \item \textbf{One-to-one? Onto?} Depends heavily on the properties of $A$ and $B$ (e.g., their ranks, invertibility if square). Analyzing this requires more advanced tools (like Kronecker products or vectorization).
+    \end{itemize}
+\end{example}
+
+\begin{example}[Differentiation (Original Ex 5)]
+    Let $C^1(\R)$ be the space of continuously differentiable functions $f: \R \to \R$, and $C(\R)$ be the space of continuous functions. The **differentiation map** $D: C^1(\R) \to C(\R)$ is defined by $D(f) = f'$ (the derivative of $f$).
+    \begin{itemize}
+        \item \textbf{Linear:} $D(cf + dg) = (cf+dg)' = cf' + dg' = cD(f) + dD(g)$. Yes, by standard derivative rules.
+        \item \textbf{One-to-one?} No. $\ker(D) = \{f \in C^1(\R) \mid f' = 0\}$. These are precisely the constant functions. Since there are many non-zero constant functions, the kernel is non-trivial.
+        \item \textbf{Onto?} Yes. For any continuous function $g \in C(\R)$, the Fundamental Theorem of Calculus (Part 1) guarantees that the function $f(x) = \int_0^x g(t) dt$ (plus any constant) is differentiable, belongs to $C^1(\R)$, and satisfies $f'(x) = g(x)$. Thus $D(f) = g$. Every continuous function has an antiderivative in $C^1(\R)$.
+    \end{itemize}
+\end{example}
+
+\begin{example}[Integration Functional (Original Ex 6)]
+    Let $C([a,b])$ be the space of continuous functions on $[a,b]$. Define $J: C([a,b]) \to \R$ by $J(f) = \int_a^b f(t) dt$.
+    \begin{itemize}
+        \item \textbf{Linear:} $J(cf+dg) = \int_a^b (cf(t)+dg(t)) dt = c\int_a^b f(t) dt + d\int_a^b g(t) dt = cJ(f) + dJ(g)$. Yes, by linearity of the definite integral.
+        \item \textbf{Functional:} A linear map from a vector space to its scalar field ($\R$ or $\C$) is called a **linear functional**.
+        \item \textbf{Onto?} Yes. For any $c \in \R$, consider the constant function $f(t) = c/(b-a)$ (assuming $b \neq a$). This $f$ is in $C([a,b])$ and $J(f) = \int_a^b \frac{c}{b-a} dt = \frac{c}{b-a} [t]_a^b = \frac{c}{b-a} (b-a) = c$.
+        \item \textbf{One-to-one?} No. $\ker(J) = \{f \in C([a,b]) \mid \int_a^b f(t) dt = 0\}$. This space contains many non-zero functions (e.g., any function whose graph has equal signed area above and below the axis between $a$ and $b$, like $\sin(x)$ on $[0, 2\pi]$ if $a=0, b=2\pi$). The example sketched in the lecture involved constructing a piecewise linear function centered at $(a+b)/2$ with positive and negative parts cancelling out.
+    \end{itemize}
+\end{example}
+
+\begin{example}[Integral Operator (Original Ex 7)]
+    Define $L: C([a,b]) \to C([a,b])$ by $L(f)(x) = \int_a^x f(t) dt$. Note the output is a function of $x$.
+    \begin{itemize}
+        \item \textbf{Linear:} Similar justification to $J$ using linearity of integrals. Yes.
+        \item \textbf{Onto?} No. The Fundamental Theorem of Calculus (Part 1) tells us that if $f$ is continuous, then $F(x) = L(f)(x) = \int_a^x f(t) dt$ is not just continuous, but also differentiable (specifically, $F'(x) = f(x)$). Furthermore, $F(a) = \int_a^a f(t) dt = 0$. Thus, the image $\img(L)$ is a subset of $C^1([a,b])$, consisting of continuously differentiable functions $F$ on $[a,b]$ such that $F(a)=0$. Since not all continuous functions are differentiable (e.g., $|x-a|$ if $a<b$), $L$ cannot be onto $C([a,b])$.
+        \item \textbf{One-to-one?} Yes. Suppose $L(f) = 0$. This means the function $F(x) = \int_a^x f(t) dt$ is the zero function for all $x \in [a,b]$. Differentiating both sides with respect to $x$ (using FTC Part 1), we get $f(x) = F'(x) = 0$ for all $x \in (a,b)$. Since $f$ is continuous, $f(x)=0$ for all $x \in [a,b]$. Thus $\ker(L) = \{0\}$, and $L$ is one-to-one. (This was the homework exercise mentioned).
+    \end{itemize}
+\end{example}
+
+\subsection{Examples of Non-Linear Mappings}
+
+It's also important to recognize when a mapping is *not* linear. Linearity is quite a strict condition.
+
+\begin{example}[Affine Map (Original Non-Linear Ex 1)]
+    Let $A \in \M{n}{m}(\F)$ and $b \in \Fn{n}$ with $b \neq 0$. The map $f: \Fn{m} \to \Fn{n}$ defined by $f(u) = Au + b$ is called an **affine map**.
+    \begin{itemize}
+        \item \textbf{Not Linear:} A necessary condition for linearity is that $T(0_U) = 0_V$. Here, $f(0_m) = A(0_m) + b = 0_n + b = b$. Since $b \neq 0_n$, $f(0_m) \neq 0_n$, so the map cannot be linear. (It also fails additivity and homogeneity unless $b=0$).
+    \end{itemize}
+\end{example}
+
+\begin{example}[Quadratic Matrix Map (Original Non-Linear Ex 2)]
+    Let $V = \{A \in \Mn{n}(\R) \mid A\tr = A\}$ be the space of $n \times n$ real symmetric matrices. Define $f: V \to V$ by $f(A) = AA\tr$.
+    \begin{itemize}
+        \item \textbf{Well-defined target space?} If $A$ is symmetric, $A\tr = A$, so $f(A) = AA = A^2$. Is $A^2$ symmetric? $(A^2)\tr = (A\tr)\tr (A\tr) = A A\tr = A^2$ (using $(XY)\tr=Y\tr X\tr$ and $(X\tr)\tr = X$). More simply, $(A^2)\tr = (A\tr)^2$. If $A\tr=A$, then $(A^2)\tr = A^2$. Yes, the output is also symmetric. So the map $f(A)=AA\tr$ maps $V$ to $V$.
+        \item \textbf{Not Linear:} Consider $f(A+B) = (A+B)(A+B)\tr = (A+B)(A\tr+B\tr) = AA\tr + AB\tr + BA\tr + BB\tr$. In general, this is not equal to $f(A)+f(B) = AA\tr + BB\tr$. For instance, if $A=I, B=I$, $f(A+B)=f(2I)=(2I)(2I)\tr=4I$. But $f(A)+f(B)=f(I)+f(I)=II\tr+II\tr=I+I=2I$. Since $4I \neq 2I$ (for $n \ge 1$), $f$ fails additivity. Also, $f(cA) = (cA)(cA)\tr = (cA)(c A\tr) = c^2 A A\tr = c^2 f(A)$, which is not $c f(A)$ unless $c=0, 1$. Thus, $f$ is not linear. (The original transcript simplified to $A^2$ assuming symmetric input, but the non-linearity holds regardless).
+    \end{itemize}
+\end{example}
+
+These examples highlight that linearity involves preserving sums and scalar multiples exactly, without extra terms (like $+b$) or changes in powers (like $A^2$ or $c^2$).
+
+\end{document}

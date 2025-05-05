@@ -1,0 +1,390 @@
+\documentclass[11pt]{article}
+\usepackage{amsmath, amssymb, amsthm}
+\usepackage[margin=1in]{geometry}
+\usepackage{mathtools} % For :=
+\usepackage{graphicx} % Needed for lrbox
+
+% Setup Theorem Environments
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{remark}[theorem]{Remark}
+\newtheorem{example}[theorem]{Example}
+
+\theoremstyle{definition}
+\newtheorem*{solution}{Solution}
+
+\theoremstyle{remark}
+\newtheorem*{note}{Note}
+
+% Custom environment for announcements - Corrected Definition v3 using lrbox
+\newsavebox{\announcementbox} % Define a box variable
+
+\newenvironment{announcement}
+  {% Start definition for \begin{announcement}
+   \begin{lrbox}{\announcementbox}% Start saving content to the box \announcementbox
+   \begin{minipage}{0.9\textwidth}% Set width for the content within the box
+   \par\vspace{0.5\baselineskip}% Add some space at the top inside the minipage
+   \textbf{Administrative Announcements}\par\medskip% Add title
+   \noindent\ignorespaces% Ready for the environment content (e.g., itemize)
+  }
+  {% Start definition for \end{announcement}
+   \par\vspace{0.5\baselineskip}% Add some space at the bottom inside the minipage
+   \end{minipage}% End the minipage
+   \end{lrbox}% Finish saving content to the box \announcementbox
+   % Now, place the framed box
+   \par\medskip\noindent\begin{center}% Center the final framed box
+   \fbox{\usebox{\announcementbox}}% Typeset the saved box inside an \fbox
+   \end{center}\par\medskip% Add space after the centered box
+  }
+
+% Math commands
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\F}{\mathbb{F}}
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\mat}[1]{\begin{pmatrix}#1\end{pmatrix}}
+\DeclareMathOperator{\dimn}{dim}
+\DeclareMathOperator{\spn}{span}
+
+\title{Lecture Notes: Isomorphisms, Coordinate Vectors, and Bases}
+\date{\today} % Or use a specific date if preferred
+\author{Undergraduate Mathematics Educator} % Placeholder
+
+\begin{document}
+\maketitle
+
+%--------------------------------------------------------------------------
+% Administrative Announcements
+%--------------------------------------------------------------------------
+\begin{announcement}
+\begin{itemize}
+    \item \textbf{Upcoming Quiz:}
+        \begin{itemize}
+            \item \textbf{Timing:} There will be a quiz on Thursday in approximately 2-2.5 weeks. Please await confirmation of the exact date.
+            \item \textbf{Scope:} Typically, the quiz covers material up to, but not including, the week of the quiz (i.e., if the quiz is in week $X$, it covers material up to week $X-1$). We will request formal clarification on the exact topics covered and update you. (It was mentioned there might be two questions, but this is preliminary).
+            \item \textbf{Tutorial on Quiz Day:} Attendance at the tutorial section on the day of the quiz is appreciated, but understandable if you cannot make it.
+        \end{itemize}
+    \item \textbf{Clarification Needed:} We will seek clarification regarding the exact quiz scope and the definition convention for polynomial spaces $\R_n[x]$ (see Section \ref{sec:polynomials} for discussion).
+    \item \textbf{Reception Hour (Office Hour):} An update regarding the schedule for reception hours will be provided soon to ensure a consistent time.
+    \item \textbf{Previous Confusing Topics:} It was noted that a previous question involving null spaces and direct sums might have been confusing. We aim for clarity in all presented material.
+\end{itemize}
+\end{announcement}
+
+%--------------------------------------------------------------------------
+% Section 1: Isomorphisms
+%--------------------------------------------------------------------------
+\section{Isomorphisms: When Vector Spaces are ``Essentially the Same''}
+
+Often in mathematics, we encounter structures that look different on the surface but share the same fundamental properties. In linear algebra, the concept of an \emph{isomorphism} captures this idea for vector spaces. It allows us to say precisely when two vector spaces, even if their elements are different kinds of objects (like vectors in $\R^n$ versus matrices or polynomials), are structurally identical from the perspective of vector space operations.
+
+\begin{definition}[Isomorphism]
+Let $U$ and $V$ be vector spaces over the same field $\F$. A function $\Phi: U \to V$ is called an \textbf{isomorphism} if it satisfies the following three conditions:
+\begin{enumerate}
+    \item \textbf{Linearity:} $\Phi$ preserves vector space operations. That is, for all $u_1, u_2 \in U$ and all scalars $c \in \F$:
+        \begin{itemize}
+            \item $\Phi(u_1 + u_2) = \Phi(u_1) + \Phi(u_2)$ (preserves addition)
+            \item $\Phi(c u_1) = c \Phi(u_1)$ (preserves scalar multiplication)
+        \end{itemize}
+        (These two conditions are often combined into $\Phi(\alpha u_1 + \beta u_2) = \alpha \Phi(u_1) + \beta \Phi(u_2)$ for all $u_1, u_2 \in U$ and $\alpha, \beta \in \F$.)
+    \item \textbf{One-to-one (Injective):} $\Phi$ maps distinct vectors in $U$ to distinct vectors in $V$. That is, if $u_1 \neq u_2$, then $\Phi(u_1) \neq \Phi(u_2)$. Equivalently, if $\Phi(u_1) = \Phi(u_2)$, then $u_1 = u_2$.
+    \item \textbf{Onto (Surjective):} Every vector in $V$ is the image of some vector in $U$. That is, for every $v \in V$, there exists at least one $u \in U$ such that $\Phi(u) = v$.
+\end{enumerate}
+If such an isomorphism $\Phi$ exists, we say that $U$ and $V$ are \textbf{isomorphic}, sometimes denoted $U \cong V$.
+\end{definition}
+
+\begin{remark}
+A function that satisfies condition (1) is called a \emph{linear transformation} (or linear map). A function that satisfies conditions (2) and (3) is called a \emph{bijection}. Thus, an isomorphism is a linear bijection between vector spaces.
+\end{remark}
+
+\begin{example}[Matrices vs. $\R^4$ - Original Example] \label{ex:matrix_iso}
+Consider the vector space $U = \R^{2 \times 2}$, the space of $2 \times 2$ real matrices, and the vector space $V = \R^4$. Define the map $\Phi: U \to V$ by
+\[ \Phi\left( \mat{a & b \\ c & d} \right) := (a, b, c, d) \]
+Is this an isomorphism? Let's think about the conditions:
+\begin{itemize}
+    \item \textbf{Linearity:} You can verify that adding two matrices and then applying $\Phi$ gives the same result as applying $\Phi$ to each matrix and then adding the resulting vectors in $\R^4$. Similarly for scalar multiplication. (Exercise: Write this out formally!)
+    \item \textbf{One-to-one:} If $\Phi\left( \mat{a & b \\ c & d} \right) = \Phi\left( \mat{a' & b' \\ c' & d'} \right)$, then $(a, b, c, d) = (a', b', c', d')$, which implies $a=a', b=b', c=c', d=d'$. Thus, the matrices must be identical. So, $\Phi$ is one-to-one.
+    \item \textbf{Onto:} For any vector $(a, b, c, d) \in \R^4$, the matrix $\mat{a & b \\ c & d}$ is in $U$ and maps to it. So, $\Phi$ is onto.
+\end{itemize}
+Since $\Phi$ is linear, one-to-one, and onto, it is an isomorphism. This means that $\R^{2 \times 2}$ and $\R^4$ are isomorphic ($ \R^{2 \times 2} \cong \R^4 $). They are different kinds of objects, but as vector spaces, they behave identically. For instance, a set of matrices in $\R^{2 \times 2}$ is linearly independent if and only if their corresponding images under $\Phi$ in $\R^4$ form a linearly independent set.
+\end{example}
+
+This preservation of linear independence (and dependence) is a crucial consequence of isomorphism.
+
+\begin{theorem}[Isomorphisms Preserve Linear Independence] \label{thm:iso_preserves_li}
+Let $\Phi: U \to V$ be an isomorphism between vector spaces $U$ and $V$. Let $S = \{u_1, u_2, \dots, u_k\} \subseteq U$. Then $S$ is linearly independent in $U$ if and only if the set of images $\Phi(S) = \{\Phi(u_1), \Phi(u_2), \dots, \Phi(u_k)\} \subseteq V$ is linearly independent in $V$.
+\end{theorem}
+
+\begin{proof}
+(Sketch)
+($\Rightarrow$) Assume $S$ is LI. Consider a linear combination of the images equal to the zero vector in $V$: $c_1 \Phi(u_1) + \dots + c_k \Phi(u_k) = \mathbf{0}_V$. By linearity of $\Phi$, this is $\Phi(c_1 u_1 + \dots + c_k u_k) = \mathbf{0}_V$. Since $\Phi$ is an isomorphism, it's one-to-one, and we know $\Phi(\mathbf{0}_U) = \mathbf{0}_V$. Therefore, $c_1 u_1 + \dots + c_k u_k = \mathbf{0}_U$. Since $S$ is LI, all scalars $c_i$ must be zero. Thus, $\Phi(S)$ is LI.
+
+($\Leftarrow$) Assume $\Phi(S)$ is LI. Consider a linear combination $c_1 u_1 + \dots + c_k u_k = \mathbf{0}_U$. Apply $\Phi$ to both sides: $\Phi(c_1 u_1 + \dots + c_k u_k) = \Phi(\mathbf{0}_U)$. By linearity, $c_1 \Phi(u_1) + \dots + c_k \Phi(u_k) = \mathbf{0}_V$. Since $\Phi(S)$ is LI, all scalars $c_i$ must be zero. Thus, $S$ is LI.
+\end{proof}
+
+This theorem is incredibly useful. It allows us to transfer questions about linear independence from one vector space to another, potentially simpler, isomorphic space.
+
+%--------------------------------------------------------------------------
+% Section 2: Coordinate Vectors
+%--------------------------------------------------------------------------
+\section{Coordinate Vectors: Translating Abstract Vectors into Concrete Numbers}
+
+While vector spaces can contain diverse objects like matrices or polynomials, it's often convenient to work with familiar column vectors (tuples of numbers). Coordinate vectors provide a bridge, allowing us to represent any vector in a finite-dimensional vector space as a unique column vector, once we've chosen a basis.
+
+\begin{definition}[Coordinate Vector]
+Let $V$ be a finite-dimensional vector space over a field $\F$, and let $S = \{v_1, v_2, \dots, v_n\}$ be an \textbf{ordered basis} for $V$. For any vector $v \in V$, there exists a unique set of scalars $\alpha_1, \alpha_2, \dots, \alpha_n \in \F$ such that
+\[ v = \alpha_1 v_1 + \alpha_2 v_2 + \dots + \alpha_n v_n \]
+The \textbf{coordinate vector} of $v$ relative to the basis $S$, denoted $[v]_S$, is the column vector in $\F^n$ formed by these unique scalars:
+\[ [v]_S := \mat{\alpha_1 \\ \alpha_2 \\ \vdots \\ \alpha_n} \in \F^n \]
+\end{definition}
+
+\begin{remark}
+The order of the vectors in the basis $S$ matters! Changing the order of basis vectors will change the coordinate vector.
+\end{remark}
+
+\begin{example}[Coordinates in $\R^3$ - Original Example]
+Consider $V = \R^3$ with the standard basis $S = \{e_1, e_2, e_3\}$, where $e_1=(1,0,0)$, $e_2=(0,1,0)$, $e_3=(0,0,1)$. Let $v = (3, 5, 8)$.
+We can write $v$ as a linear combination of the basis vectors:
+\[ v = 3 e_1 + 5 e_2 + 8 e_3 \]
+The unique scalars are $\alpha_1=3, \alpha_2=5, \alpha_3=8$. Therefore, the coordinate vector of $v$ relative to the standard basis $S$ is:
+\[ [v]_S = \mat{3 \\ 5 \\ 8} \]
+In this case, for the standard basis, the coordinate vector looks just like the original vector, which is why the standard basis is so convenient. For other bases, this will generally not be true.
+\end{example}
+
+The mapping that takes a vector $v$ to its coordinate vector $[v]_S$ is not just a convenient representation; it's a fundamental connection between the abstract vector space $V$ and the concrete space $\F^n$.
+
+\begin{theorem}[The Coordinate Map is an Isomorphism] \label{thm:coord_map_iso}
+Let $V$ be an $n$-dimensional vector space over $\F$, and let $S$ be any ordered basis for $V$. The map $[\cdot]_S: V \to \F^n$ defined by $v \mapsto [v]_S$ is an isomorphism.
+\end{theorem}
+
+\begin{note}
+The proof involves showing that the coordinate map is linear, one-to-one, and onto, relying on the properties of a basis (spanning and linear independence guarantee existence and uniqueness of the coordinate representation). We won't detail the proof here, but it's a foundational result.
+\end{note}
+
+\textbf{Why is this important?} Theorem \ref{thm:coord_map_iso} combined with Theorem \ref{thm:iso_preserves_li} gives us a powerful strategy:
+To check if a set of vectors $\{u_1, \dots, u_k\}$ in $V$ is linearly independent, we can:
+\begin{enumerate}
+    \item Choose a convenient basis $S$ for $V$.
+    \item Find the coordinate vectors $[u_1]_S, \dots, [u_k]_S$ in $\F^n$.
+    \item Check if the set of coordinate vectors $\{[u_1]_S, \dots, [u_k]_S\}$ is linearly independent in $\F^n$ (e.g., using row reduction or determinants if $k=n$).
+    \item The original set $\{u_1, \dots, u_k\}$ is linearly independent in $V$ if and only if the set of coordinate vectors is linearly independent in $\F^n$.
+\end{enumerate}
+We will now see this strategy in action.
+
+%--------------------------------------------------------------------------
+% Section 3: Application: Basis for Symmetric Matrices
+%--------------------------------------------------------------------------
+\section{Application: A Basis for $2 \times 2$ Symmetric Matrices}
+
+Let's apply these ideas to a concrete problem involving matrices.
+
+\textbf{Problem Setup:}
+Consider the vector space $V = \R^{2 \times 2}$. Let $W$ be the subset of $V$ consisting of all symmetric $2 \times 2$ real matrices:
+\[ W = \left\{ A \in \R^{2 \times 2} \mid A^T = A \right\} = \left\{ \mat{a & b \\ b & c} \mid a, b, c \in \R \right\} \]
+We know (or can easily verify) that $W$ is a subspace of $V$.
+
+Consider the following set of three matrices in $W$:
+\[ E = \{ M_1, M_2, M_3 \} \]
+where
+\[ M_1 = \mat{1 & -1 \\ -1 & 2}, \quad M_2 = \mat{4 & 1 \\ 1 & 0}, \quad M_3 = \mat{3 & -2 \\ -2 & 1} \]
+(\emph{First check: Are these indeed in W? Yes, they are symmetric.})
+The question is: \textbf{Is $E$ a basis for $W$?}
+
+\textbf{Strategy: Using Coordinate Vectors}
+
+\begin{enumerate} % Changed to enumerate for steps
+    \item \textbf{Find a Known Basis for W:} Recall (or verify) that a simple basis for $W$ is the set $S = \{E_1, E_2, E_3\}$, where
+    \[ E_1 = \mat{1 & 0 \\ 0 & 0}, \quad E_2 = \mat{0 & 1 \\ 1 & 0}, \quad E_3 = \mat{0 & 0 \\ 0 & 1} \]
+    Any symmetric matrix $\mat{a & b \\ b & c}$ can be uniquely written as $a E_1 + b E_2 + c E_3$.
+    Since this basis $S$ has 3 elements, the dimension of $W$ is $\dimn(W) = 3$.
+
+    \item \textbf{Dimension Argument:} We have a set $E$ containing 3 vectors ($M_1, M_2, M_3$) in a 3-dimensional space $W$. We know that if we can show $E$ is linearly independent, then it must also span $W$ and hence be a basis. Conversely, if it spans $W$, it must be linearly independent. So, the task reduces to checking the linear independence of $E$.
+
+    \item \textbf{Map to Coordinate Vectors:} We will use the isomorphism $[\cdot]_S: W \to \R^3$ relative to the basis $S=\{E_1, E_2, E_3\}$. We need to find the coordinate vectors $[M_1]_S, [M_2]_S, [M_3]_S$.
+    Recall that for $M = \mat{a & b \\ b & c}$, we have $M = a E_1 + b E_2 + c E_3$, so $[M]_S = \mat{a \\ b \\ c}$.
+    \begin{itemize}
+        \item For $M_1 = \mat{1 & -1 \\ -1 & 2}$: Here $a=1, b=-1, c=2$. So, $[M_1]_S = \mat{1 \\ -1 \\ 2}$.
+        \item For $M_2 = \mat{4 & 1 \\ 1 & 0}$: Here $a=4, b=1, c=0$. So, $[M_2]_S = \mat{4 \\ 1 \\ 0}$.
+        \item For $M_3 = \mat{3 & -2 \\ -2 & 1}$: Here $a=3, b=-2, c=1$. So, $[M_3]_S = \mat{3 \\ -2 \\ 1}$.
+    \end{itemize}
+
+    \item \textbf{Check Linear Independence in $\R^3$:} By Theorems \ref{thm:iso_preserves_li} and \ref{thm:coord_map_iso}, the set $E = \{M_1, M_2, M_3\}$ is linearly independent in $W$ if and only if the set of coordinate vectors $\{[M_1]_S, [M_2]_S, [M_3]_S\}$ is linearly independent in $\R^3$.
+    To check the independence of these column vectors in $\R^3$, we form a matrix whose rows (or columns) are these vectors and check its rank (or determinant). Let's use rows:
+    \[ C = \mat{1 & -1 & 2 \\ 4 & 1 & 0 \\ 3 & -2 & 1} \]
+    We can either row-reduce $C$ or compute its determinant.
+    \begin{itemize}
+        \item \textbf{Row Reduction:} (Steps omitted, but as mentioned in lecture) $C$ is row-equivalent to the identity matrix $I_3$.
+        \item \textbf{Determinant:} $\det(C) = 1(1\cdot 1 - 0\cdot(-2)) - (-1)(4\cdot 1 - 0\cdot 3) + 2(4\cdot(-2) - 1\cdot 3) = 1(1) + 1(4) + 2(-8-3) = 1 + 4 + 2(-11) = 5 - 22 = -17$.
+    \end{itemize}
+    Since the matrix $C$ has full rank (rank 3) and its determinant is non-zero ($-17 \neq 0$), the rows (the coordinate vectors) are linearly independent.
+
+    \item \textbf{Conclusion:} Since the set of coordinate vectors $\{[M_1]_S, [M_2]_S, [M_3]_S\}$ is linearly independent in $\R^3$, the original set $E = \{M_1, M_2, M_3\}$ must be linearly independent in $W$. As $E$ is a linearly independent set of 3 vectors in the 3-dimensional space $W$, it forms a basis for $W$.
+\end{enumerate} % End enumerate for steps
+
+\begin{remark}[Why not map to $\R^4$?]
+A natural question arises: why didn't we use the isomorphism from Example \ref{ex:matrix_iso} mapping $\R^{2 \times 2}$ to $\R^4$? The subspace $W$ is only 3-dimensional. While we could map $M_1, M_2, M_3$ to vectors in $\R^4$ (e.g., $M_1 \mapsto (1, -1, -1, 2)$), the target space $\R^4$ is too large. The map $\Phi|_{W}: W \to \R^4$ restricted to $W$ is still linear and one-to-one, but it's *not onto* $\R^4$. Therefore, it's not an isomorphism *between* $W$ and $\R^4$. The coordinate map $[\cdot]_S: W \to \R^3$ *is* an isomorphism between $W$ and $\R^3$, allowing us to directly relate properties in $W$ to properties in $\R^3$.
+\end{remark}
+
+%--------------------------------------------------------------------------
+% Section 4: Finding Coordinates Relative to a Basis
+%--------------------------------------------------------------------------
+\section{Finding Coordinates Relative to a Basis}
+
+Now, let's use the basis $E = \{M_1, M_2, M_3\}$ we just found for the space $W$ of $2 \times 2$ symmetric matrices.
+
+\textbf{Problem:}
+Given the matrices
+\[ A = \mat{1 & -5 \\ -5 & 5} \quad \text{and} \quad B = \mat{1 & -5 \\ -1 & 2} \]
+Find their coordinate vectors relative to the basis $E = \{M_1, M_2, M_3\}$, denoted $[A]_E$ and $[B]_E$.
+
+\textbf{Solution:}
+
+\begin{itemize}
+    \item \textbf{Matrix B:} First, observe matrix $B$. Is it symmetric? No, $B^T = \mat{1 & -1 \\ -5 & 2} \neq B$. Since $B$ is not in the subspace $W$, it cannot be expressed as a linear combination of the vectors in $E$ (which form a basis *for W*). Therefore, the coordinate vector $[B]_E$ is undefined, or we could say $B \notin \spn(E) = W$. If we tried to solve for coefficients, we would find the system of equations has no solution.
+
+    \item \textbf{Matrix A:} Matrix $A$ is symmetric ($A^T = A$), so $A \in W$. Since $E$ is a basis for $W$, we know there exist unique scalars $c_1, c_2, c_3$ such that
+        \[ A = c_1 M_1 + c_2 M_2 + c_3 M_3 \]
+        By definition, the coordinate vector we seek is $[A]_E = \mat{c_1 \\ c_2 \\ c_3}$.
+        How do we find $c_1, c_2, c_3$? We could substitute the matrices $A, M_1, M_2, M_3$ and solve the resulting system of equations for the matrix entries (4 equations for $a,b,b,c$).
+
+        \textbf{Alternative (using the coordinate map trick):}
+        We can apply the coordinate map $[\cdot]_S: W \to \R^3$ (relative to the standard basis $S=\{E_1, E_2, E_3\}$) to both sides of the equation $A = c_1 M_1 + c_2 M_2 + c_3 M_3$. Using the linearity of the coordinate map (Theorem \ref{thm:coord_map_iso}):
+        \[ [A]_S = [c_1 M_1 + c_2 M_2 + c_3 M_3]_S = c_1 [M_1]_S + c_2 [M_2]_S + c_3 [M_3]_S \]
+        We already calculated these coordinate vectors in the previous section:
+        \begin{itemize}
+            \item $[M_1]_S = \mat{1 \\ -1 \\ 2}$
+            \item $[M_2]_S = \mat{4 \\ 1 \\ 0}$
+            \item $[M_3]_S = \mat{3 \\ -2 \\ 1}$
+        \end{itemize}
+        We also need $[A]_S$. Since $A = \mat{1 & -5 \\ -5 & 5}$, we have $a=1, b=-5, c=5$. So, $[A]_S = \mat{1 \\ -5 \\ 5}$.
+        Substituting these into the equation gives:
+        \[ \mat{1 \\ -5 \\ 5} = c_1 \mat{1 \\ -1 \\ 2} + c_2 \mat{4 \\ 1 \\ 0} + c_3 \mat{3 \\ -2 \\ 1} \]
+        This is a vector equation in $\R^3$, which corresponds to the following system of linear equations:
+        \begin{align*} 1c_1 + 4c_2 + 3c_3 &= 1 \\ -1c_1 + 1c_2 - 2c_3 &= -5 \\ 2c_1 + 0c_2 + 1c_3 &= 5 \end{align*}
+        In matrix form, this is $C^T \mathbf{c} = \mathbf{a}$, where $C$ is the matrix from the previous section (with coordinate vectors as rows), $\mathbf{c} = \mat{c_1 \\ c_2 \\ c_3}$, and $\mathbf{a} = [A]_S$:
+        \[ \mat{1 & 4 & 3 \\ -1 & 1 & -2 \\ 2 & 0 & 1} \mat{c_1 \\ c_2 \\ c_3} = \mat{1 \\ -5 \\ 5} \]
+        (Note: The coefficient matrix here is the transpose of the matrix $C$ we used in the previous section where we put coordinate vectors as rows.)
+        Solving this system (e.g., using Gaussian elimination, or noting we found the inverse relationship implicitly before), we find the unique solution:
+        \[ c_1 = 2, \quad c_2 = -1, \quad c_3 = 1 \]
+        (Check: $2M_1 - M_2 + M_3 = 2\mat{1 & -1 \\ -1 & 2} - \mat{4 & 1 \\ 1 & 0} + \mat{3 & -2 \\ -2 & 1} = \mat{2 & -2 \\ -2 & 4} + \mat{-4 & -1 \\ -1 & 0} + \mat{3 & -2 \\ -2 & 1} = \mat{2-4+3 & -2-1-2 \\ -2-1-2 & 4+0+1} = \mat{1 & -5 \\ -5 & 5} = A$. Correct.)
+
+        Therefore, the coordinate vector of $A$ relative to the basis $E$ is:
+        \[ [A]_E = \mat{c_1 \\ c_2 \\ c_3} = \mat{2 \\ -1 \\ 1} \]
+\end{itemize}
+
+\begin{remark}[Uniqueness of Coordinates]
+Since $E$ is a basis for $W$, the representation of any vector $A \in W$ as a linear combination of $M_1, M_2, M_3$ is unique. This corresponds to the fact that the linear system we solved had a unique solution. If $E$ were linearly dependent, we might have found infinitely many solutions (infinitely many ways to write $A$ as a combination) or no solution.
+\end{remark}
+
+%--------------------------------------------------------------------------
+% Section 5: Application: Basis for Polynomial Spaces
+%--------------------------------------------------------------------------
+\section{Application: A Basis for a Polynomial Space} \label{sec:polynomials}
+
+Let's extend these ideas to spaces of polynomials.
+
+\textbf{Problem Setup:}
+Let $\R_n[x]$ denote the vector space of polynomials with real coefficients of degree \emph{strictly less than} $n$. That is,
+\[ \R_n[x] = \{ a_0 + a_1 x + a_2 x^2 + \dots + a_{n-1} x^{n-1} \mid a_i \in \R \} \]
+\begin{note}
+The notation for polynomial spaces can sometimes be ambiguous. Some sources use $\mathcal{P}_n$ or $\R_n[x]$ to mean degree \emph{at most} $n$, while others use it for degree \emph{strictly less than} $n$. The convention used here (as indicated in the lecture source) is degree strictly less than $n$ (i.e., maximum degree $n-1$). This is consistent with the basis having $n$ elements. Please be mindful of the definition used in specific contexts. We will request clarification for the course.
+\end{note}
+
+The \textbf{standard basis} for $\R_n[x]$ is $S = \{1, x, x^2, \dots, x^{n-1}\}$. This basis has $n$ elements, so $\dimn(\R_n[x]) = n$.
+
+Consider the following set of $n$ polynomials in $\R_n[x]$:
+\[ E = \{p_1, p_2, \dots, p_n\} \]
+where
+\begin{align*} p_1 &= 1 \\ p_2 &= 1 + x \\ p_3 &= 1 + x + x^2 \\ &\vdots \\ p_n &= 1 + x + x^2 + \dots + x^{n-1} \end{align*}
+The question is: \textbf{Is $E$ a basis for $\R_n[x]$?}
+
+(An aside mentioned in the lecture: A different set $F = \{1+x, 1+x+x^2, \dots, 1+x+\dots+x^{n-1}\}$ contains only $n-1$ polynomials. Since $\dimn(\R_n[x])=n$, a set with fewer than $n$ elements cannot span the space, so $F$ cannot be a basis for $\R_n[x]$.)
+
+\textbf{Strategy: Using Coordinate Vectors}
+
+\begin{enumerate} % Numbered steps
+    \item \textbf{Dimension Argument:} We have a set $E$ containing $n$ polynomials in the $n$-dimensional space $\R_n[x]$. If we show $E$ is linearly independent, it must be a basis.
+
+    \item \textbf{Map to Coordinate Vectors:} We use the isomorphism $[\cdot]_S: \R_n[x] \to \R^n$ relative to the standard basis $S=\{1, x, \dots, x^{n-1}\}$.
+    Recall that for $p(x) = a_0 + a_1 x + \dots + a_{n-1} x^{n-1}$, the coordinate vector is $[p(x)]_S = \mat{a_0 \\ a_1 \\ \vdots \\ a_{n-1}}$.
+    Let's find the coordinate vectors for the polynomials in $E$:
+    \begin{itemize}
+        \item $p_1 = 1 = 1 \cdot 1 + 0 \cdot x + \dots + 0 \cdot x^{n-1}$
+          \[ \implies [p_1]_S = \mat{1 \\ 0 \\ 0 \\ \vdots \\ 0} \]
+        \item $p_2 = 1 + x = 1 \cdot 1 + 1 \cdot x + 0 \cdot x^2 + \dots + 0 \cdot x^{n-1}$
+          \[ \implies [p_2]_S = \mat{1 \\ 1 \\ 0 \\ \vdots \\ 0} \]
+        \item $p_3 = 1 + x + x^2 = 1 \cdot 1 + 1 \cdot x + 1 \cdot x^2 + 0 \cdot x^3 + \dots + 0 \cdot x^{n-1}$
+          \[ \implies [p_3]_S = \mat{1 \\ 1 \\ 1 \\ 0 \\ \vdots \\ 0} \]
+        \item $\vdots$
+        \item $p_n = 1 + x + \dots + x^{n-1} = 1 \cdot 1 + 1 \cdot x + \dots + 1 \cdot x^{n-1}$
+          \[ \implies [p_n]_S = \mat{1 \\ 1 \\ 1 \\ \vdots \\ 1} \]
+    \end{itemize}
+
+    \item \textbf{Check Linear Independence in $\R^n$:} The set $E$ is linearly independent in $\R_n[x]$ if and only if the set of coordinate vectors $\{[p_1]_S, \dots, [p_n]_S\}$ is linearly independent in $\R^n$. Let's form a matrix $C$ whose rows are these coordinate vectors:
+    \[ C = \mat{
+        1 & 0 & 0 & \dots & 0 \\
+        1 & 1 & 0 & \dots & 0 \\
+        1 & 1 & 1 & \dots & 0 \\
+        \vdots & \vdots & \vdots & \ddots & \vdots \\
+        1 & 1 & 1 & \dots & 1
+        } \]
+    This is a \textbf{lower triangular matrix}. The determinant of a triangular matrix is the product of its diagonal entries. Here, all diagonal entries are 1.
+    \[ \det(C) = 1 \cdot 1 \cdot 1 \cdots 1 = 1 \]
+    Since the determinant is non-zero ($1 \neq 0$), the rows of $C$ (the coordinate vectors) are linearly independent.
+
+    \item \textbf{Conclusion:} Since the set of coordinate vectors $\{[p_1]_S, \dots, [p_n]_S\}$ is linearly independent in $\R^n$, the original set $E = \{p_1, \dots, p_n\}$ must be linearly independent in $\R_n[x]$. As $E$ is a linearly independent set of $n$ vectors in the $n$-dimensional space $\R_n[x]$, it forms a basis for $\R_n[x]$.
+\end{enumerate} % End numbered steps
+
+%--------------------------------------------------------------------------
+% Section 6: Inverse Functions and Bijections
+%--------------------------------------------------------------------------
+\section{Inverse Functions and Bijections}
+
+We shift gears slightly to discuss a fundamental concept about functions in general, which has parallels in linear algebra (e.g., invertible matrices correspond to invertible linear transformations). When does a function have an inverse?
+
+\begin{definition}[Inverse Function]
+Let $f: A \to B$ be a function between two sets $A$ and $B$. A function $g: B \to A$ is called the \textbf{inverse} of $f$ if it satisfies both of the following conditions:
+\begin{enumerate}
+    \item $g(f(x)) = x$ for all $x \in A$. (Applying $f$ then $g$ returns to the start).
+    \item $f(g(y)) = y$ for all $y \in B$. (Applying $g$ then $f$ returns to the start).
+\end{enumerate}
+If such a function $g$ exists, we say $f$ is \textbf{invertible}, and we denote the inverse by $f^{-1}$ (so $g = f^{-1}$).
+\end{definition}
+
+\begin{note}
+The notation $f^{-1}$ here means the inverse function, not $1/f$.
+\end{note}
+
+The existence of an inverse function is directly tied to the function being both one-to-one (injective) and onto (surjective), also known as bijective.
+
+\begin{theorem}[Existence of Inverse Function] \label{thm:inverse_iff_bijective}
+A function $f: A \to B$ has an inverse function $f^{-1}: B \to A$ if and only if $f$ is bijective (i.e., $f$ is both one-to-one and onto). Furthermore, if the inverse exists, it is unique.
+\end{theorem}
+
+\begin{proof}[Proof Sketch]
+
+($\Rightarrow$) Assume $f^{-1}$ exists. We need to show $f$ is one-to-one and onto.
+\begin{itemize}
+    \item \textbf{One-to-one:} Assume $f(x_1) = f(x_2)$ for some $x_1, x_2 \in A$. Apply $f^{-1}$ to both sides: $f^{-1}(f(x_1)) = f^{-1}(f(x_2))$. By condition (1) of the inverse definition, this implies $x_1 = x_2$. Thus, $f$ is one-to-one.
+    \item \textbf{Onto:} Let $y$ be any element in $B$. We need to find an $x \in A$ such that $f(x)=y$. Let's choose $x = f^{-1}(y)$. This $x$ is in $A$ because $f^{-1}$ maps from $B$ to $A$. Now apply $f$ to this $x$: $f(x) = f(f^{-1}(y))$. By condition (2) of the inverse definition, this equals $y$. So, we found an $x$ (namely $f^{-1}(y)$) that maps to $y$. Thus, $f$ is onto.
+\end{itemize}
+
+($\Leftrightarrow$) Assume $f$ is bijective (one-to-one and onto). We need to construct $f^{-1}: B \to A$ and show it satisfies the conditions. % Corrected symbol
+\begin{itemize}
+    \item \textbf{Construction:} For any $y \in B$, since $f$ is onto, there exists at least one $x \in A$ such that $f(x)=y$. Since $f$ is one-to-one, this $x$ is unique. We define the function $g: B \to A$ by setting $g(y)$ to be this unique $x \in A$ for which $f(x)=y$.
+    \item \textbf{Verification:}
+        \begin{itemize}
+            \item Check $g(f(x)) = x$: Let $x \in A$. Let $y = f(x)$. By our definition of $g$, $g(y)$ is the unique element in $A$ that $f$ maps to $y$. Since $f(x)=y$, that unique element must be $x$. So, $g(f(x)) = g(y) = x$.
+            \item Check $f(g(y)) = y$: Let $y \in B$. Let $x = g(y)$. By our definition of $g$, $x$ is the unique element in $A$ such that $f(x)=y$. So, applying $f$ to $x=g(y)$ indeed gives $y$. That is, $f(g(y)) = y$.
+        \end{itemize}
+    Thus, $g$ satisfies the definition of an inverse function, so $f^{-1}$ exists (and $f^{-1}=g$).
+\end{itemize}
+
+\textbf{Uniqueness:} (Sketch) Suppose $g_1: B \to A$ and $g_2: B \to A$ are both inverses of $f$. For any $y \in B$, we can show $g_1(y) = g_2(y)$ using the properties. For instance: $g_1(y) = g_1(f(g_2(y))) = (g_1 \circ f)(g_2(y)) = \text{id}_A(g_2(y)) = g_2(y)$. Thus, $g_1=g_2$. (Here $\text{id}_A$ is the identity map on A).
+\end{proof}
+
+This theorem establishes a fundamental equivalence: invertibility of a function is the same as being bijective. This connection appears throughout mathematics, including the invertibility of linear transformations and matrices in linear algebra.
+
+\end{document}
